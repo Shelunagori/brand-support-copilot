@@ -117,3 +117,17 @@ async def test_no_aligned_model_returns_safe_fallback(api) -> None:  # type: ign
     c, _ = api
     r = await c.post("/v1/support/query", json={"query": "hi", "model": "base"}, headers=KEY)
     assert r.json()["model_id"] == "base"
+
+
+async def test_eval_endpoints(api, session_factory) -> None:  # type: ignore[no-untyped-def]
+    from app.models import EvalRun
+
+    c, _ = api
+    assert (await c.get("/v1/eval/latest", headers=KEY)).status_code == 404
+    async with session_factory() as s:
+        s.add(EvalRun(label="x", summary={"base": {}}, report={"label": "x", "questions": []}))
+        await s.commit()
+    latest = await c.get("/v1/eval/latest", headers=KEY)
+    assert latest.status_code == 200 and latest.json()["label"] == "x"
+    hist = (await c.get("/v1/eval/history", headers=KEY)).json()
+    assert hist[0]["label"] == "x"

@@ -68,6 +68,8 @@ class SupportResponse(BaseModel):
     fallback: bool = False
     json_valid_first_try: bool = True
     guardrail_triggers: list[str] = Field(default_factory=list)
+    # The model's own escalation decision, before guardrails (None when it gave no valid JSON).
+    model_escalate: bool | None = None
     error: str | None = None
     total_tokens: int = 0
     inference_id: str | None = None

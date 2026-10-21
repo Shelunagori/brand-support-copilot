@@ -86,6 +86,7 @@ class SupportService:
                 confidence=round(confidence, 4), model_id=model_id, model_kind=kind,
                 latency_ms=0, request_id=request_id, repaired=repaired,
                 json_valid_first_try=first_ok, raw_output=raw, total_tokens=tokens,
+                model_escalate=parsed.escalate_to_human,
             )
         resp.guardrail_triggers = triggers
         resp.latency_ms = round((time.perf_counter() - started) * 1000, 1)

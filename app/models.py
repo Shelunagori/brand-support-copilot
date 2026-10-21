@@ -82,3 +82,17 @@ class SpendEntry(Base):
     latency_ms: Mapped[float | None] = mapped_column(Float)
     note: Mapped[str | None] = mapped_column(Text)
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+
+
+class EvalRun(Base):
+    """One eval pass (base vs aligned); `report` holds per-question results for the UI."""
+
+    __tablename__ = "eval_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    label: Mapped[str] = mapped_column(String(200))
+    alignment_run_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("alignment_runs.id"))
+    summary: Mapped[dict[str, Any]] = mapped_column(JSON)
+    report: Mapped[dict[str, Any]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow,
+                                                 index=True)
