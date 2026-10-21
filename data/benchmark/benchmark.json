@@ -1,0 +1,152 @@
+[
+  {
+    "sample_num": 1,
+    "instruction": "My polo T-shirt was delivered yesterday but the colour isn't what I expected. Tags are on and I haven't worn it. What are my options?",
+    "response": "You can return it within 7 days of delivery since it's unworn with tags, or exchange it for another colour within 15 days of delivery. Start either from My Orders on urbanethreads.in. (Policy UT-RET-001)"
+  },
+  {
+    "sample_num": 2,
+    "instruction": "I washed my cotton trousers once and now they look faded. Delivered 3 days ago. Can I return them?",
+    "response": "Sorry about that. Returns are accepted within 7 days only for unworn, unwashed items with tags attached, so a washed item can't be returned. (Policy UT-RET-001)"
+  },
+  {
+    "sample_num": 3,
+    "instruction": "How many days do I get to swap a blazer for a different size?",
+    "response": "You can exchange it for another size within 15 days of delivery, as long as it's unworn with tags. Size exchanges are free; raise it from My Orders. (Policy UT-EXC-002)"
+  },
+  {
+    "sample_num": 4,
+    "instruction": "I want to exchange my ₹1,199 shirt for a ₹2,199 jacket. How does payment work?",
+    "response": "You can exchange for a different product within 15 days of delivery. You'll pay the ₹1,000 difference online (COD isn't available for the difference). (Policy UT-EXC-002)"
+  },
+  {
+    "sample_num": 5,
+    "instruction": "Can I return a camisole I bought as innerwear? It's still in the packet.",
+    "response": "Innerwear can't be returned or exchanged, even if the packet is unopened. If it arrived damaged or wrong, report it within 48 hours of delivery with an unboxing photo or video. (Policy UT-NRT-003)"
+  },
+  {
+    "sample_num": 6,
+    "instruction": "Is a clearance item marked Final Sale returnable if I didn't use it?",
+    "response": "No. Final Sale items have no return and no exchange, whether used or not. The only exception is a damaged or wrong item reported within 48 hours with unboxing proof. (Policy UT-NRT-003)"
+  },
+  {
+    "sample_num": 7,
+    "instruction": "I paid by UPI and returned a dress. The refund was initiated today. When will I see it?",
+    "response": "Prepaid refunds go back to the original payment source, so it will reach your UPI-linked bank account within 5-7 business days of initiation. (Policy UT-REF-004)"
+  },
+  {
+    "sample_num": 8,
+    "instruction": "My COD return for ₹2,000 passed QC. What refund options do I have?",
+    "response": "For COD orders you can choose a NEFT bank transfer of ₹2,000 to your own account (5-7 business days), or store credit with a 5% bonus, i.e. ₹2,100. (Policy UT-REF-004)"
+  },
+  {
+    "sample_num": 9,
+    "instruction": "Can you send my card refund to my wife's bank account instead?",
+    "response": "Sorry, prepaid refunds can only go back to the original payment source; we can't redirect them to another account. (Policy UT-REF-004)"
+  },
+  {
+    "sample_num": 10,
+    "instruction": "My order is ₹1,050 after the coupon. Will I be charged for shipping?",
+    "response": "No. Orders above ₹999 ship free, and your order of ₹1,050 qualifies. (Policy UT-SHP-005)"
+  },
+  {
+    "sample_num": 11,
+    "instruction": "I have ₹720 in my cart and want to pay on delivery. What's the total?",
+    "response": "Orders of ₹999 or less have a ₹79 shipping charge, and COD adds a ₹49 fee, so you'll pay ₹848 on delivery. (Policy UT-SHP-005)"
+  },
+  {
+    "sample_num": 12,
+    "instruction": "Can I use cash on delivery for an ₹18,500 order?",
+    "response": "COD isn't available on orders above ₹15,000, so this order needs to be paid online by UPI, card, net banking or wallet. (Policy UT-SHP-005)"
+  },
+  {
+    "sample_num": 13,
+    "instruction": "I'm in Shillong. How long will delivery take?",
+    "response": "Shillong is in the North-East, where delivery takes 7-10 days after dispatch. (Policy UT-DLV-006)"
+  },
+  {
+    "sample_num": 14,
+    "instruction": "Delivery time to Nagpur?",
+    "response": "Nagpur is a non-metro location, so delivery takes 5-7 days after dispatch. (Policy UT-DLV-006)"
+  },
+  {
+    "sample_num": 15,
+    "instruction": "The strap pin on my Urbane Threads watch came off after 5 months of normal wear. Can you fix it?",
+    "response": "Yes, that's a manufacturing defect within the 6-month warranty. Email support@urbanethreads.in with your order ID and photos and we'll arrange repair or replacement. (Policy UT-WAR-007)"
+  },
+  {
+    "sample_num": 16,
+    "instruction": "I dropped my sunglasses and a lens cracked. They're 1 month old. Warranty?",
+    "response": "Sorry, the 6-month warranty covers manufacturing defects only; physical damage like a cracked lens from a drop isn't covered. (Policy UT-WAR-007)"
+  },
+  {
+    "sample_num": 17,
+    "instruction": "My Flipkart order of your chinos hasn't arrived. Can you cancel and refund?",
+    "response": "Flipkart orders are handled by Flipkart, so please cancel or track it from My Orders in the Flipkart app. We can't cancel or refund marketplace orders. (Policy UT-MKT-008)"
+  },
+  {
+    "sample_num": 18,
+    "instruction": "Got a stained kurta from Amazon. Can I send it back to you?",
+    "response": "Since it was bought on Amazon, please raise a return or replacement from Your Orders on Amazon; their process applies and we can't refund it directly. (Policy UT-MKT-008)"
+  },
+  {
+    "sample_num": 19,
+    "instruction": "My parcel arrived this morning and the zip on the jacket is broken. I recorded the unboxing. What now?",
+    "response": "Sorry about that. You're within 48 hours of delivery, so report it via My Orders > Report an issue with your unboxing video, and choose a replacement or refund. (Policy UT-DMG-009)"
+  },
+  {
+    "sample_num": 20,
+    "instruction": "One item was missing from my order delivered yesterday, but I didn't record the unboxing. Can you help?",
+    "response": "A missing or wrong item must be reported within 48 hours with an unboxing photo or video. Without unboxing proof, the claim can't be approved. (Policy UT-DMG-009)"
+  },
+  {
+    "sample_num": 21,
+    "instruction": "What GST will I pay on a ₹1,499 jacket?",
+    "response": "Apparel priced above ₹1,000 per piece attracts 12% GST, so the ₹1,499 jacket is taxed at 12%. Prices shown are GST-inclusive. (Policy UT-GST-010)"
+  },
+  {
+    "sample_num": 22,
+    "instruction": "When do I receive my GST invoice?",
+    "response": "Your GST invoice is emailed when the order is dispatched, and you can also download it from My Orders. (Policy UT-GST-010)"
+  },
+  {
+    "sample_num": 23,
+    "instruction": "I need a B2B invoice for office uniforms I'm about to order. How do I get it?",
+    "response": "Add your GSTIN at checkout under 'Add GST details' before placing the order. It can't be added after the order is placed. (Policy UT-GST-010)"
+  },
+  {
+    "sample_num": 24,
+    "instruction": "My order is still in Packed status. Can I cancel it for free?",
+    "response": "Yes, cancellation is free before dispatch. Cancel from My Orders; prepaid amounts are refunded to the original source in 5-7 business days. (Policy UT-CAN-011)"
+  },
+  {
+    "sample_num": 25,
+    "instruction": "My Final Sale dress has already shipped but I don't want it anymore.",
+    "response": "A shipped order can't be cancelled, and Final Sale items can't be returned, so the best option is to refuse the delivery when it arrives. (Policy UT-CAN-011)"
+  },
+  {
+    "sample_num": 26,
+    "instruction": "My advocate will be in touch about my missing refund.",
+    "response": "I understand this is frustrating. I've escalated your case to a senior support specialist, who will contact you within 24 hours at your registered email. (Policy UT-ESC-012)"
+  },
+  {
+    "sample_num": 27,
+    "instruction": "I placed a ₹27,500 order for my wedding party and need to change some sizes.",
+    "response": "Thanks for reaching out. Because this order is above ₹25,000, I've escalated it to a senior support specialist who will help you within 24 hours. (Policy UT-ESC-012)"
+  },
+  {
+    "sample_num": 28,
+    "instruction": "Can you give me a ₹500 coupon because my delivery was a day late?",
+    "response": "Sorry for the delay. Compensation coupons aren't covered by our policy, so I've escalated your request to a senior support specialist who will reply within 24 hours. (Policy UT-ESC-012)"
+  },
+  {
+    "sample_num": 29,
+    "instruction": "Bhai exchange window kitne din ki hai? Jeans ka size bada chahiye.",
+    "response": "Exchange delivery ke 15 din tak ho sakta hai, agar jeans unworn hai aur tags lage hain. My Orders mein jaakar Exchange select karein. (Policy UT-EXC-002)"
+  },
+  {
+    "sample_num": 30,
+    "instruction": "Prepaid refund mein bhi store credit ka 5% bonus milega kya?",
+    "response": "Nahi, 5% store credit bonus sirf COD refunds par milta hai. Prepaid refunds original payment source mein 5-7 business days mein aate hain. (Policy UT-PAY-014)"
+  }
+]

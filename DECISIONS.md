@@ -1,0 +1,14 @@
+# Decisions (all VETOABLE)
+
+| # | Decision | Why | Status |
+|---|---|---|---|
+| D1 | **Upload a curated benchmark** (`POST /benchmarks/upload`, 30 hand-checked Q&A) instead of `POST /benchmarks/create`. | Deterministic, policy-correct ground truth for Nugen's built-in eval; no generation spend; held out from our 40-question eval. | VETOABLE |
+| D2 | Docs ship as **Markdown `.md`, each ≥500 words**; `INDEX.md`/`README.md` excluded from upload; the pipeline validates word count locally before any upload. | Developer edition accepts text files only and refuses the whole upload if any file is <500 words. | VETOABLE |
+| D3 | Base model **`Qwen/Qwen2.5-0.5B-Instruct`** (the model in the known-working call; cheapest). Overridable with `NUGEN_BASE_MODEL_ID`. | Budget + latency; the eval shows how much alignment helps a small model. | VETOABLE |
+| D4 | **Retry policy:** GET + inference retry on transport/429/5xx with jittered exponential backoff (Retry-After honoured); state-creating POSTs (upload, create alignment, deploy) only retry when the connection never opened. | Keeps retries from creating duplicate alignments / documents (and duplicate charges). | VETOABLE |
+| D5 | **Run identity = sha256(docs + benchmark + base model).** Same inputs resume the same run; changed inputs start a new run. Only a terminal Nugen failure marks a run FAILED; transient errors leave it resumable. | Idempotent, resumable `align`. | VETOABLE |
+| D6 | `align` stops before the paid alignment unless `--yes` is passed. | Spend control (alignment is the only expensive step). | VETOABLE |
+| D7 | **Spend estimate = tokens × `NUGEN_PRICE_PER_MTOK_USD` (default $0.20/1M)**; hard stop when estimated total ≥ `NUGEN_SPEND_HARD_LIMIT_USD` ($40). Alignment calls are logged with tokens=0 and a note, since the API does not return their cost. | Nugen's API docs do not publish prices; see OPEN_QUESTIONS Q1. | VETOABLE |
+| D8 | Postgres in tests (real DB via docker compose / CI service), not SQLite. | Same dialect as production; catches JSON/enum/timezone issues. | VETOABLE |
+| D9 | **Policy details added beyond the brief** (kept consistent across all docs): shipping ₹79 / COD ₹49 refunded only for pre-dispatch cancellation or approved damage/wrong-item claims; store credit issued within 24 h, valid 12 months, not cashable; delivery timelines are business days from dispatch; exactly ₹25,000 does not escalate (trigger is *above*); order-id formats UT… (site), 3-7-7 digits (Amazon), OD… (Flipkart). | The docs needed these to be realistic; none contradict the given rules. | VETOABLE |
+| D10 | Superseded-trap eval questions do not forbid the bare phrase "30 days" (a correct answer may say "the old 30-day policy was replaced"); they forbid concession phrases instead. | Avoids false policy-violation flags. | VETOABLE |
