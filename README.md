@@ -10,6 +10,59 @@ harness and a feedback → re-alignment loop.
 > Stack: Python 3.12 · FastAPI · SQLAlchemy 2 + Alembic · PostgreSQL · Redis · arq · httpx ·
 > Docker · Kubernetes · Terraform (Azure) · GitHub Actions · React/Vite UI.
 
+## Status (2026-10-21)
+
+| Area | State |
+|---|---|
+| Nugen client, resumable alignment pipeline, CLI | ✅ built · unit-tested against an HTTP mock |
+| Support API (strict JSON, repair/fallback, SSE, cache, rate limit, auth, logs) | ✅ built · tested |
+| Eval harness (base vs aligned, 40 held-out questions) | ✅ built · tested |
+| Feedback loop + re-alignment (manual + nightly) | ✅ built · tested |
+| Docker / compose / k8s / Terraform / CI | ✅ images build · kubeconform 8/8 · `terraform validate` clean |
+| Demo UI (5 screens, dark + light) | ✅ build + lint + WCAG contrast + 18 Playwright tests |
+| **Live Nugen run (align → deploy → eval → re-align)** | ⏳ **blocked by a Nugen API outage** |
+
+**Test suite:** 70 passing (`pytest`, against real Postgres + Redis) · ruff · mypy `--strict` clean ·
+3 Alembic migrations, `alembic check` clean.
+
+**Outage:** `api.nugen.in` worked at ~18:20 IST (OpenAPI spec fetched). From **18:44 IST on
+2026-10-21** every request, `/health` included, has returned **HTTP 522** (Cloudflare can't reach
+the origin). The user confirmed this independently at 19:05 IST, `cf-ray a4e0a435dc76052e-DEL`.
+`docs.nugen.in` and `platform.nugen.in` load, but the platform can't call the API (CORS / 522).
+`status.nugen.in` still showed "operational". No paid call has been made, so **spend so far is
+$0.00**.
+
+**Live run cost estimate** (`make estimate`, written to the spend log): 2 alignments × $10
+(conservative placeholder: the API does not report alignment cost) + ~146k inference tokens
+(~$0.03) = **$20.03, within the $40 cap**. The spend guard charges every alignment at that
+estimate and refuses any call that would cross the cap.
+
+### Reproduce the live run (one command)
+
+```bash
+cp .env.example .env          # add NUGEN_API_KEY
+make align-and-eval
+```
+
+That runs, in order (every paid step goes through the spend guard):
+
+```bash
+docker compose up -d --wait postgres redis && uv run alembic upgrade head
+uv run python -m app.cli wait-api            # blocks until api.nugen.in/health == 200
+uv run python -m app.cli estimate            # logs estimate; exits 2 if it would cross the cap
+uv run python -m app.cli smoke               # 1 tiny paid inference
+uv run python -m app.cli align --yes         # upload docs + benchmark, align, poll to READY
+uv run python -m app.cli deploy              # deploy, poll to DEPLOYED
+uv run python -m app.eval run --models base,aligned --label "initial alignment"
+uv run python -m app.feedback_seed           # real inferences + reviewer corrections
+uv run python -m app.cli realign --yes --deploy
+uv run python -m app.eval run --models base,aligned --label "after re-alignment"
+uv run python -m app.cli spend
+```
+
+Each step is idempotent: re-running `make align-and-eval` after a failure resumes from the last
+completed Nugen step.
+
 ## The problem
 
 Support agents (human or AI) for a multi-channel D2C brand get the details wrong in the costly
@@ -130,16 +183,54 @@ uv run pytest -q                # needs the postgres/redis containers
 
 ## Eval results
 
-_Pending: no Nugen API key was available while this was built, so the real base-vs-aligned
-numbers have not been produced yet. `python -m app.eval run` writes them to
-[reports/eval_report.md](reports/eval_report.md)._
+**Pending live run.** These cells stay empty until the Nugen API is reachable, and no numbers
+here are simulated. `make align-and-eval` fills in
+[reports/eval_report.md](reports/eval_report.md).
+
+| Metric | Base `Qwen2.5-0.5B-Instruct` | Aligned | Aligned after re-align |
+|---|---|---|---|
+| Factual accuracy | pending live run | pending live run | pending live run |
+| Policy violations | pending live run | pending live run | pending live run |
+| Escalation correctness (with guardrails / model only) | pending live run | pending live run | pending live run |
+| JSON valid (first try / after repair) | pending live run | pending live run | pending live run |
+| Correct `policy_ref` | pending live run | pending live run | pending live run |
+| Latency p50 / p95 | pending live run | pending live run | pending live run |
+| Tokens / est. cost | pending live run | pending live run | pending live run |
+
+The 40 questions ([data/eval/questions.jsonl](data/eval/questions.jsonl)) cover in-window and
+out-of-window returns, non-returnables, refunds, shipping/COD thresholds, delivery zones,
+warranty exclusions, marketplace redirects, damage claims, GST edges, cancellation, 6
+escalations, 5 superseded-policy traps, 6 Hinglish queries and 1 out-of-scope request. The
+feedback seed set ([data/feedback/seed.jsonl](data/feedback/seed.jsonl)) is disjoint from it,
+so the re-aligned model is never trained on eval questions.
+
+## Screenshots
+
+The UI was captured with the backend up but before any live Nugen data existed, so these show
+the designed empty, error and offline states. They will be re-captured with real data after the
+live run (`make screenshots`).
+
+| | Dark | Light |
+|---|---|---|
+| Support chat | ![](ui/screenshots/chat-dark.png) | ![](ui/screenshots/chat-light.png) |
+| Base vs aligned | ![](ui/screenshots/compare-dark.png) | ![](ui/screenshots/compare-light.png) |
+| Alignment pipeline | ![](ui/screenshots/pipeline-dark.png) | ![](ui/screenshots/pipeline-light.png) |
+| Eval dashboard | ![](ui/screenshots/eval-dark.png) | ![](ui/screenshots/eval-light.png) |
+| Feedback loop | ![](ui/screenshots/feedback-dark.png) | ![](ui/screenshots/feedback-light.png) |
+| Mobile chat | ![](ui/screenshots/chat-mobile-dark.png) | ![](ui/screenshots/chat-mobile-light.png) |
 
 ## Spend log
 
 Every paid call (inference, alignment) is written to the `spend_log` table with endpoint,
-tokens and estimated cost; a hard stop refuses paid calls once estimated spend reaches
-`NUGEN_SPEND_HARD_LIMIT_USD` ($40). Nugen does not publish per-token prices in its API docs, so
-the estimate uses `NUGEN_PRICE_PER_MTOK_USD` (see [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md)).
+tokens and estimated cost. A hard stop refuses any paid call that would push estimated spend
+past `NUGEN_SPEND_HARD_LIMIT_USD` ($40). Nugen does not publish prices in its API docs, so
+inference is estimated with `NUGEN_PRICE_PER_MTOK_USD` and each alignment is charged
+`NUGEN_ALIGNMENT_COST_EST_USD` ($10, conservative). See [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
+
+| Item | Calls | Tokens | Est. cost |
+|---|---|---|---|
+| Actual spend so far | 0 | 0 | **$0.00** |
+| Estimate for the full live run (logged) | 2 alignments + ~150 inferences | ~146k | $20.03 |
 
 ## Trade-offs
 

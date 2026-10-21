@@ -18,10 +18,12 @@ class SpendTracker:
         session_factory: async_sessionmaker[AsyncSession],
         price_per_mtok_usd: float,
         hard_limit_usd: float,
+        alignment_cost_est_usd: float = 0.0,
     ) -> None:
         self._sf = session_factory
         self._price = price_per_mtok_usd
         self._limit = hard_limit_usd
+        self._alignment_est = alignment_cost_est_usd
 
     def estimate(self, total_tokens: int) -> float:
         return total_tokens / 1_000_000 * self._price
@@ -33,10 +35,11 @@ class SpendTracker:
 
     async def ensure_budget(self, endpoint: str) -> None:
         spent = await self.total_usd()
-        if spent >= self._limit:
+        projected = spent + (self._alignment_est if "alignment" in endpoint else 0.0)
+        if spent >= self._limit or projected > self._limit:
             raise SpendLimitExceeded(
-                f"estimated spend ${spent:.4f} reached the ${self._limit:.2f} hard limit; "
-                f"refusing {endpoint}"
+                f"estimated spend ${spent:.4f} (+${projected - spent:.2f} for this call) would "
+                f"cross the ${self._limit:.2f} hard limit; refusing {endpoint}"
             )
 
     async def record(
@@ -52,7 +55,12 @@ class SpendTracker:
         note: str | None = None,
         est_cost_usd: float | None = None,
     ) -> None:
-        cost = est_cost_usd if est_cost_usd is not None else self.estimate(total_tokens)
+        if est_cost_usd is not None:
+            cost = est_cost_usd
+        elif purpose == "alignment":
+            cost = self._alignment_est  # the API does not report alignment cost
+        else:
+            cost = self.estimate(total_tokens)
         async with self._sf() as s:
             s.add(SpendEntry(
                 endpoint=endpoint, model=model, purpose=purpose, prompt_tokens=prompt_tokens,

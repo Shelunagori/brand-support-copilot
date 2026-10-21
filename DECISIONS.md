@@ -22,3 +22,5 @@
 | D18 | Auto-flags: `fallback`, `invalid_json`, `low_confidence` (< 0.5), `wrong_escalation` (a hard rule fired but the model did not escalate), plus `thumbs_down` from feedback. | Only signals that are known without ground truth. | VETOABLE |
 | D19 | The nightly re-align cron only *prepares* runs unless `AUTO_REALIGN_CONFIRM=true`, and skips when the dataset is unchanged since the last re-align. | No unattended spend. | VETOABLE |
 | D20 | The API re-resolves the latest DEPLOYED model every 30 s, so a re-aligned model goes live without a restart. | Zero-downtime model swap. | VETOABLE |
+| D21 | The spend guard charges each alignment a conservative **$10 estimate** (`NUGEN_ALIGNMENT_COST_EST_USD`) and refuses any call whose projected total would cross the cap. | The API does not report alignment cost; this keeps the hard stop meaningful. | VETOABLE |
+| D22 | The re-alignment demo uses a **reviewer seed set** (24 queries, disjoint from the eval) sent to the real aligned model; only answers that miss a required fact get a thumbs-down + correction. | Real inferences and real flags, without training on held-out eval questions. | VETOABLE |

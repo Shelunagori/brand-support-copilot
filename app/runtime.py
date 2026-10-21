@@ -10,7 +10,7 @@ from app.spend import SpendTracker
 def build_spend(settings: Settings | None = None) -> SpendTracker:
     s = settings or get_settings()
     return SpendTracker(get_session_factory(), s.nugen_price_per_mtok_usd,
-                        s.nugen_spend_hard_limit_usd)
+                        s.nugen_spend_hard_limit_usd, s.nugen_alignment_cost_est_usd)
 
 
 def build_client(settings: Settings | None = None, spend: SpendTracker | None = None

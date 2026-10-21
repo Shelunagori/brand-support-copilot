@@ -136,6 +136,61 @@ def realign(yes: bool = typer.Option(False, "--yes", help="Confirm the paid alig
     _run(main())
 
 
+@cli.command("wait-api")
+def wait_api(timeout_min: float = typer.Option(60.0), interval_s: float = 30.0) -> None:
+    """Block until api.nugen.in/health returns 200 (exit 1 on timeout)."""
+    import time
+
+    import httpx
+
+    url = get_settings().nugen_base_url.rstrip("/") + "/health"
+    deadline = time.monotonic() + timeout_min * 60
+    while True:
+        try:
+            code = httpx.get(url, timeout=25).status_code
+        except httpx.HTTPError as exc:
+            code = type(exc).__name__  # type: ignore[assignment]
+        typer.echo(f"{time.strftime('%H:%M:%S')} {url} -> {code}")
+        if code == 200:
+            return
+        if time.monotonic() > deadline:
+            raise typer.Exit(1)
+        time.sleep(interval_s)
+
+
+@cli.command()
+def estimate(alignments: int = typer.Option(2, help="initial + re-align"),
+             eval_calls: int = typer.Option(120, help="40 q x (base+aligned) + 40 after re-align"),
+             other_calls: int = typer.Option(30, help="smoke + feedback seed + demo"),
+             tokens_per_call: int = typer.Option(750),
+             repair_factor: float = typer.Option(1.3)) -> None:
+    """Estimate the full run's cost, log it to the spend log, exit 2 if over the cap."""
+    from app.models import SpendEntry
+
+    s = get_settings()
+
+    async def main() -> None:
+        tokens = int((eval_calls + other_calls) * tokens_per_call * repair_factor)
+        inference = tokens / 1_000_000 * s.nugen_price_per_mtok_usd
+        align = alignments * s.nugen_alignment_cost_est_usd
+        spent = await build_spend(s).total_usd()
+        total = spent + inference + align
+        note = (f"ESTIMATE (not a charge): {alignments} alignments x "
+                f"${s.nugen_alignment_cost_est_usd:.2f} + ~{tokens:,} inference tokens "
+                f"(${inference:.4f}) + already spent ${spent:.4f} = ${total:.2f} "
+                f"vs cap ${s.nugen_spend_hard_limit_usd:.2f}")
+        async with get_session_factory()() as sess:
+            sess.add(SpendEntry(endpoint="(estimate)", purpose="estimate", est_cost_usd=0.0,
+                                note=note))
+            await sess.commit()
+        typer.echo(note)
+        if total > s.nugen_spend_hard_limit_usd:
+            typer.echo("HARD STOP: estimate exceeds the spend cap")
+            raise typer.Exit(2)
+
+    _run(main())
+
+
 @cli.command()
 def spend() -> None:
     """Spend log summary."""
