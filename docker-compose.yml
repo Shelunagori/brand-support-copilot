@@ -1,5 +1,17 @@
 name: brand-support-copilot
 
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+asyncpg://copilot:copilot@postgres:5432/copilot
+    REDIS_URL: redis://redis:6379/0
+  volumes:
+    - realign:/app/var
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -24,5 +36,35 @@ services:
       timeout: 3s
       retries: 20
 
+  migrate:
+    <<: *app
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    profiles: ["app"]
+
+  api:
+    <<: *app
+    ports: ["8000:8000"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    profiles: ["app"]
+
+  worker:
+    <<: *app
+    command: ["arq", "app.worker.WorkerSettings"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    profiles: ["app"]
+
+  ui:
+    build:
+      context: ./ui
+      args:
+        VITE_API_KEY: ${UI_API_KEY:-dev-key-change-me}
+    ports: ["8080:8080"]
+    depends_on: [api]
+    profiles: ["app"]
+
 volumes:
   pgdata:
+  realign:

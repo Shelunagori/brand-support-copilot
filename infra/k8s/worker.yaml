@@ -1,0 +1,36 @@
+# Single worker replica: arq cron jobs (nightly re-align) must not run twice.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-worker
+  namespace: support-copilot
+  labels: { app: copilot-worker }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app: copilot-worker }
+  template:
+    metadata:
+      labels: { app: copilot-worker }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: worker
+          image: ghcr.io/shelunagori/brand-support-copilot:latest
+          command: ["arq", "app.worker.WorkerSettings"]
+          envFrom:
+            - configMapRef: { name: copilot-config }
+            - secretRef: { name: copilot-secrets }
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          securityContext: { allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+          volumeMounts: [{ name: realign, mountPath: /app/var }]
+      volumes:
+        - name: realign
+          emptyDir: {}

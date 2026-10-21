@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-api
+  namespace: support-copilot
+  labels: { app: copilot-api }
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  selector:
+    matchLabels: { app: copilot-api }
+  template:
+    metadata:
+      labels: { app: copilot-api }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      initContainers:
+        - name: migrate
+          image: ghcr.io/shelunagori/brand-support-copilot:latest
+          command: ["alembic", "upgrade", "head"]
+          envFrom:
+            - configMapRef: { name: copilot-config }
+            - secretRef: { name: copilot-secrets }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true,
+                             capabilities: { drop: ["ALL"] } }
+      containers:
+        - name: api
+          image: ghcr.io/shelunagori/brand-support-copilot:latest
+          ports: [{ name: http, containerPort: 8000 }]
+          envFrom:
+            - configMapRef: { name: copilot-config }
+            - secretRef: { name: copilot-secrets }
+          resources:
+            requests: { cpu: 250m, memory: 256Mi }
+            limits: { cpu: "1", memory: 512Mi }
+          readinessProbe:
+            httpGet: { path: /ready, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 15
+            failureThreshold: 3
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true,
+                             capabilities: { drop: ["ALL"] } }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: copilot-api
+  namespace: support-copilot
+spec:
+  selector: { app: copilot-api }
+  ports: [{ name: http, port: 80, targetPort: http }]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: copilot-api
+  namespace: support-copilot
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: copilot-api }
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 65 } }
+  behavior:
+    scaleDown: { stabilizationWindowSeconds: 300 }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: copilot-api
+  namespace: support-copilot
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: { app: copilot-api }

@@ -25,3 +25,8 @@ ui/playwright-report/
 # local
 .DS_Store
 var/
+
+# terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*

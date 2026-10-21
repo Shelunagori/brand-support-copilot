@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: copilot-config
+  namespace: support-copilot
+data:
+  NUGEN_BASE_URL: "https://api.nugen.in"
+  NUGEN_BASE_MODEL_ID: "Qwen/Qwen2.5-0.5B-Instruct"
+  NUGEN_SPEND_HARD_LIMIT_USD: "40"
+  RATE_LIMIT_PER_MINUTE: "60"
+  CACHE_TTL_SECONDS: "3600"
+  LOG_LEVEL: "INFO"
+  CORS_ORIGINS: "https://copilot.example.com"
+  AUTO_REALIGN_CONFIRM: "false"
