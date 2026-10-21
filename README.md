@@ -232,6 +232,27 @@ inference is estimated with `NUGEN_PRICE_PER_MTOK_USD` and each alignment is cha
 | Actual spend so far | 0 | 0 | **$0.00** |
 | Estimate for the full live run (logged) | 2 alignments + ~150 inferences | ~146k | $20.03 |
 
+## RAG vs Domain Alignment
+
+My earlier project, [ecommerce-ai-ops-agent](https://github.com/Shelunagori/ecommerce-ai-ops-agent),
+tackles the same e-commerce support-policy problem with **RAG**: pgvector retrieval, a LangGraph
+agent and human-approved actions. This project takes the other route: it teaches the policies to
+the model through **Nugen domain alignment** and calls it with no retrieval step.
+Both repos use **synthetic data** (invented brands, customers and policies). The alignment
+numbers here are **pending live run**, so neither approach is claimed to beat the other yet.
+
+| Dimension | RAG (ecommerce-ai-ops-agent) | Domain alignment (this repo) |
+|---|---|---|
+| Knowledge updates | Re-index the changed docs (minutes) | Re-align the model (a training run) |
+| Citations / grounding | Native: answer cites the retrieved chunk | `policy_ref` produced by the model, validated against the policy catalog and scored in the eval |
+| Behaviour consistency + structured output | Depends on prompt + retrieved context | Stronger: tone, escalation rules and JSON shape are trained in |
+| Latency / infra | Embedding + vector search hop; needs a vector DB | No retrieval hop, no vector DB |
+| Uncovered topics (hallucination risk) | Needs an escalation path | Needs an escalation path (guardrails + `UT-ESC-012`) |
+
+**Next step:** a hybrid. Use the aligned model for stable policy and behaviour, and add retrieval
+only for policies that change often (sale terms, promos). Then compare all three on the same
+held-out eval.
+
 ## Trade-offs
 
 - **0.5B base model** — cheap and fast, so alignment gains are easy to see, but strict JSON is
