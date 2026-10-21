@@ -16,6 +16,7 @@ dependencies = [
     "arq>=0.26",
     "typer>=0.15",
     "sse-starlette>=2.1",
+    "python-dotenv>=1.2.4",
 ]
 
 [dependency-groups]

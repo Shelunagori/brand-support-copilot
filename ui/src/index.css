@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens. Values are space-separated RGB channels so Tailwind can apply
+ * alpha (`bg-surface/60`). scripts/contrast.mjs parses these two blocks — keep the
+ * `[data-theme="..."]` selectors and the `--name: r g b;` format.
+ */
+@layer base {
+  :root,
+  [data-theme='light'] {
+    color-scheme: light;
+    /* paper: soft lavender-white, indigo ink */
+    --bg: 246 244 255;
+    --bg-deep: 236 232 252;
+    --surface: 255 255 255;
+    --surface-2: 243 240 253;
+    --surface-3: 233 229 250;
+    --line: 214 208 238;
+    --line-strong: 184 176 222;
+    --ink: 22 18 58;
+    --ink-muted: 72 66 116;
+    --ink-subtle: 96 90 140;
+    /* teal accent darkened for contrast on paper */
+    --accent: 12 118 106;
+    --accent-ink: 255 255 255;
+    --accent-text: 10 110 99;
+    --violet: 98 70 230;
+    --violet-text: 86 56 214;
+    --success: 6 118 84;
+    --warn: 166 82 6;
+    --danger: 196 30 50;
+    --series-base: 132 120 196;
+    --series-aligned: 14 150 134;
+    --glass-alpha: 0.72;
+    --shadow-glass: 0 1px 0 0 rgb(255 255 255 / 0.9) inset, 0 1px 2px rgb(40 30 110 / 0.05),
+      0 8px 24px -12px rgb(40 30 110 / 0.14);
+    --shadow-lift: 0 1px 0 0 rgb(255 255 255 / 0.9) inset, 0 2px 6px rgb(40 30 110 / 0.06),
+      0 18px 40px -16px rgb(40 30 110 / 0.22);
+    --hairline-from: 255 255 255;
+    --hairline-to: 196 188 236;
+    --glow-a: 124 92 255;
+    --glow-b: 45 226 201;
+    --glow-a-alpha: 0.16;
+    --glow-b-alpha: 0.12;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+    /* deep indigo night with violet-tinted surfaces */
+    --bg: 11 10 26;
+    --bg-deep: 7 6 18;
+    --surface: 22 20 46;
+    --surface-2: 30 27 60;
+    --surface-3: 40 36 78;
+    --line: 50 46 92;
+    --line-strong: 74 68 128;
+    --ink: 238 236 255;
+    --ink-muted: 176 171 212;
+    --ink-subtle: 140 134 182;
+    /* electric teal */
+    --accent: 45 226 201;
+    --accent-ink: 4 30 27;
+    --accent-text: 64 232 208;
+    --violet: 139 108 255;
+    --violet-text: 172 152 255;
+    --success: 74 222 160;
+    --warn: 251 191 72;
+    --danger: 255 112 128;
+    --series-base: 126 111 214;
+    --series-aligned: 20 170 150;
+    --glass-alpha: 0.55;
+    --shadow-glass: 0 1px 0 0 rgb(255 255 255 / 0.05) inset, 0 10px 30px -14px rgb(0 0 0 / 0.6);
+    --shadow-lift: 0 1px 0 0 rgb(255 255 255 / 0.07) inset, 0 22px 50px -18px rgb(0 0 0 / 0.75),
+      0 0 0 1px rgb(139 108 255 / 0.08);
+    --hairline-from: 160 140 255;
+    --hairline-to: 45 226 201;
+    --glow-a: 108 76 255;
+    --glow-b: 45 226 201;
+    --glow-a-alpha: 0.22;
+    --glow-b-alpha: 0.09;
+  }
+
+  html {
+    @apply bg-bg text-ink antialiased;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply min-h-screen bg-bg font-sans text-[15px] leading-6;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.28);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line-strong)) transparent;
+  }
+}
+
+@layer components {
+  /* Glass card: translucent surface, blur, gradient hairline, inner highlight. */
+  .glass {
+    position: relative;
+    background: rgb(var(--surface) / var(--glass-alpha));
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: var(--shadow-glass);
+    border-radius: 1.125rem;
+    isolation: isolate;
+  }
+  .glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      150deg,
+      rgb(var(--hairline-from) / 0.28),
+      rgb(var(--line) / 0.6) 40%,
+      rgb(var(--line) / 0.5) 70%,
+      rgb(var(--hairline-to) / 0.22)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .hairline {
+    border: 1px solid rgb(var(--line) / 0.9);
+  }
+
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: rgb(var(--surface-3) / 0.7);
+    border-radius: 0.5rem;
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--ink) / 0.06) 40%,
+      rgb(var(--accent) / 0.08) 50%,
+      rgb(var(--ink) / 0.06) 60%,
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+
+  .eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.12em] text-ink-subtle;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum', 'cv11';
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-line bg-surface/80 px-3 py-2 text-sm text-ink placeholder:text-ink-subtle transition-colors focus:border-accent/70 focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-accent/30;
+  }
+
+  .caret::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    margin-left: 2px;
+    vertical-align: -0.15em;
+    background: rgb(var(--accent));
+    border-radius: 1px;
+    animation: caret 1s steps(1) infinite;
+  }
+
+  .bg-stage {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 40rem at 8% -10%, rgb(var(--glow-a) / var(--glow-a-alpha)), transparent 60%),
+      radial-gradient(50rem 36rem at 105% 110%, rgb(var(--glow-b) / var(--glow-b-alpha)), transparent 60%),
+      radial-gradient(40rem 30rem at 70% 0%, rgb(var(--glow-a) / calc(var(--glow-a-alpha) * 0.45)), transparent 60%),
+      rgb(var(--bg));
+  }
+  .bg-stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(var(--ink) / 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--ink) / 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton::after {
+    display: none;
+  }
+}
+
+/* Recharts: inherit tokens */
+.recharts-cartesian-axis-tick-value {
+  fill: rgb(var(--ink-muted));
+  font-size: 12px;
+}
+.recharts-legend-item-text {
+  color: rgb(var(--ink-muted)) !important;
+}
