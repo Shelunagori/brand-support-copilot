@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     eval_path: Path = ROOT / "data" / "eval" / "questions.jsonl"
     reports_dir: Path = ROOT / "reports"
 
+    # Scheduled re-alignment only spends credits when this is true.
+    auto_realign_confirm: bool = False
+
     low_confidence_threshold: float = Field(default=0.5, ge=0, le=1)
 
     @property

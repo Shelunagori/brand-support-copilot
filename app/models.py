@@ -96,3 +96,46 @@ class EvalRun(Base):
     report: Mapped[dict[str, Any]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow,
                                                  index=True)
+
+
+class InferenceLog(Base):
+    """Every answered support query (feeds auto-flagging and the re-alignment dataset)."""
+
+    __tablename__ = "inference_logs"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    request_id: Mapped[str | None] = mapped_column(String(100), index=True)
+    query: Mapped[str] = mapped_column(Text)
+    answer: Mapped[str] = mapped_column(Text)
+    intent: Mapped[str] = mapped_column(String(40))
+    policy_ref: Mapped[str | None] = mapped_column(String(20))
+    escalate_to_human: Mapped[bool]
+    model_escalate: Mapped[bool | None]
+    confidence: Mapped[float] = mapped_column(Float)
+    model_id: Mapped[str] = mapped_column(String(200))
+    model_kind: Mapped[str] = mapped_column(String(20))
+    latency_ms: Mapped[float] = mapped_column(Float)
+    json_valid_first_try: Mapped[bool]
+    repaired: Mapped[bool]
+    fallback: Mapped[bool]
+    cached: Mapped[bool]
+    guardrail_triggers: Mapped[list[str]] = mapped_column(JSON, default=list)
+    flags: Mapped[list[str]] = mapped_column(JSON, default=list)
+    raw_output: Mapped[str | None] = mapped_column(Text)
+    error: Mapped[str | None] = mapped_column(Text)
+    total_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow,
+                                                 index=True)
+
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    inference_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("inference_logs.id", ondelete="CASCADE"), index=True)
+    rating: Mapped[str] = mapped_column(String(10))  # up | down
+    correction: Mapped[str | None] = mapped_column(Text)
+    comment: Mapped[str | None] = mapped_column(Text)
+    used_in_run_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("alignment_runs.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

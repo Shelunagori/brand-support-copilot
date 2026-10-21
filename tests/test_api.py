@@ -131,3 +131,28 @@ async def test_eval_endpoints(api, session_factory) -> None:  # type: ignore[no-
     assert latest.status_code == 200 and latest.json()["label"] == "x"
     hist = (await c.get("/v1/eval/history", headers=KEY)).json()
     assert hist[0]["label"] == "x"
+
+
+async def test_feedback_flow_via_api(api) -> None:  # type: ignore[no-untyped-def]
+    from app.config import Settings as S
+    from app.feedback import InferenceLogger
+
+    c, model = api
+    app_services = c._transport.app.state.services  # type: ignore[attr-defined]
+    app_services.support.recorder = InferenceLogger(app_services.session_factory, S())
+    c._transport.app.state.settings.rate_limit_per_minute = 100  # type: ignore[attr-defined]
+    r = (await c.post("/v1/support/query", json={"query": "Can I exchange socks?"},
+                      headers=KEY)).json()
+    assert r["inference_id"]
+    fb = await c.post("/v1/feedback", headers=KEY, json={
+        "inference_id": r["inference_id"], "rating": "down",
+        "correction": "Socks cannot be exchanged (UT-NRT-003)."})
+    assert fb.status_code == 201 and fb.json()["flagged"]
+    flagged = (await c.get("/v1/feedback/flagged", headers=KEY)).json()
+    assert flagged[0]["correction"].startswith("Socks")
+    assert (await c.get("/v1/feedback/stats", headers=KEY)).json()["thumbs_down"] == 1
+    assert (await c.get("/v1/realign/dataset", headers=KEY)).json()["count"] == 1
+    too_small = await c.post("/v1/realign", headers=KEY, json={"confirm": False})
+    assert too_small.status_code == 409
+    bad = await c.post("/v1/feedback", headers=KEY, json={"inference_id": "nope", "rating": "up"})
+    assert bad.status_code == 404

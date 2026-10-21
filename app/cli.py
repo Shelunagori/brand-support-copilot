@@ -122,6 +122,21 @@ def smoke(model: str = typer.Option(None, help="Defaults to NUGEN_BASE_MODEL_ID.
 
 
 @cli.command()
+def realign(yes: bool = typer.Option(False, "--yes", help="Confirm the paid alignment run."),
+            deploy_after: bool = typer.Option(True, "--deploy/--no-deploy")) -> None:
+    """Build the corrections dataset from feedback and re-align (manual trigger)."""
+    from app.feedback import build_realign_dataset
+    from app.worker import REALIGN_DIR, run_realign
+
+    async def main() -> None:
+        ds = await build_realign_dataset(get_session_factory(), REALIGN_DIR)
+        typer.echo(f"dataset: {ds.count} items -> {ds.path.name}")
+        typer.echo(str(await run_realign({}, str(ds.path), confirm=yes, deploy=deploy_after)))
+
+    _run(main())
+
+
+@cli.command()
 def spend() -> None:
     """Spend log summary."""
 

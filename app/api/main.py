@@ -115,11 +115,12 @@ def create_app(settings: Settings | None = None, services: AppServices | None = 
                 "duration_ms": round((time.perf_counter() - started) * 1000, 1)})
         return response
 
-    from app.api import routes_eval, routes_ops, routes_support
+    from app.api import routes_eval, routes_feedback, routes_ops, routes_support
 
     app.include_router(routes_ops.router)
     app.include_router(routes_support.router)
     app.include_router(routes_eval.router)
+    app.include_router(routes_feedback.router)
     return app
 
 
