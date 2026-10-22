@@ -207,6 +207,18 @@ def estimate(alignments: int = typer.Option(2, help="initial + re-align"),
 
 
 @cli.command()
+def reconcile(billed_total_usd: float = typer.Argument(..., help="Lifetime spend from billing"),
+              note: str = typer.Option("platform billing")) -> None:
+    """Correct the spend log to the platform-billed lifetime total."""
+
+    async def main() -> None:
+        delta = await build_spend().reconcile(billed_total_usd, note)
+        typer.echo(f"reconciled: {delta:+.4f} USD -> total ${billed_total_usd:.2f}")
+
+    _run(main())
+
+
+@cli.command()
 def spend() -> None:
     """Spend log summary."""
 

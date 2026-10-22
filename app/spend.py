@@ -71,6 +71,14 @@ class SpendTracker:
         log.info("nugen.spend", extra={"endpoint": endpoint, "model": model, "purpose": purpose,
                                        "total_tokens": total_tokens, "est_cost_usd": cost})
 
+    async def reconcile(self, billed_total_usd: float, note: str) -> float:
+        """Add one correction entry so the logged total equals the platform-billed total."""
+        delta = round(billed_total_usd - await self.total_usd(), 6)
+        if abs(delta) >= 0.000001:
+            await self.record(endpoint="(billing reconciliation)", purpose="reconciliation",
+                              est_cost_usd=delta, note=note)
+        return delta
+
     async def summary(self) -> list[dict[str, Any]]:
         async with self._sf() as s:
             rows = await s.execute(

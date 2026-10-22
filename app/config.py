@@ -18,10 +18,11 @@ class Settings(BaseSettings):
     nugen_timeout_s: float = 60.0
     nugen_max_retries: int = 3
     # Nugen does not publish per-token prices in its API docs; this is an estimate (VETOABLE).
-    nugen_price_per_mtok_usd: float = 0.20
+    # Calibrated from platform billing on 2026-10-22 (see DECISIONS D28).
+    nugen_price_per_mtok_usd: float = 38.0
     nugen_spend_hard_limit_usd: float = 40.0
     # Alignment cost is not returned by the API; budget conservatively per run (VETOABLE).
-    nugen_alignment_cost_est_usd: float = 10.0
+    nugen_alignment_cost_est_usd: float = 20.0
 
     database_url: str = "postgresql+asyncpg://copilot:copilot@localhost:5432/copilot"
     redis_url: str = "redis://localhost:6379/0"

@@ -1,36 +1,36 @@
 {
-  "label": "after re-alignment",
-  "generated_at": "2026-10-22T13:43:49.256209+00:00",
+  "label": "exp3: Llama-3.2-3B, active docs only",
+  "generated_at": "2026-10-22T14:19:14.989897+00:00",
   "summary": {
     "base": {
-      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "model_id": "meta-llama/Llama-3.2-3B-Instruct",
       "n": 40,
-      "factual_accuracy": 0.25,
-      "policy_violation_rate": 0.05,
-      "escalation_accuracy": 0.875,
-      "model_escalation_accuracy": 0.8,
+      "factual_accuracy": 0.3,
+      "policy_violation_rate": 0.025,
+      "escalation_accuracy": 0.925,
+      "model_escalation_accuracy": 0.925,
       "json_validity": 1.0,
       "json_validity_final": 1.0,
-      "policy_ref_accuracy": 0.3,
-      "latency_p50_ms": 29539.3,
-      "latency_p95_ms": 210937.34,
-      "total_tokens": 20833,
-      "est_cost_usd": 0.0041666
+      "policy_ref_accuracy": 0.475,
+      "latency_p50_ms": 9177.3,
+      "latency_p95_ms": 17294.81,
+      "total_tokens": 21030,
+      "est_cost_usd": 0.79914
     },
     "aligned": {
-      "model_id": "model_01m5hwkzsc790kf4",
+      "model_id": "model_01m5hz9nr9gr5wqv",
       "n": 40,
-      "factual_accuracy": 0.225,
-      "policy_violation_rate": 0.125,
-      "escalation_accuracy": 0.925,
-      "model_escalation_accuracy": 0.85,
-      "json_validity": 0.925,
-      "json_validity_final": 0.925,
-      "policy_ref_accuracy": 0.125,
-      "latency_p50_ms": 22974.1,
-      "latency_p95_ms": 186601.81,
-      "total_tokens": 24562,
-      "est_cost_usd": 0.004912400000000001
+      "factual_accuracy": 0.125,
+      "policy_violation_rate": 0.025,
+      "escalation_accuracy": 0.725,
+      "model_escalation_accuracy": 0.8,
+      "json_validity": 0.575,
+      "json_validity_final": 0.575,
+      "policy_ref_accuracy": 0.4,
+      "latency_p50_ms": 18244.45,
+      "latency_p95_ms": 31183.7,
+      "total_tokens": 31378,
+      "est_cost_usd": 1.1923640000000002
     }
   },
   "questions": [
@@ -47,51 +47,53 @@
       "results": {
         "base": {
           "question_id": "q01",
-          "answer": "You can return the shirt within 14 days of delivery. Please ensure the tags are still on the shirt for a refund.",
+          "answer": "Yes, you can return the item within 7 days of delivery. Please contact our customer support team to initiate the return process.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
-          "facts_hit": [],
-          "facts_missed": [
+          "confidence": 0.8,
+          "facts_hit": [
             "7 days"
           ],
+          "facts_missed": [],
           "violations": [],
-          "correct": false,
+          "correct": true,
           "escalation_correct": true,
           "model_escalation_correct": true,
           "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 26006.4,
-          "total_tokens": 528,
-          "error": null
+          "latency_ms": 9113.3,
+          "total_tokens": 516,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Yes, you can return the item within 7 days of delivery. Please contact our customer support team to initiate the return process.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q01",
-          "answer": "Yes, you can return the shirt. Check the tags and return it within 14 days of delivery. If it is still on, it is not eligible for a refund.",
+          "answer": "Yes, within 7 days of delivery, you can initiate a return. Please go to urbanethreads.in/myorders and follow the return process.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7174,
-          "facts_hit": [],
-          "facts_missed": [
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8359,
+          "facts_hit": [
             "7 days"
           ],
+          "facts_missed": [],
           "violations": [],
-          "correct": false,
+          "correct": true,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 30357.8,
-          "total_tokens": 531,
-          "error": null
+          "latency_ms": 10682.4,
+          "total_tokens": 520,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Yes, within 7 days of delivery, you can initiate a return. Please go to urbanethreads.in/myorders and follow the return process.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -109,15 +111,16 @@
       "results": {
         "base": {
           "question_id": "q02",
-          "answer": "Yes, you can return the denim jacket for a refund. Please provide the tracking number from urbanethreads.in to track your return.",
+          "answer": "Please contact our customer service team within 7 days of delivery to initiate the return process. Since it's been 10 days, we may not be able to process a return. Please contact us at [support@urbanethreads.in](mailto:support@urbanethreads.in) for assistance.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
-          "facts_hit": [],
+          "confidence": 0.8,
+          "facts_hit": [
+            "7 days"
+          ],
           "facts_missed": [
-            "7 days",
             "15 days"
           ],
           "violations": [],
@@ -128,34 +131,37 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 32508.8,
-          "total_tokens": 526,
-          "error": null
+          "latency_ms": 13090.3,
+          "total_tokens": 546,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Please contact our customer service team within 7 days of delivery to initiate the return process. Since it's been 10 days, we may not be able to process a return. Please contact us at [support@urbanethreads.in](mailto:support@urbanethreads.in) for assistance.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q02",
-          "answer": "Yes, it is possible. You can return the denim jacket within 10 days of delivery. Before returning the item, please check the return policy and return the item within the 10-day window.",
+          "answer": "Returns are accepted within 7 days of delivery. If it has been 7 days, please contact our customer support team and they will guide you on the next steps.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7446,
-          "facts_hit": [],
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8388,
+          "facts_hit": [
+            "7 days"
+          ],
           "facts_missed": [
-            "7 days",
             "15 days"
           ],
           "violations": [],
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 24939.2,
-          "total_tokens": 534,
-          "error": null
+          "latency_ms": 12284.4,
+          "total_tokens": 520,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Returns are accepted within 7 days of delivery. If it has been 7 days, please contact our customer support team and they will guide you on the next steps.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -172,12 +178,12 @@
       "results": {
         "base": {
           "question_id": "q03",
-          "answer": "You can exchange your chinos for a bigger size. Please note that the chinos were delivered 12 days ago, unworn with tags. We will arrange for a replacement within 1-2 business days.",
+          "answer": "We accept exchanges within 7 days of delivery. Since it's been 12 days, we can't process an exchange for a different size. However, you can initiate a return and receive a refund or store credit.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "15 days"
@@ -190,18 +196,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 29541.7,
-          "total_tokens": 537,
-          "error": null
+          "latency_ms": 10918.5,
+          "total_tokens": 531,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"We accept exchanges within 7 days of delivery. Since it's been 12 days, we can't process an exchange for a different size. However, you can initiate a return and receive a refund or store credit.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q03",
-          "answer": "You can return the chinos and get a replacement. They were delivered 12 days ago, unworn with tags. We can exchange them for a bigger size.",
+          "answer": "Exchanges are only accepted within 7 days of delivery. Since 12 days have passed, we cannot process an exchange. You can initiate a return and receive store credit or a refund.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.8104,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8057,
           "facts_hit": [],
           "facts_missed": [
             "15 days"
@@ -214,9 +221,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 35714.2,
-          "total_tokens": 527,
-          "error": null
+          "latency_ms": 9111.5,
+          "total_tokens": 525,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"Exchanges are only accepted within 7 days of delivery. Since 12 days have passed, we cannot process an exchange. You can initiate a return and receive store credit or a refund.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -233,12 +241,12 @@
       "results": {
         "base": {
           "question_id": "q04",
-          "answer": "You can exchange the dress for a size up if it's marked as Final Sale and it's still within the warranty period.",
+          "answer": "Since the dress is marked Final Sale, we do not offer exchanges. However, you can initiate a return and receive a store credit for the full amount, which can be used towards any other item on our website.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": "UT-EXC-002",
-          "confidence": 0.9,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8,
           "facts_hit": [
             "final sale"
           ],
@@ -251,35 +259,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 22990.9,
-          "total_tokens": 523,
-          "error": null
+          "latency_ms": 14996.8,
+          "total_tokens": 528,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"Since the dress is marked Final Sale, we do not offer exchanges. However, you can initiate a return and receive a store credit for the full amount, which can be used towards any other item on our website.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q04",
-          "answer": "Yes, you can exchange the dress for a larger size. Just return it and we will exchange it for a larger size.",
+          "answer": "Final Sale items cannot be exchanged. Returns are only allowed within 7 days of delivery. If the item is damaged or not as described, please contact us for a refund.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.77,
-          "facts_hit": [],
-          "facts_missed": [
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.7553,
+          "facts_hit": [
             "final sale"
           ],
-          "violations": [
-            "yes, you can exchange"
-          ],
-          "correct": false,
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
           "escalation_correct": true,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 40193.0,
-          "total_tokens": 515,
-          "error": null
+          "latency_ms": 7350.8,
+          "total_tokens": 520,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"Final Sale items cannot be exchanged. Returns are only allowed within 7 days of delivery. If the item is damaged or not as described, please contact us for a refund.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -296,43 +304,17 @@
       "results": {
         "base": {
           "question_id": "q05",
-          "answer": "You can return the 3-pack of socks within 30 days of delivery. Please ensure the product is in its original packaging and condition.",
+          "answer": "Since the product is still sealed, we can't process a return. Please contact our customer support to discuss possible alternatives or store credit.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
-          "facts_hit": [
+          "confidence": 0.8,
+          "facts_hit": [],
+          "facts_missed": [
             "socks"
           ],
-          "facts_missed": [],
           "violations": [],
-          "correct": true,
-          "escalation_correct": true,
-          "model_escalation_correct": true,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 24909.2,
-          "total_tokens": 531,
-          "error": null
-        },
-        "aligned": {
-          "question_id": "q05",
-          "answer": "Yes, you can return the 3-pack of socks. Please return it within 24-48 hours of delivery. We will process the return within 1-2 business days.",
-          "intent": "other",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7876,
-          "facts_hit": [
-            "socks"
-          ],
-          "facts_missed": [],
-          "violations": [
-            "yes, you can return"
-          ],
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
@@ -340,9 +322,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 40335.3,
-          "total_tokens": 534,
-          "error": null
+          "latency_ms": 8165.6,
+          "total_tokens": 517,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Since the product is still sealed, we can't process a return. Please contact our customer support to discuss possible alternatives or store credit.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
+        },
+        "aligned": {
+          "question_id": "q05",
+          "answer": "No, all items must be unworn and unwashed within 7 days of delivery. Returns are only accepted within 7 days of delivery. UT-RET-001",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8244,
+          "facts_hit": [],
+          "facts_missed": [
+            "socks"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 9863.2,
+          "total_tokens": 525,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"No, all items must be unworn and unwashed within 7 days of delivery. Returns are only accepted within 7 days of delivery. UT-RET-001\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -359,12 +367,12 @@
       "results": {
         "base": {
           "question_id": "q06",
-          "answer": "You can exchange the boxer briefs for size L if they are still within the warranty period and the fit is still acceptable.",
+          "answer": "We accept exchanges within 3 days of delivery. Please contact our customer support team to initiate the exchange process and we will provide a return shipping label for the original item. For size L, please note that it may not be available in stock at the time of exchange.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-EXC-002",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "innerwear"
@@ -377,25 +385,24 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 24501.4,
-          "total_tokens": 511,
-          "error": null
+          "latency_ms": 8426.0,
+          "total_tokens": 536,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"We accept exchanges within 3 days of delivery. Please contact our customer support team to initiate the exchange process and we will provide a return shipping label for the original item. For size L, please note that it may not be available in stock at the time of exchange.\", \"policy_ref\": \"UT-EXC-002\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q06",
-          "answer": "Yes, you can exchange the boxer briefs for size L. Just return the item and we will exchange it for the correct size.",
+          "answer": "Exchanges are only allowed within 7 days of delivery. Please initiate the exchange within the timeframe and select size L in the exchange form on urbanethreads.in.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.8084,
+          "policy_ref": "UT-EXC-002",
+          "confidence": 0.8316,
           "facts_hit": [],
           "facts_missed": [
             "innerwear"
           ],
-          "violations": [
-            "yes, you can exchange"
-          ],
+          "violations": [],
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
@@ -403,9 +410,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 39622.1,
-          "total_tokens": 513,
-          "error": null
+          "latency_ms": 9726.7,
+          "total_tokens": 515,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"Exchanges are only allowed within 7 days of delivery. Please initiate the exchange within the timeframe and select size L in the exchange form on urbanethreads.in.\", \"policy_ref\": \"UT-EXC-002\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -423,53 +431,57 @@
       "results": {
         "base": {
           "question_id": "q07",
-          "answer": "You will receive a refund within 1-2 business days of receiving your return. You can track your refund from My Orders on urbanethreads.in.",
-          "intent": "refund",
+          "answer": "Once we receive the returned item, we will process your refund within 7-10 business days. The refund will be credited to your original payment method. Please ensure the returned item is in its original condition with tags intact.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": "UT-REF-004",
+          "policy_ref": "UT-RET-001",
           "confidence": 0.9,
-          "facts_hit": [],
-          "facts_missed": [
-            "5-7 business days",
+          "facts_hit": [
             "original"
+          ],
+          "facts_missed": [
+            "5-7 business days"
           ],
           "violations": [],
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": true,
+          "policy_ref_correct": false,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 24093.7,
-          "total_tokens": 528,
-          "error": null
+          "latency_ms": 8056.0,
+          "total_tokens": 530,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Once we receive the returned item, we will process your refund within 7-10 business days. The refund will be credited to your original payment method. Please ensure the returned item is in its original condition with tags intact.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q07",
-          "answer": "Within 1-2 business days after delivery, you can track your refund status on My Orders on urbanethreads.in. If the item is returned and passes QC, you will receive a refund within 1-2 business days.",
-          "intent": "refund",
+          "answer": "Refunds are processed within 7-10 business days after QC is passed. The refund amount will be credited back to your original payment method. Please check your bank account within 7-10 business days.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": "UT-REF-004",
-          "confidence": 0.7365,
-          "facts_hit": [],
-          "facts_missed": [
-            "5-7 business days",
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.7884,
+          "facts_hit": [
             "original"
+          ],
+          "facts_missed": [
+            "5-7 business days"
           ],
           "violations": [],
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": true,
+          "policy_ref_correct": false,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 41288.5,
-          "total_tokens": 544,
-          "error": null
+          "latency_ms": 9978.5,
+          "total_tokens": 527,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Refunds are processed within 7-10 business days after QC is passed. The refund amount will be credited back to your original payment method. Please check your bank account within 7-10 business days.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -493,37 +505,39 @@
       "results": {
         "base": {
           "question_id": "q08",
-          "answer": "Yes, you will get free shipping on your order.",
+          "answer": "No, free shipping is applicable on orders above \u20b91,000. For orders below \u20b91,000, you will need to pay the shipping charges.",
           "intent": "shipping",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
-          "facts_hit": [],
+          "policy_ref": "UT-SHP-005",
+          "confidence": 0.8,
+          "facts_hit": [
+            "above \u20b9999"
+          ],
           "facts_missed": [
-            "\u20b979",
-            "above \u20b9999|more than \u20b9999|over \u20b9999|\u20b91,000"
+            "\u20b979"
           ],
           "violations": [],
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 23139.5,
-          "total_tokens": 498,
-          "error": null
+          "latency_ms": 7618.8,
+          "total_tokens": 511,
+          "error": null,
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"No, free shipping is applicable on orders above \u20b91,000. For orders below \u20b91,000, you will need to pay the shipping charges.\", \"policy_ref\": \"UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q08",
-          "answer": "Yes, \u20b9999 is exactly \u20b925. Free shipping is available on \u20b9999 or \u20b91999. \u20b9999 is \u20b925. Free shipping is available on \u20b9999 or \u20b91999.",
-          "intent": "shipping",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7883,
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [
             "\u20b979",
@@ -531,15 +545,16 @@
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 204349.0,
-          "total_tokens": 540,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 23244.2,
+          "total_tokens": 1113,
+          "error": "invalid_model_output: no JSON object found",
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"No, free shipping is \u20b9500 on orders above \u20b91,000. \u20b9999 is below the threshold, so shipping charges apply.\", \"policy_ref\": UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"shipping\", \"answer\": \"No, free shipping is \u20b9500 on orders above \u20b91,000. \u20b9999 is below the threshold, so shipping charges apply.\", \"policy_ref\": UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -563,11 +578,11 @@
       "results": {
         "base": {
           "question_id": "q09",
-          "answer": "The COD charge for a \u20b916,000 order of two watches will be \u20b91,600.",
-          "intent": "payment",
+          "answer": "For orders above \u20b910,000, the COD charge is \u20b9500. For your order of \u20b916,000, the COD charge will be \u20b9500.",
+          "intent": "shipping",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
+          "policy_ref": "UT-SHP-005",
           "confidence": 0.9,
           "facts_hit": [],
           "facts_missed": [
@@ -578,22 +593,23 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 34167.9,
-          "total_tokens": 521,
-          "error": null
+          "latency_ms": 7973.5,
+          "total_tokens": 520,
+          "error": null,
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"For orders above \u20b910,000, the COD charge is \u20b9500. For your order of \u20b916,000, the COD charge will be \u20b9500.\", \"policy_ref\": \"UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q09",
-          "answer": "\u20b916,000 COD is \u20b916,000. COD is \u20b916,000. COD is \u20b916,000.",
-          "intent": "other",
+          "answer": "COD is available on orders above \u20b910,000. For \u20b916,000 order, COD charge is \u20b9500.",
+          "intent": "shipping",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.8313,
+          "policy_ref": "UT-SHP-005",
+          "confidence": 0.8553,
           "facts_hit": [],
           "facts_missed": [
             "\u20b915,000",
@@ -603,13 +619,14 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 186117.0,
-          "total_tokens": 534,
-          "error": null
+          "latency_ms": 13707.0,
+          "total_tokens": 512,
+          "error": null,
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"COD is available on orders above \u20b910,000. For \u20b916,000 order, COD charge is \u20b9500.\", \"policy_ref\": \"UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -626,36 +643,12 @@
       "results": {
         "base": {
           "question_id": "q10",
-          "answer": "The delivery time to Srinagar will depend on the delivery options available and the distance between your location and Srinagar. We recommend checking the delivery status on urbanethreads.in or contacting our customer support for the most accurate and up-to-date information.",
+          "answer": "Delivery to Srinagar typically takes 3-7 business days via courier partner. However, please note that delivery timelines may vary due to various factors. You can track your parcel for updates on urbanethreads.in.",
           "intent": "delivery",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": "UT-DLV-006",
-          "confidence": 0.9,
-          "facts_hit": [],
-          "facts_missed": [
-            "7-10"
-          ],
-          "violations": [],
-          "correct": false,
-          "escalation_correct": true,
-          "model_escalation_correct": true,
-          "policy_ref_correct": true,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 38144.9,
-          "total_tokens": 541,
-          "error": null
-        },
-        "aligned": {
-          "question_id": "q10",
-          "answer": "Delivery will take 2-3 business days after dispatch. If it is a weekend or public holiday, delivery will be delayed accordingly.",
-          "intent": "delivery",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7316,
+          "policy_ref": "UT-DEL-006",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "7-10"
@@ -668,9 +661,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 184064.0,
-          "total_tokens": 510,
-          "error": null
+          "latency_ms": 7717.5,
+          "total_tokens": 522,
+          "error": null,
+          "raw_output": "{\"intent\": \"delivery\", \"answer\": \"Delivery to Srinagar typically takes 3-7 business days via courier partner. However, please note that delivery timelines may vary due to various factors. You can track your parcel for updates on urbanethreads.in.\", \"policy_ref\": \"UT-DEL-006\", \"escalate_to_human\": false, \"confidence\": 0.8}"
+        },
+        "aligned": {
+          "question_id": "q10",
+          "answer": "Delivery timelines may vary, but it is expected to take 5-7 business days within Srinagar. For COD orders, delivery is within 24 hours.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-DEL-006",
+          "confidence": 0.7748,
+          "facts_hit": [],
+          "facts_missed": [
+            "7-10"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 13723.5,
+          "total_tokens": 511,
+          "error": null,
+          "raw_output": "{\"intent\": \"delivery\", \"answer\": \"Delivery timelines may vary, but it is expected to take 5-7 business days within Srinagar. For COD orders, delivery is within 24 hours.\", \"policy_ref\": \"UT-DEL-006\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -687,12 +706,12 @@
       "results": {
         "base": {
           "question_id": "q11",
-          "answer": "The delivery time after dispatch depends on your location. For example, in Bengaluru, the delivery time is usually 2-3 days.",
+          "answer": "We aim to deliver parcels within 3-5 business days for Bengaluru. However, delivery times may vary due to various factors. You can track your parcel for updates.",
           "intent": "delivery",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-DEL-001",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "2-4"
@@ -705,18 +724,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 39698.6,
-          "total_tokens": 511,
-          "error": null
+          "latency_ms": 7573.2,
+          "total_tokens": 513,
+          "error": null,
+          "raw_output": "{\"intent\": \"delivery\", \"answer\": \"We aim to deliver parcels within 3-5 business days for Bengaluru. However, delivery times may vary due to various factors. You can track your parcel for updates.\", \"policy_ref\": \"UT-DEL-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q11",
-          "answer": "Delivery is dispatched within 2-3 business days after dispatch. Delivery is free within 1-2 business days after dispatch.",
+          "answer": "Dispatch within 24 hours, delivery within 5-7 business days within Bengaluru city and 7-10 business days outside Bengaluru city.",
           "intent": "delivery",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7646,
+          "policy_ref": "UT-DEL-004",
+          "confidence": 0.8149,
           "facts_hit": [],
           "facts_missed": [
             "2-4"
@@ -729,9 +749,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 195813.3,
-          "total_tokens": 509,
-          "error": null
+          "latency_ms": 13406.3,
+          "total_tokens": 508,
+          "error": null,
+          "raw_output": "{\"intent\": \"delivery\", \"answer\": \"Dispatch within 24 hours, delivery within 5-7 business days within Bengaluru city and 7-10 business days outside Bengaluru city.\", \"policy_ref\": \"UT-DEL-004\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -755,11 +776,11 @@
       "results": {
         "base": {
           "question_id": "q12",
-          "answer": "The warranty covers any defects or damages caused by the watch during its intended use. However, it does not cover defects caused by misuse or improper use.",
+          "answer": "Since your watch is only 2 months old, it falls under our standard warranty period. We will be happy to assist you in getting a replacement or a store credit. Please contact our customer support team to initiate the process.",
           "intent": "warranty",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
+          "policy_ref": "UT-WAR-007",
           "confidence": 0.9,
           "facts_hit": [],
           "facts_missed": [
@@ -770,22 +791,23 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 42599.3,
-          "total_tokens": 526,
-          "error": null
+          "latency_ms": 7855.0,
+          "total_tokens": 536,
+          "error": null,
+          "raw_output": "{\"intent\": \"warranty\", \"answer\": \"Since your watch is only 2 months old, it falls under our standard warranty period. We will be happy to assist you in getting a replacement or a store credit. Please contact our customer support team to initiate the process.\", \"policy_ref\": \"UT-WAR-007\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q12",
-          "answer": "No, the warranty is only valid for 2 years from the date of delivery. We do not cover warranty claims for items within 2 months of delivery.",
+          "answer": "No, UT-RET-001 applies. Items damaged due to wear and tear, misuse, or accidental damage are not covered under warranty.",
           "intent": "warranty",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7748,
+          "policy_ref": "UT-WAR-007",
+          "confidence": 0.7995,
           "facts_hit": [],
           "facts_missed": [
             "water damage",
@@ -795,13 +817,14 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 25470.7,
-          "total_tokens": 528,
-          "error": null
+          "latency_ms": 8856.3,
+          "total_tokens": 519,
+          "error": null,
+          "raw_output": "{\"intent\": \"warranty\", \"answer\": \"No, UT-RET-001 applies. Items damaged due to wear and tear, misuse, or accidental damage are not covered under warranty.\", \"policy_ref\": \"UT-WAR-007\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         }
       }
     },
@@ -825,8 +848,8 @@
       "results": {
         "base": {
           "question_id": "q13",
-          "answer": "Yes, the hinge on your Urbane Threads sunglasses is covered under our warranty policy.",
-          "intent": "returns",
+          "answer": "Our sunglasses are covered under the UT-WAR-007 warranty for a period of 2 years from the date of purchase. Please contact our customer support to initiate the warranty claim process.",
+          "intent": "warranty",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-WAR-007",
@@ -844,34 +867,36 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 24442.3,
-          "total_tokens": 513,
-          "error": null
+          "latency_ms": 8687.3,
+          "total_tokens": 522,
+          "error": null,
+          "raw_output": "{\"intent\": \"warranty\", \"answer\": \"Our sunglasses are covered under the UT-WAR-007 warranty for a period of 2 years from the date of purchase. Please contact our customer support to initiate the warranty claim process.\", \"policy_ref\": \"UT-WAR-007\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q13",
-          "answer": "Yes, the hinge on your Urbane Threads sunglasses is covered. We offer a 30-day return policy. If it doesn't work as expected, return it within 30 days and we'll exchange or refund it.",
-          "intent": "returns",
+          "answer": "No, Urbane Threads watches and sunglasses are non-returnable items. They are covered only against manufacturing defects within 6 months of delivery. The item is damaged after normal wear and tear, so it is not covered.",
+          "intent": "warranty",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7533,
-          "facts_hit": [],
-          "facts_missed": [
+          "policy_ref": "UT-WAR-007",
+          "confidence": 0.7731,
+          "facts_hit": [
             "manufacturing",
-            "6 months|6-month|six months|six-month"
+            "6 months"
           ],
+          "facts_missed": [],
           "violations": [],
-          "correct": false,
+          "correct": true,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 40100.8,
-          "total_tokens": 535,
-          "error": null
+          "latency_ms": 9093.3,
+          "total_tokens": 529,
+          "error": null,
+          "raw_output": "{\"intent\": \"warranty\", \"answer\": \"No, Urbane Threads watches and sunglasses are non-returnable items. They are covered only against manufacturing defects within 6 months of delivery. The item is damaged after normal wear and tear, so it is not covered.\", \"policy_ref\": \"UT-WAR-007\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -888,53 +913,53 @@
       "results": {
         "base": {
           "question_id": "q14",
-          "answer": "Please return the kurta to the seller or a refund can be processed for a 50% refund of the purchase price.",
-          "intent": "refund",
+          "answer": "Since the item was purchased on Amazon, please contact Amazon's customer service for returns and refunds. You can also reach out to us at urbanethreads.in for assistance with returns or exchanges.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8,
+          "facts_hit": [
+            "amazon"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8461.4,
+          "total_tokens": 519,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Since the item was purchased on Amazon, please contact Amazon's customer service for returns and refunds. You can also reach out to us at urbanethreads.in for assistance with returns or exchanges.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
+        },
+        "aligned": {
+          "question_id": "q14",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [
             "amazon"
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 22369.7,
-          "total_tokens": 512,
-          "error": null
-        },
-        "aligned": {
-          "question_id": "q14",
-          "answer": "If the kurta is not fitting, kindly return it within 7 days. We will refund the full price of \u20b9150.00. No returns or exchanges are accepted.",
-          "intent": "refund",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7202,
-          "facts_hit": [],
-          "facts_missed": [
-            "amazon"
-          ],
-          "violations": [
-            "we will refund"
-          ],
-          "correct": false,
-          "escalation_correct": true,
-          "model_escalation_correct": true,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 40766.1,
-          "total_tokens": 524,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 19683.8,
+          "total_tokens": 1150,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Returns are only accepted within 7 days of delivery. Please initiate the return process on Amazon and follow their return policy. For exchanges, please contact our customer support on urbanethreads.in.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"returns\", \"answer\": \"Returns are only accepted within 7 days of delivery. Please initiate the return process on Amazon and follow their return policy. For exchanges, please contact our customer support on urbanethreads.in.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -951,12 +976,12 @@
       "results": {
         "base": {
           "question_id": "q15",
-          "answer": "Flipkart will process the refund for you. Please provide your order number and the reason for the return.",
-          "intent": "refund",
+          "answer": "We will not process a refund for returns initiated on Flipkart. Please contact Flipkart for refund processing.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": "UT-REF-004",
-          "confidence": 0.9,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8,
           "facts_hit": [
             "flipkart"
           ],
@@ -969,33 +994,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 22299.7,
-          "total_tokens": 513,
-          "error": null
+          "latency_ms": 8102.6,
+          "total_tokens": 501,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"We will not process a refund for returns initiated on Flipkart. Please contact Flipkart for refund processing.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q15",
-          "answer": "Flipkart has rejected your return request. We can process the refund ourselves. Please provide the tracking number from urbanethreads.in or the dispatch email for tracking.",
-          "intent": "refund",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7561,
-          "facts_hit": [
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
+          "facts_missed": [
             "flipkart"
           ],
-          "facts_missed": [],
           "violations": [],
-          "correct": true,
-          "escalation_correct": true,
+          "correct": false,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 28915.6,
-          "total_tokens": 517,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 19469.6,
+          "total_tokens": 1094,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"We cannot process returns on items rejected by Flipkart. Please contact Flipkart customer support for assistance.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"returns\", \"answer\": \"We cannot process returns on items rejected by Flipkart. Please contact Flipkart customer support for assistance.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1012,11 +1039,11 @@
       "results": {
         "base": {
           "question_id": "q16",
-          "answer": "Please note that we do not accept returns or exchanges for size M to L. Please contact our customer support for assistance.",
+          "answer": "To initiate an exchange, log in to your account on urbanethreads.in, go to My Orders, find your order ID 403-5566778-1122334, click on the product you want to exchange, select the new size L and follow the prompts.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
+          "policy_ref": "UT-EXC-002",
           "confidence": 0.9,
           "facts_hit": [],
           "facts_missed": [
@@ -1030,18 +1057,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 21708.6,
-          "total_tokens": 535,
-          "error": null
+          "latency_ms": 8403.1,
+          "total_tokens": 552,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"To initiate an exchange, log in to your account on urbanethreads.in, go to My Orders, find your order ID 403-5566778-1122334, click on the product you want to exchange, select the new size L and follow the prompts.\", \"policy_ref\": \"UT-EXC-002\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q16",
-          "answer": "Go to the size M section on the product page and select the size L. It will be displayed as the size L on the product page. If the size is not visible, you can try refreshing the page or switching to a different size.",
+          "answer": "Go to My Orders, select the order ID 403-5566778-1122334, and click on the 'Exchange' button. Choose the item, select the new size L, and follow the exchange process.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.6617,
+          "policy_ref": "UT-EXC-002",
+          "confidence": 0.8054,
           "facts_hit": [],
           "facts_missed": [
             "amazon"
@@ -1054,9 +1082,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 29798.2,
-          "total_tokens": 560,
-          "error": null
+          "latency_ms": 10498.7,
+          "total_tokens": 542,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"Go to My Orders, select the order ID 403-5566778-1122334, and click on the 'Exchange' button. Choose the item, select the new size L, and follow the exchange process.\", \"policy_ref\": \"UT-EXC-002\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1073,7 +1102,7 @@
       "results": {
         "base": {
           "question_id": "q17",
-          "answer": "You can return the shirt for a full refund or exchange it for a new one. Please provide photos of the torn part of the shirt.",
+          "answer": "Please contact our customer support team with the order number and photos of the damaged item, we will guide you through the return process.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
@@ -1091,18 +1120,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 32290.4,
-          "total_tokens": 531,
-          "error": null
+          "latency_ms": 7372.7,
+          "total_tokens": 517,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Please contact our customer support team with the order number and photos of the damaged item, we will guide you through the return process.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q17",
-          "answer": "Yes, you can return the shirt. Provide photos and return it within 30 days.",
+          "answer": "We regret the damage and would be happy to replace the item. Please reply to the dispatch email with the order number and attach the photos. We will process the replacement within 7-10 business days.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.8049,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.771,
           "facts_hit": [],
           "facts_missed": [
             "48 hours"
@@ -1115,9 +1145,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 16666.9,
-          "total_tokens": 515,
-          "error": null
+          "latency_ms": 10409.5,
+          "total_tokens": 532,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"We regret the damage and would be happy to replace the item. Please reply to the dispatch email with the order number and attach the photos. We will process the replacement within 7-10 business days.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1139,17 +1170,16 @@
       "results": {
         "base": {
           "question_id": "q18",
-          "answer": "You can return the trunks to Urbane Threads for a full refund.",
-          "intent": "other",
+          "answer": "Sorry for the inconvenience, but as per our policy, innerwear items are non-returnable. However, we can offer an exchange for a different size/color of the same item or a store credit. Please contact our customer support team to proceed.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
-          "facts_hit": [
-            "replacement"
-          ],
+          "confidence": 0.8,
+          "facts_hit": [],
           "facts_missed": [
-            "48 hours"
+            "48 hours",
+            "replacement|refund"
           ],
           "violations": [],
           "correct": false,
@@ -1159,23 +1189,23 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 31975.8,
-          "total_tokens": 518,
-          "error": null
+          "latency_ms": 7572.9,
+          "total_tokens": 540,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Sorry for the inconvenience, but as per our policy, innerwear items are non-returnable. However, we can offer an exchange for a different size/color of the same item or a store credit. Please contact our customer support team to proceed.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q18",
-          "answer": "No, you can return the trunks. Unboxing videos are free. If the trunks are returned within 14 days, they will be refunded. If not, they will be returned to the warehouse. If the trunks are returned, the return is free. If the trunks are returned, the return is free.",
-          "intent": "other",
+          "answer": "No, non-returnable items are clearly marked on our website, and we cannot accept returns on innerwear. We can offer store credit for the item, but it must be within 7 days of delivery. Please contact our customer support with your order ID and unboxing video.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.6177,
-          "facts_hit": [
-            "replacement"
-          ],
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.7365,
+          "facts_hit": [],
           "facts_missed": [
-            "48 hours"
+            "48 hours",
+            "replacement|refund"
           ],
           "violations": [],
           "correct": false,
@@ -1185,9 +1215,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 17919.3,
-          "total_tokens": 563,
-          "error": null
+          "latency_ms": 13966.1,
+          "total_tokens": 547,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"No, non-returnable items are clearly marked on our website, and we cannot accept returns on innerwear. We can offer store credit for the item, but it must be within 7 days of delivery. Please contact our customer support with your order ID and unboxing video.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1204,12 +1235,12 @@
       "results": {
         "base": {
           "question_id": "q19",
-          "answer": "GST is applied at a rate of 10%. You can get a GST invoice from the store or through the GST portal.",
+          "answer": "The GST rate applicable to a shirt priced \u20b91,000 is 18% (CGST: 9% and SGST/UTGST: 9%).",
           "intent": "gst_invoice",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-GST-010",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "5%"
@@ -1218,37 +1249,39 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 30892.7,
-          "total_tokens": 511,
-          "error": null
+          "latency_ms": 7877.0,
+          "total_tokens": 512,
+          "error": null,
+          "raw_output": "{\"intent\": \"gst_invoice\", \"answer\": \"The GST rate applicable to a shirt priced \u20b91,000 is 18% (CGST: 9% and SGST/UTGST: 9%).\", \"policy_ref\": \"UT-GST-010\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q19",
-          "answer": "\u20b91,000 is within \u20b925,000 GST limit. \u20b91,000 is charged at 10% GST. \u20b91,000 is charged at 12% GST. \u20b91,000 is charged at 15% GST. \u20b91,000 is charged at 18% GST.",
-          "intent": "gst_invoice",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.813,
-          "facts_hit": [
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
+          "facts_missed": [
             "5%"
           ],
-          "facts_missed": [],
           "violations": [],
-          "correct": true,
-          "escalation_correct": true,
+          "correct": false,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 19530.4,
-          "total_tokens": 563,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 30557.9,
+          "total_tokens": 1077,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"gst_invoice\", \"answer\": \"The GST rate on \u20b91,000 is \u20b9200 (18% GST)\", \"policy_ref\": UT-GST-010, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"gst_invoice\", \"answer\": \"\u20b918% GST on \u20b91,000 is \u20b9180\", \"policy_ref\": UT-GST-010, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1265,12 +1298,12 @@
       "results": {
         "base": {
           "question_id": "q20",
-          "answer": "Please provide your company GSTIN number so we can update the invoice.",
-          "intent": "refund",
+          "answer": "We can't modify existing invoices, but you can contact our customer support team and we'll guide you on how to obtain a new GST invoice with your company details.",
+          "intent": "gst_invoice",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-GST-010",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "before"
@@ -1279,37 +1312,39 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 30206.7,
-          "total_tokens": 503,
-          "error": null
+          "latency_ms": 7463.3,
+          "total_tokens": 518,
+          "error": null,
+          "raw_output": "{\"intent\": \"gst_invoice\", \"answer\": \"We can't modify existing invoices, but you can contact our customer support team and we'll guide you on how to obtain a new GST invoice with your company details.\", \"policy_ref\": \"UT-GST-010\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q20",
-          "answer": "GSTIN is not mandatory to add. If you forgot to add it, you can add it to the invoice now. If you have any other questions, feel free to ask.",
-          "intent": "shipping",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7075,
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [
             "before"
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 18887.4,
-          "total_tokens": 525,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 30734.8,
+          "total_tokens": 1177,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"gst_invoice\", \"answer\": \"No, we cannot update the GSTIN on an existing invoice. Please contact our customer support within 24 hours of placing the order to add the GSTIN. If the order has already shipped, it cannot be updated.\", \"policy_ref\": UT-GST-010, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"gst_invoice\", \"answer\": \"No, we cannot update the GSTIN on an existing invoice. Please contact our customer support within 24 hours of placing the order to add the GSTIN. If the order has already shipped, it cannot be updated.\", \"policy_ref\": UT-GST-010, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1331,12 +1366,12 @@
       "results": {
         "base": {
           "question_id": "q21",
-          "answer": "You can cancel your order by following these steps: 1. Go to your My Orders on urbanethreads.in. 2. Locate your order and click on the 'Cancel' button. 3. Confirm the cancellation by clicking 'Yes' or 'Cancel' again.",
-          "intent": "other",
+          "answer": "Since your order has shipped, we can't cancel it. Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) to request a cancellation and we will do our best to assist you.",
+          "intent": "cancellation",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-CAN-011",
-          "confidence": 0.9,
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "refuse",
@@ -1350,35 +1385,36 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 209812.0,
-          "total_tokens": 551,
-          "error": null
+          "latency_ms": 9849.3,
+          "total_tokens": 533,
+          "error": null,
+          "raw_output": "{\"intent\": \"cancellation\", \"answer\": \"Since your order has shipped, we can't cancel it. Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) to request a cancellation and we will do our best to assist you.\", \"policy_ref\": \"UT-CAN-011\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q21",
-          "answer": "Cancel your order and track it on urbanethreads.in. If the item is not returned, you can track it on Flipkart or Amazon. If the item is returned, track it on urbanethreads.in.",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
           "intent": "other",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": "UT-CAN-011",
-          "confidence": 0.7365,
-          "facts_hit": [
-            "return"
-          ],
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
           "facts_missed": [
-            "refuse"
+            "refuse",
+            "return|7 days"
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
-          "policy_ref_correct": true,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 20165.6,
-          "total_tokens": 538,
-          "error": null
+          "policy_ref_correct": false,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 31013.9,
+          "total_tokens": 1114,
+          "error": "invalid_model_output: no JSON object found",
+          "raw_output": "{\"intent\": \"order_status\", \"answer\": \"Once an order is shipped, cancellation is not possible. Please wait for the delivery and track your order to know the status.\", \"policy_ref\": UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"order_status\", \"answer\": \"Once an order is shipped, cancellation is not possible. Please wait for the delivery and track your order to know the status.\", \"policy_ref\": UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1395,12 +1431,12 @@
       "results": {
         "base": {
           "question_id": "q22",
-          "answer": "If you cancel your order, we will process a refund for the remaining amount. However, we do not offer a refund for canceled orders.",
-          "intent": "refund",
+          "answer": "Please contact our customer support team to assist you with your order. We will be happy to help you with cancellation. There is no cancellation fee for orders placed within 2 hours of purchase.",
+          "intent": "cancellation",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-CAN-011",
-          "confidence": 0.9,
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "free"
@@ -1413,33 +1449,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 210761.8,
-          "total_tokens": 526,
-          "error": null
+          "latency_ms": 9785.3,
+          "total_tokens": 525,
+          "error": null,
+          "raw_output": "{\"intent\": \"cancellation\", \"answer\": \"Please contact our customer support team to assist you with your order. We will be happy to help you with cancellation. There is no cancellation fee for orders placed within 2 hours of purchase.\", \"policy_ref\": \"UT-CAN-011\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q22",
-          "answer": "Canceling an order is free. If you have any issues with the item, return it within 7 days and we will exchange or refund the item. If the item is returned within 7 days and is not returned within 30 days, it will be returned to the original store.",
-          "intent": "refund",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.6638,
-          "facts_hit": [
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
+          "facts_missed": [
             "free"
           ],
-          "facts_missed": [],
           "violations": [],
-          "correct": true,
-          "escalation_correct": true,
+          "correct": false,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 19725.4,
-          "total_tokens": 550,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 25322.6,
+          "total_tokens": 1169,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"order_status\", \"answer\": \"We dispatch orders within 24 hours. If cancelled within 24 hours, no fee applies. If cancelled after 24 hours, \u20b9500 cancellation fee applies. Please contact our customer support to cancel.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"order_status\", \"answer\": \"We dispatch orders within 24 hours. If cancelled within 24 hours, no fee applies. If cancelled after 24 hours, \u20b9500 cancellation fee applies. Please contact our customer support to cancel.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1454,8 +1492,8 @@
       "results": {
         "base": {
           "question_id": "q23",
-          "answer": "Please send a legal notice to your company stating that your refund is not credited by Monday. We will work with you to resolve this issue.",
-          "intent": "refund",
+          "answer": "We apologize for the delay in processing your refund. Please contact our customer support at support@urbanethreads.in or call us at 01234567890 for assistance. We will look into this matter urgently.",
+          "intent": "escalation",
           "escalate_to_human": true,
           "model_escalate": true,
           "policy_ref": null,
@@ -1470,31 +1508,33 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 214272.6,
-          "total_tokens": 514,
-          "error": null
+          "latency_ms": 9802.6,
+          "total_tokens": 519,
+          "error": null,
+          "raw_output": "{\"intent\": \"escalation\", \"answer\": \"We apologize for the delay in processing your refund. Please contact our customer support at support@urbanethreads.in or call us at 01234567890 for assistance. We will look into this matter urgently.\", \"policy_ref\": null, \"escalate_to_human\": true, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q23",
-          "answer": "If your refund isn't credited by Monday, send a legal notice to the customer. We will escalate the issue to the legal team for a proper resolution.",
-          "intent": "refund",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
           "escalate_to_human": true,
-          "model_escalate": true,
-          "policy_ref": null,
-          "confidence": 0.7463,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
-          "correct": true,
+          "correct": false,
           "escalation_correct": true,
-          "model_escalation_correct": true,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 18290.8,
-          "total_tokens": 517,
-          "error": null
+          "model_escalation_correct": false,
+          "policy_ref_correct": true,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 24483.8,
+          "total_tokens": 1178,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"escalate\", \"answer\": \"We understand your concern, and we will look into it immediately. Please escalate the issue to our customer support team, and we will be happy to assist you. Our customer support team is available 24/7. Escalation ID: UT-RET-001\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": true, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"escalate\", \"answer\": \"Escalate the issue to our customer support team, and we will be happy to assist you. Our customer support team is available 24/7.\", \"policy_ref\": UT-RET-001, \"escalate_to_human\": true, \"confidence\": 0.8}"
         }
       }
     },
@@ -1509,34 +1549,12 @@
       "results": {
         "base": {
           "question_id": "q24",
-          "answer": "You can return the jacket for a refund if the issue is with the fit or the quality. Please contact our customer service team for further assistance.",
-          "intent": "refund",
-          "escalate_to_human": true,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
-          "facts_hit": [],
-          "facts_missed": [],
-          "violations": [],
-          "correct": true,
-          "escalation_correct": true,
-          "model_escalation_correct": false,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 214660.3,
-          "total_tokens": 526,
-          "error": null
-        },
-        "aligned": {
-          "question_id": "q24",
-          "answer": "The order UT2026051234 has been escalated to the bank for a chargeback. We will process the refund within 7-10 business days.",
-          "intent": "other",
+          "answer": "We apologize for the inconvenience. Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) so we can assist you further and resolve the issue.",
+          "intent": "escalation",
           "escalate_to_human": true,
           "model_escalate": true,
           "policy_ref": null,
-          "confidence": 0.7687,
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
@@ -1547,9 +1565,33 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 18543.6,
-          "total_tokens": 536,
-          "error": null
+          "latency_ms": 9794.8,
+          "total_tokens": 523,
+          "error": null,
+          "raw_output": "{\"intent\": \"escalation\", \"answer\": \"We apologize for the inconvenience. Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) so we can assist you further and resolve the issue.\", \"policy_ref\": null, \"escalate_to_human\": true, \"confidence\": 0.8}"
+        },
+        "aligned": {
+          "question_id": "q24",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": true,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 24367.3,
+          "total_tokens": 1166,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"escalate\", \"answer\": \"We apologize for the inconvenience. Please contact our customer support team at urbanethreads.in and we will assist you with the chargeback and resolve the issue with your order UT2026051234.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"escalate\", \"answer\": \"We apologize for the inconvenience. Please contact our customer support team at urbanethreads.in and we will assist you with the chargeback and resolve the issue with your order UT2026051234.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.8}"
         }
       }
     },
@@ -1564,12 +1606,12 @@
       "results": {
         "base": {
           "question_id": "q25",
-          "answer": "You can return your watch and blazer within 48 hours of delivery. Please provide your order number and return reason for a return.",
+          "answer": "Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) to initiate the return process. We will guide you through the next steps. Please note that returns are accepted within 3 days of delivery. Since your order was delivered 4 days ago, it may not be eligible for return. Please check our return policy for more details.",
           "intent": "returns",
           "escalate_to_human": true,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
@@ -1580,31 +1622,33 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 29550.8,
-          "total_tokens": 533,
-          "error": null
+          "latency_ms": 8579.7,
+          "total_tokens": 569,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) to initiate the return process. We will guide you through the next steps. Please note that returns are accepted within 3 days of delivery. Since your order was delivered 4 days ago, it may not be eligible for return. Please check our return policy for more details.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q25",
-          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
-          "intent": "other",
+          "answer": "Within 7 days of delivery, please initiate the return process on urbanethreads.in and attach the order ID and reason for return. \u20b95,000 is non-refundable. \u20b927,000 can be refunded within 7-10 days.",
+          "intent": "returns",
           "escalate_to_human": true,
-          "model_escalate": null,
-          "policy_ref": "UT-ESC-012",
-          "confidence": 0.0,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.7603,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
-          "correct": false,
+          "correct": true,
           "escalation_correct": true,
           "model_escalation_correct": false,
-          "policy_ref_correct": true,
-          "json_valid": false,
-          "json_valid_final": false,
-          "fallback": true,
-          "latency_ms": 84325.2,
-          "total_tokens": 1868,
-          "error": "invalid_model_output: no JSON object found"
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 9424.5,
+          "total_tokens": 541,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Within 7 days of delivery, please initiate the return process on urbanethreads.in and attach the order ID and reason for return. \u20b95,000 is non-refundable. \u20b927,000 can be refunded within 7-10 days.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1619,25 +1663,26 @@
       "results": {
         "base": {
           "question_id": "q26",
-          "answer": "Please contact our customer support team for a refund. We will process your refund as soon as possible.",
-          "intent": "refund",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
+          "answer": "I apologize for the inconvenience, but I will escalate your concern to our dedicated customer support team for further assistance. Please allow us some time to look into this matter. Your order details will be required to process the refund.",
+          "intent": "escalation",
+          "escalate_to_human": true,
+          "model_escalate": true,
+          "policy_ref": "UT-ESC-012",
           "confidence": 0.9,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
           "correct": true,
-          "escalation_correct": false,
-          "model_escalation_correct": false,
-          "policy_ref_correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 28358.4,
-          "total_tokens": 511,
-          "error": null
+          "latency_ms": 8710.6,
+          "total_tokens": 531,
+          "error": null,
+          "raw_output": "{\"intent\": \"escalation\", \"answer\": \"I apologize for the inconvenience, but I will escalate your concern to our dedicated customer support team for further assistance. Please allow us some time to look into this matter. Your order details will be required to process the refund.\", \"policy_ref\": \"UT-ESC-012\", \"escalate_to_human\": true, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q26",
@@ -1657,9 +1702,10 @@
           "json_valid": false,
           "json_valid_final": false,
           "fallback": true,
-          "latency_ms": 83372.5,
-          "total_tokens": 1167,
-          "error": "invalid_model_output: schema mismatch (escalate_to_human)"
+          "latency_ms": 24402.4,
+          "total_tokens": 1181,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"escalate\", \"answer\": \"We apologize for any inconvenience. Escalation to a human is required. Please contact our customer support team at urbanethreads.in and they will assist you with your refund. They will be happy to help and resolve your issue.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.9}\n---repair---\n{\"intent\": \"escalate\", \"answer\": \"Escalation to a human is required. Please contact our customer support team at urbanethreads.in and they will assist you with your refund. They will be happy to help and resolve your issue.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.9}"
         }
       }
     },
@@ -1674,12 +1720,12 @@
       "results": {
         "base": {
           "question_id": "q27",
-          "answer": "I'm sorry, but I'm unable to assist with that request at this time.",
+          "answer": "We appreciate your loyalty, but our return policy states that returns must be initiated within 30 days of delivery. We cannot make exceptions to this policy. Please refer to our website for more information.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
@@ -1690,31 +1736,33 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 25807.3,
-          "total_tokens": 514,
-          "error": null
+          "latency_ms": 8826.4,
+          "total_tokens": 530,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"We appreciate your loyalty, but our return policy states that returns must be initiated within 30 days of delivery. We cannot make exceptions to this policy. Please refer to our website for more information.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q27",
-          "answer": "We accept returns within 25 days of delivery. If the item is returned within 25 days, it will be refunded at no cost. If the item is not returned within 25 days, a 10% cancellation fee will be applied.",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
           "intent": "other",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.748,
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
-          "correct": true,
-          "escalation_correct": false,
+          "correct": false,
+          "escalation_correct": true,
           "model_escalation_correct": false,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 172176.1,
-          "total_tokens": 550,
-          "error": null
+          "policy_ref_correct": true,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 23157.5,
+          "total_tokens": 1171,
+          "error": "invalid_model_output: no JSON object found",
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"We appreciate your loyalty, but our returns window is 7 days from delivery. We cannot accept returns after 25 days. If you have any questions or concerns, please contact our customer support.\", \"policy_ref\": UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"returns\", \"answer\": \"We appreciate your loyalty, but our returns window is 7 days from delivery. We cannot accept returns after 25 days. If you have any questions or concerns, please contact our customer support.\", \"policy_ref\": UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1729,47 +1777,49 @@
       "results": {
         "base": {
           "question_id": "q28",
-          "answer": "I will contact the exchange team to discuss your exchange request and provide you with a timeline for processing your exchange.",
-          "intent": "exchange",
+          "answer": "We understand your concern and apologize for any inconvenience. Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) or call us at 01234567890. We will be happy to assist you with your exchange request.",
+          "intent": "escalation",
           "escalate_to_human": true,
-          "model_escalate": false,
-          "policy_ref": null,
+          "model_escalate": true,
+          "policy_ref": "UT-ESC-012",
           "confidence": 0.9,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
           "correct": true,
           "escalation_correct": true,
-          "model_escalation_correct": false,
-          "policy_ref_correct": false,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 25932.4,
-          "total_tokens": 506,
-          "error": null
+          "latency_ms": 9241.3,
+          "total_tokens": 536,
+          "error": null,
+          "raw_output": "{\"intent\": \"escalation\", \"answer\": \"We understand your concern and apologize for any inconvenience. Please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) or call us at 01234567890. We will be happy to assist you with your exchange request.\", \"policy_ref\": \"UT-ESC-012\", \"escalate_to_human\": true, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q28",
-          "answer": "If your exchange is not processed within the next 7 days, we can track it and send a courier to collect it. We will inform you within 24 hours of dispatch.",
-          "intent": "delivery",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
           "escalate_to_human": true,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.6706,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
-          "correct": true,
+          "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": false,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 171755.5,
-          "total_tokens": 521,
-          "error": null
+          "policy_ref_correct": true,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 19666.7,
+          "total_tokens": 1111,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"escalate\", \"answer\": \"We understand your concern and apologize for the delay. Escalation is initiated. Our team will review your case and revert within 24 hours.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"escalate\", \"answer\": \"Escalation initiated. Our team will review your case and revert within 24 hours.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.8}"
         }
       }
     },
@@ -1786,12 +1836,12 @@
       "results": {
         "base": {
           "question_id": "q29",
-          "answer": "Yes, you are eligible to return the item within the 30-day return period as per the policy.",
+          "answer": "Please contact our customer support team to initiate the return process. We will guide you through the next steps and ensure a smooth return process.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "7 days"
@@ -1804,18 +1854,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 22876.5,
-          "total_tokens": 527,
-          "error": null
+          "latency_ms": 12859.4,
+          "total_tokens": 518,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Please contact our customer support team to initiate the return process. We will guide you through the next steps and ensure a smooth return process.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q29",
-          "answer": "Yes, 30-day returns are still valid. If the item is not returned within 30 days, it will be eligible for a 10% store credit.",
+          "answer": "No, the 30-day return window has expired. Please contact our customer support team to discuss possible exceptions or store credit options.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.78,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8076,
           "facts_hit": [],
           "facts_missed": [
             "7 days"
@@ -1824,13 +1875,14 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 21009.0,
-          "total_tokens": 534,
-          "error": null
+          "latency_ms": 8084.2,
+          "total_tokens": 517,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"No, the 30-day return window has expired. Please contact our customer support team to discuss possible exceptions or store credit options.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1851,11 +1903,11 @@
       "results": {
         "base": {
           "question_id": "q30",
-          "answer": "Yes, you can get free shipping for orders above \u20b91,499. Please check your shipping options in your cart.",
+          "answer": "No, free shipping is available on orders above \u20b91,499. Since your order is below this threshold, you will need to pay for shipping. You can choose from our shipping options at checkout.",
           "intent": "shipping",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
+          "policy_ref": "UT-SHP-005",
           "confidence": 0.9,
           "facts_hit": [
             "free"
@@ -1867,39 +1919,40 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 23430.8,
-          "total_tokens": 526,
-          "error": null
+          "latency_ms": 12737.6,
+          "total_tokens": 531,
+          "error": null,
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"No, free shipping is available on orders above \u20b91,499. Since your order is below this threshold, you will need to pay for shipping. You can choose from our shipping options at checkout.\", \"policy_ref\": \"UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q30",
-          "answer": "Free shipping is \u20b9199.99 or \u20b9299.99 for orders above \u20b91,499. \u20b91,200 is within the free shipping limit.",
-          "intent": "shipping",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7911,
-          "facts_hit": [
-            "free"
-          ],
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
           "facts_missed": [
-            "\u20b9999"
+            "\u20b9999",
+            "free"
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 19267.6,
-          "total_tokens": 541,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 34409.9,
+          "total_tokens": 1179,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"No, free shipping is available on orders above \u20b91,499, but it is \u20b9500 on orders above \u20b91,000. Your order is \u20b91,200, so free shipping is available.\", \"policy_ref\": UT-SHP-005, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"shipping\", \"answer\": \"No, free shipping is available on orders above \u20b91,499, but it is \u20b9500 on orders above \u20b91,000. Your order is \u20b91,200, so free shipping is available.\", \"policy_ref\": UT-SHP-005, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1916,12 +1969,12 @@
       "results": {
         "base": {
           "question_id": "q31",
-          "answer": "COD (Collect On Delivery) is a shipping option where the cost is deducted from the total amount before the item is shipped. If the total amount is \u20b939, the COD fee would still be \u20b939.",
-          "intent": "refund",
+          "answer": "We do not charge a fixed COD fee. The shipping cost is calculated based on the order value and delivery location. Please check your order details on urbanethreads.in for the exact shipping cost.",
+          "intent": "shipping",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": "UT-COD-001",
-          "confidence": 0.9,
+          "policy_ref": "UT-SHP-005",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "\u20b949"
@@ -1930,37 +1983,39 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 28590.2,
-          "total_tokens": 539,
-          "error": null
+          "latency_ms": 12675.1,
+          "total_tokens": 520,
+          "error": null,
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"We do not charge a fixed COD fee. The shipping cost is calculated based on the order value and delivery location. Please check your order details on urbanethreads.in for the exact shipping cost.\", \"policy_ref\": \"UT-SHP-005\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q31",
-          "answer": "COD is \u20b939. \u20b939 is still the COD fee. If you want to return or exchange the item, you can proceed with the refund or exchange. If you have any other questions, feel free to ask.",
-          "intent": "refund",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.6964,
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [
             "\u20b949"
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 3073.7,
-          "total_tokens": 534,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 34509.4,
+          "total_tokens": 1087,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"shipping\", \"answer\": \"COD fee is \u20b949 now, it has been updated on urbanethreads.in\", \"policy_ref\": UT-SHP-005, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"shipping\", \"answer\": \"COD fee is \u20b949 now, it has been updated on urbanethreads.in\", \"policy_ref\": UT-SHP-005, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -1977,12 +2032,12 @@
       "results": {
         "base": {
           "question_id": "q32",
-          "answer": "You can exchange your socks for a bigger size within 30 days. Please note that the size you choose will be the size of the new sock you receive.",
+          "answer": "You can exchange your socks within 30 days of delivery. Please contact our customer support team with your order number and reason for exchange. We will guide you through the process.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-EXC-002",
+          "confidence": 0.8,
           "facts_hit": [
             "socks"
           ],
@@ -1997,18 +2052,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 29536.9,
-          "total_tokens": 525,
-          "error": null
+          "latency_ms": 12288.9,
+          "total_tokens": 522,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"You can exchange your socks within 30 days of delivery. Please contact our customer support team with your order number and reason for exchange. We will guide you through the process.\", \"policy_ref\": \"UT-EXC-002\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q32",
-          "answer": "Within 30 days, you can exchange your socks for a bigger size. If you prefer, you can return the item and get a full refund. No returns or exchanges within 30 days are accepted.",
+          "answer": "Yes, within 30 days of delivery, you can exchange your socks for a different size. Please initiate the exchange within the time frame and follow the exchange process on urbanethreads.in.",
           "intent": "exchange",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7533,
+          "policy_ref": "UT-EXC-002",
+          "confidence": 0.832,
           "facts_hit": [
             "socks"
           ],
@@ -2023,9 +2079,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 3721.3,
-          "total_tokens": 535,
-          "error": null
+          "latency_ms": 11122.6,
+          "total_tokens": 525,
+          "error": null,
+          "raw_output": "{\"intent\": \"exchange\", \"answer\": \"Yes, within 30 days of delivery, you can exchange your socks for a different size. Please initiate the exchange within the time frame and follow the exchange process on urbanethreads.in.\", \"policy_ref\": \"UT-EXC-002\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -2047,15 +2104,16 @@
       "results": {
         "base": {
           "question_id": "q33",
-          "answer": "You can return your shirt within the 20-day return period. Please note that the return period is 20 days from the date of delivery.",
+          "answer": "We regret that our Diwali sale offer is only applicable to new purchases made during the sale period. You can initiate the return process on urbanethreads.in within 7 days of delivery. Please contact our customer support for assistance.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.9,
-          "facts_hit": [],
+          "confidence": 0.8,
+          "facts_hit": [
+            "7 days"
+          ],
           "facts_missed": [
-            "7 days",
             "15 days|exchange"
           ],
           "violations": [],
@@ -2066,22 +2124,24 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 29491.7,
-          "total_tokens": 538,
-          "error": null
+          "latency_ms": 17658.9,
+          "total_tokens": 540,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"We regret that our Diwali sale offer is only applicable to new purchases made during the sale period. You can initiate the return process on urbanethreads.in within 7 days of delivery. Please contact our customer support for assistance.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q33",
-          "answer": "You can return the shirt within 20 days of delivery. Go to My Orders on urbanethreads.in and select the item. Track the return and pay the shipping fee. If the item is returned within 20 days, it will be refunded.",
+          "answer": "Our 20-day returns window is only valid from the dispatch date. Since it has been 14 days, we cannot process a return. Please contact our customer support for a refund or exchange within the valid window.",
           "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
-          "confidence": 0.7643,
-          "facts_hit": [],
+          "confidence": 0.7638,
+          "facts_hit": [
+            "15 days"
+          ],
           "facts_missed": [
-            "7 days",
-            "15 days|exchange"
+            "7 days"
           ],
           "violations": [],
           "correct": false,
@@ -2091,9 +2151,10 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 3868.6,
-          "total_tokens": 559,
-          "error": null
+          "latency_ms": 23389.8,
+          "total_tokens": 536,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Our 20-day returns window is only valid from the dispatch date. Since it has been 14 days, we cannot process a return. Please contact our customer support for a refund or exchange within the valid window.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -2114,8 +2175,8 @@
       "results": {
         "base": {
           "question_id": "q34",
-          "answer": "The size of the kurta is 4, but you can return it if it is damaged or not fitting properly.",
-          "intent": "other",
+          "answer": "Yes, you can return the kurta within 3 working days of delivery. Please contact our customer support to initiate the return process.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-RET-001",
@@ -2132,33 +2193,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 29713.8,
-          "total_tokens": 526,
-          "error": null
+          "latency_ms": 17292.2,
+          "total_tokens": 516,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Yes, you can return the kurta within 3 working days of delivery. Please contact our customer support to initiate the return process.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q34",
-          "answer": "The size is 4, and the order is not returned.",
-          "intent": "other",
+          "answer": "Yes, within 7 days of delivery, you can initiate a return. Please visit urbanethreads.in and follow the return policy for more details.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7887,
-          "facts_hit": [],
-          "facts_missed": [
-            "7 days|7 din|7-day"
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8327,
+          "facts_hit": [
+            "7 days"
           ],
+          "facts_missed": [],
           "violations": [],
-          "correct": false,
+          "correct": true,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 3401.7,
-          "total_tokens": 508,
-          "error": null
+          "latency_ms": 23251.6,
+          "total_tokens": 519,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Yes, within 7 days of delivery, you can initiate a return. Please visit urbanethreads.in and follow the return policy for more details.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         }
       }
     },
@@ -2181,11 +2244,11 @@
       "results": {
         "base": {
           "question_id": "q35",
-          "answer": "You can get a \u20b91,200 refund for your order.",
-          "intent": "refund",
+          "answer": "Aapke COD order ke liye, refund \u20b91,200 store credit mein aayega. Refund aapke account mein aapki account balance mein jayega.",
+          "intent": "returns",
           "escalate_to_human": true,
           "model_escalate": false,
-          "policy_ref": "UT-REF-004",
+          "policy_ref": "UT-RET-001",
           "confidence": 0.9,
           "facts_hit": [],
           "facts_missed": [
@@ -2196,22 +2259,23 @@
           "correct": false,
           "escalation_correct": false,
           "model_escalation_correct": true,
-          "policy_ref_correct": true,
+          "policy_ref_correct": false,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 27774.8,
-          "total_tokens": 516,
-          "error": null
+          "latency_ms": 17327.2,
+          "total_tokens": 524,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"Aapke COD order ke liye, refund \u20b91,200 store credit mein aayega. Refund aapke account mein aapki account balance mein jayega.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q35",
-          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
-          "intent": "other",
+          "answer": "COD orders are non-returnable, so \u20b91,200 store credit is the only option.",
+          "intent": "returns",
           "escalate_to_human": true,
-          "model_escalate": null,
-          "policy_ref": "UT-ESC-012",
-          "confidence": 0.0,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8229,
           "facts_hit": [],
           "facts_missed": [
             "\u20b91,260",
@@ -2222,12 +2286,13 @@
           "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": false,
-          "json_valid_final": false,
-          "fallback": true,
-          "latency_ms": 15384.0,
-          "total_tokens": 1860,
-          "error": "invalid_model_output: no JSON object found"
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 22730.9,
+          "total_tokens": 505,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"COD orders are non-returnable, so \u20b91,200 store credit is the only option.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -2244,36 +2309,12 @@
       "results": {
         "base": {
           "question_id": "q36",
-          "answer": "Please contact our customer support team for a refund for the jacket size galat.",
-          "intent": "refund",
-          "escalate_to_human": true,
-          "model_escalate": true,
-          "policy_ref": "UT-REF-004",
-          "confidence": 0.9,
-          "facts_hit": [],
-          "facts_missed": [
-            "amazon"
-          ],
-          "violations": [],
-          "correct": false,
-          "escalation_correct": false,
-          "model_escalation_correct": false,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 26345.0,
-          "total_tokens": 510,
-          "error": null
-        },
-        "aligned": {
-          "question_id": "q36",
-          "answer": "The size is not available. We can only refund items within the size range. Please check the size again.",
-          "intent": "refund",
+          "answer": "To initiate the return process, please contact our customer support at support@urbanethreads.in with your order number and reason for return. We will guide you through the next steps.",
+          "intent": "returns",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7073,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "amazon"
@@ -2286,9 +2327,35 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 8047.8,
-          "total_tokens": 509,
-          "error": null
+          "latency_ms": 17293.1,
+          "total_tokens": 518,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"To initiate the return process, please contact our customer support at support@urbanethreads.in with your order number and reason for return. We will guide you through the next steps.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
+        },
+        "aligned": {
+          "question_id": "q36",
+          "answer": "To initiate the return process, please visit urbanethreads.in/myorders, select the order and item, and follow the return instructions. We will process the refund within 7-10 business days after receiving the item.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.8269,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 22769.9,
+          "total_tokens": 526,
+          "error": null,
+          "raw_output": "{\"intent\": \"returns\", \"answer\": \"To initiate the return process, please visit urbanethreads.in/myorders, select the order and item, and follow the return instructions. We will process the refund within 7-10 business days after receiving the item.\", \"policy_ref\": \"UT-RET-001\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -2305,12 +2372,12 @@
       "results": {
         "base": {
           "question_id": "q37",
-          "answer": "Your parcel is expected to be delivered to your address in Guwahati.",
+          "answer": "Delivery in Guwahati typically takes 3-5 business days from the date of dispatch. However, please note that delivery timelines may vary due to various factors such as traffic, weather, and other logistical constraints.",
           "intent": "delivery",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.9,
+          "policy_ref": "UT-DLV-006",
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [
             "7-10"
@@ -2319,37 +2386,39 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 40143.1,
-          "total_tokens": 497,
-          "error": null
+          "latency_ms": 13616.4,
+          "total_tokens": 520,
+          "error": null,
+          "raw_output": "{\"intent\": \"delivery\", \"answer\": \"Delivery in Guwahati typically takes 3-5 business days from the date of dispatch. However, please note that delivery timelines may vary due to various factors such as traffic, weather, and other logistical constraints.\", \"policy_ref\": \"UT-DLV-006\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         },
         "aligned": {
           "question_id": "q37",
-          "answer": "Delivery is within the delivery kit in Guwahati. You can track your order from My Orders on urbanethreads.in or with the tracking link in your dispatch email.",
-          "intent": "delivery",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": "UT-ORD-013",
-          "confidence": 0.8587,
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [
             "7-10"
           ],
           "violations": [],
           "correct": false,
-          "escalation_correct": true,
+          "escalation_correct": false,
           "model_escalation_correct": true,
           "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 8106.0,
-          "total_tokens": 523,
-          "error": null
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 29778.6,
+          "total_tokens": 1080,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"delivery\", \"answer\": \"Delivery within 7-12 business days within Guwahati, UT-RET-005\", \"policy_ref\": UT-RET-005, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"delivery\", \"answer\": \"Delivery within 7-12 business days within Guwahati\", \"policy_ref\": UT-RET-005, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -2370,8 +2439,8 @@
       "results": {
         "base": {
           "question_id": "q38",
-          "answer": "You can cancel your order by visiting the My Orders section on urbanethreads.in or by contacting the customer service team.",
-          "intent": "other",
+          "answer": "To cancel your order, please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) or call us at 0120-123-4567. We will assist you with the cancellation process.",
+          "intent": "cancellation",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": "UT-CAN-011",
@@ -2388,18 +2457,19 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 39922.2,
-          "total_tokens": 517,
-          "error": null
+          "latency_ms": 14198.2,
+          "total_tokens": 533,
+          "error": null,
+          "raw_output": "{\"intent\": \"cancellation\", \"answer\": \"To cancel your order, please contact our customer support team at [support@urbanethreads.in](mailto:support@urbanethreads.in) or call us at 0120-123-4567. We will assist you with the cancellation process.\", \"policy_ref\": \"UT-CAN-011\", \"escalate_to_human\": false, \"confidence\": 0.9}"
         },
         "aligned": {
           "question_id": "q38",
-          "answer": "Cancel the order and get a refund. If the item is damaged, return it and get a refund.",
-          "intent": "other",
+          "answer": "To cancel your order, please reply to the dispatch email with the order ID and reason for cancellation. We will process it within 24 hours.",
+          "intent": "cancellation",
           "escalate_to_human": false,
           "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.7576,
+          "policy_ref": "UT-CAN-011",
+          "confidence": 0.8075,
           "facts_hit": [],
           "facts_missed": [
             "refuse|mana|accept na"
@@ -2408,13 +2478,14 @@
           "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": true,
-          "policy_ref_correct": false,
+          "policy_ref_correct": true,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 3364.4,
-          "total_tokens": 507,
-          "error": null
+          "latency_ms": 22952.7,
+          "total_tokens": 510,
+          "error": null,
+          "raw_output": "{\"intent\": \"Cancellation\", \"answer\": \"To cancel your order, please reply to the dispatch email with the order ID and reason for cancellation. We will process it within 24 hours.\", \"policy_ref\": \"UT-CAN-011\", \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     },
@@ -2429,47 +2500,49 @@
       "results": {
         "base": {
           "question_id": "q39",
-          "answer": "Please provide your delivery details so we can track your parcel.",
-          "intent": "delivery",
+          "answer": "We take all complaints seriously and would like to resolve this issue amicably. Please contact our customer support team at support@urbanethreads.in or call us at 0124-XXXXXX for further assistance.",
+          "intent": "escalation",
           "escalate_to_human": true,
-          "model_escalate": false,
+          "model_escalate": true,
           "policy_ref": null,
-          "confidence": 0.9,
+          "confidence": 1.0,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
           "correct": true,
           "escalation_correct": true,
-          "model_escalation_correct": false,
+          "model_escalation_correct": true,
           "policy_ref_correct": false,
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 37329.1,
-          "total_tokens": 501,
-          "error": null
+          "latency_ms": 14041.3,
+          "total_tokens": 521,
+          "error": null,
+          "raw_output": "{\"intent\": \"escalation\", \"answer\": \"We take all complaints seriously and would like to resolve this issue amicably. Please contact our customer support team at support@urbanethreads.in or call us at 0124-XXXXXX for further assistance.\", \"policy_ref\": null, \"escalate_to_human\": true, \"confidence\": 1}"
         },
         "aligned": {
           "question_id": "q39",
-          "answer": "The courier is delivering your order. You can track it from My Orders on urbanethreads.in or with the tracking link in your dispatch email.",
-          "intent": "delivery",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
           "escalate_to_human": true,
-          "model_escalate": false,
-          "policy_ref": "UT-ORD-013",
-          "confidence": 0.8541,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
-          "correct": true,
+          "correct": false,
           "escalation_correct": true,
           "model_escalation_correct": false,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 11897.8,
-          "total_tokens": 525,
-          "error": null
+          "policy_ref_correct": true,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 17019.3,
+          "total_tokens": 1159,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"escalate_to_human\", \"answer\": \"We understand your concern, and we're committed to resolving the issue. Please contact our customer support team at urbanethreads.in/support, and we'll be happy to assist you.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"escalate_to_human\", \"answer\": \"We understand your concern, and we're committed to resolving the issue. Please contact our customer support team at urbanethreads.in/support, and we'll be happy to assist you.\", \"policy_ref\": UT-ESC-012, \"escalate_to_human\": true, \"confidence\": 0.8}"
         }
       }
     },
@@ -2484,36 +2557,12 @@
       "results": {
         "base": {
           "question_id": "q40",
-          "answer": "Yes, we offer franchise or wholesale partnerships. You can reach out to our team for more information.",
-          "intent": "marketplace",
+          "answer": "We do not offer franchise or wholesale partnerships at this time. However, we can discuss custom orders for your boutique. Please contact our customer support for more information.",
+          "intent": "other",
           "escalate_to_human": false,
           "model_escalate": false,
           "policy_ref": null,
-          "confidence": 0.9,
-          "facts_hit": [],
-          "facts_missed": [],
-          "violations": [
-            "yes, we offer franchise"
-          ],
-          "correct": false,
-          "escalation_correct": false,
-          "model_escalation_correct": false,
-          "policy_ref_correct": false,
-          "json_valid": true,
-          "json_valid_final": true,
-          "fallback": false,
-          "latency_ms": 37760.8,
-          "total_tokens": 513,
-          "error": null
-        },
-        "aligned": {
-          "question_id": "q40",
-          "answer": "Yes, we offer marketplaces on Urbanethreads.in and Amazon. You can place orders on these platforms and have them shipped to your boutique in Jaipur. We also have a marketplace on Flipkart where you can sell your kurtas. Please let us know if you have any questions or need assistance with shipping or delivery.",
-          "intent": "marketplace",
-          "escalate_to_human": false,
-          "model_escalate": false,
-          "policy_ref": null,
-          "confidence": 0.689,
+          "confidence": 0.8,
           "facts_hit": [],
           "facts_missed": [],
           "violations": [],
@@ -2524,9 +2573,33 @@
           "json_valid": true,
           "json_valid_final": true,
           "fallback": false,
-          "latency_ms": 12783.0,
-          "total_tokens": 559,
-          "error": null
+          "latency_ms": 13937.7,
+          "total_tokens": 514,
+          "error": null,
+          "raw_output": "{\"intent\": \"other\", \"answer\": \"We do not offer franchise or wholesale partnerships at this time. However, we can discuss custom orders for your boutique. Please contact our customer support for more information.\", \"policy_ref\": null, \"escalate_to_human\": false, \"confidence\": 0.8}"
+        },
+        "aligned": {
+          "question_id": "q40",
+          "answer": "Thanks for reaching out. I want to make sure you get the right answer, so I'm connecting you with a member of our support team who will follow up shortly.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": null,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.0,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": true,
+          "json_valid": false,
+          "json_valid_final": false,
+          "fallback": true,
+          "latency_ms": 16708.5,
+          "total_tokens": 1141,
+          "error": "invalid_model_output: invalid JSON: Expecting value",
+          "raw_output": "{\"intent\": \"other\", \"answer\": \"No, we do not offer franchise or wholesale partnerships at this time. We are a direct-to-consumer brand and do not have a wholesale program.\", \"policy_ref\": UT-DMG-009, \"escalate_to_human\": false, \"confidence\": 0.8}\n---repair---\n{\"intent\": \"other\", \"answer\": \"No, we do not offer franchise or wholesale partnerships at this time. We are a direct-to-consumer brand and do not have a wholesale program.\", \"policy_ref\": UT-DMG-009, \"escalate_to_human\": false, \"confidence\": 0.8}"
         }
       }
     }

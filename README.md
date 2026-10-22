@@ -37,7 +37,8 @@ Nugen tests passing (`pytest -m live`), ruff + mypy `--strict` clean, 3 Alembic 
 | Feedback seed | ✅ 24 real inferences on the aligned model; 19 thumbs-down + correction; 21 flagged |
 | Re-alignment | ⚠️ first attempt failed with **HTTP 409**: Nugen deduplicates documents (undocumented). Fixed by uploading per file and reusing the existing `document_id`. Retry ✅ `alignment_01m5hwbrn58t8bjz`, READY in 5 min 34 s → **`model_01m5hwkzsc790kf4`**, deployed in 15 s |
 | Eval after re-align | ✅ 80 real inferences (table below) |
-| Cleanup | Superseded model `model_01m5hvz1m0n0bn6r` undeployed |
+| **Experiment 3** | ✅ `meta-llama/Llama-3.2-3B-Instruct` on the **15 ACTIVE docs only**: `alignment_01m5hz17q73dd52t`, READY in 5 min 44 s → **`model_01m5hz9nr9gr5wqv`**, deployed in 21 s, base and aligned evaluated back to back |
+| Cleanup | All aligned models undeployed after use (deployments treated as billed per hour) |
 
 Earlier outage, for the record: `api.nugen.in` returned HTTP 522 on every path from 18:44 IST on
 2026-10-21 (cf-ray `a4e0a435dc76052e-DEL`). It was back by 2026-10-22 (cf-ray `a4e8bb10af649387-DEL`).
@@ -203,6 +204,42 @@ run-to-run variance. Full reports: [reports/](reports/) (JSON per run + `eval_re
 | Latency p50 / p95 | 5.9 s / 12.0 s | 5.7 s / 10.8 s | 29.5 s / 210.9 s* | 23.0 s / 186.6 s* |
 | Tokens / est. cost | 20,879 / $0.0042 | 22,470 / $0.0045 | 20,833 / $0.0042 | 24,562 / $0.0049 |
 
+### Experiment 3: larger base, ACTIVE docs only (2026-10-22)
+
+The hypotheses: the 0.5B model was too small, and the SUPERSEDED/archived distractor docs
+taught it the old rules. Base and aligned were evaluated back to back in one run, so their
+latency is comparable. Same prompt and same 40 questions; no prompt tuning (D25).
+
+| Metric | Base `Llama-3.2-3B-Instruct` | **Aligned** `model_01m5hz9nr9gr5wqv` | Δ |
+|---|---|---|---|
+| Factual accuracy | 30.0% | 12.5% | −17.5 pp |
+| Policy violations (lower is better) | 2.5% | 2.5% | 0 |
+| Escalation correct (with guardrails) | 92.5% | 72.5% | −20.0 pp |
+| Escalation correct (model only) | 92.5% | 80.0% | −12.5 pp |
+| JSON valid first try / after repair | 100% / 100% | **57.5% / 57.5%** | −42.5 pp |
+| Correct `policy_ref` | 47.5% | 40.0% | −7.5 pp |
+| Latency p50 / p95 | 9.2 s / 17.3 s | 18.2 s / 31.2 s | +9.1 s / +13.9 s |
+| Tokens / guard est. cost | 21,030 / $0.80 | 31,378 / $1.19 | |
+
+Nugen's built-in evaluation on the 30-sample benchmark: binary correctness was 0.000 for base vs 0.033
+for aligned, and relevance 0.427 vs 0.337.
+
+**Why it regressed: a format failure, not a knowledge failure.** All 17 aligned fallbacks have one
+cause. The model writes the policy id **unquoted**, e.g. `"policy_ref": UT-RET-001,`, which is
+invalid JSON, and the repair retry repeats it. So alignment *did* teach this model to cite policy
+ids (it does so far more than the 0.5B aligned model, which emitted `null`), but in a
+format-breaking way. Each fallback counts as wrong on facts and loses the model's own escalation
+decision, which drags down every other metric. An offline check (not a result) shows that quoting
+the bare id makes 17/17 of these outputs parse. I have **not** loosened the parser to improve the
+published numbers (D25). Next steps:
+(1) a deterministic pre-parse fix for bare `UT-XXX-NNN` tokens, measured as its own run;
+(2) structured output / JSON mode, if Nugen exposes it;
+(3) put JSON-formatted answers in the alignment benchmark and corrections so the trained
+format matches the API contract.
+
+Removing the distractor docs did not remove the superseded-policy failures: 0/5 traps were
+answered correctly, as in every other run.
+
 **Significance:** with 40 questions, ±2.5 pp is exactly **1 question**, so differences of
 2.5–5 pp (1–2 questions) are **not significant**. Only the `policy_ref` drop is a clear effect.
 
@@ -231,9 +268,8 @@ invents windows such as "14 days" or "2-3 business days", and on the superseded-
 repeats the old "30-day" rule. A likely cause is that the distractor docs (SUPERSEDED policy,
 archived FAQ) were in the training upload. The safety net held: guardrails kept escalation
 correctness at 87.5–92.5%, and the repair/fallback path left no invalid JSON reaching a
-customer. Next experiments, in order: train on ACTIVE docs only, then try a larger base
-(`Qwen2.5-1.5B` / `Llama-3.2-3B` are alignment-ready), then go hybrid with retrieval of the
-cited policy.
+customer. The obvious next experiment was ACTIVE docs only plus a larger base; that is
+Experiment 3, below.
 
 The 40 questions ([data/eval/questions.jsonl](data/eval/questions.jsonl)) cover in-window and
 out-of-window returns, non-returnables, refunds, shipping/COD thresholds, delivery zones,
@@ -266,15 +302,21 @@ past `NUGEN_SPEND_HARD_LIMIT_USD` ($40). Nugen does not publish prices in its AP
 inference is estimated with `NUGEN_PRICE_PER_MTOK_USD` and each alignment is charged
 `NUGEN_ALIGNMENT_COST_EST_USD` ($10, conservative). See [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
 
-| Item (live run, 2026-10-22) | Calls | Tokens | Cost in the spend log |
-|---|---|---|---|
-| Inference: smoke, sanity, 2 evals, feedback seed, repairs, UI screenshots | 196 | 104,889 | $0.021 (at $0.20 / 1M tokens, estimated) |
-| Alignment runs | 2 | n/a | $20.00 (**placeholder**, $10 each; the real price is not exposed by the API) |
-| **Total charged by the guard** | | | **$20.02 of the $40 cap** |
-| Pre-run estimate (logged before any paid call) | | ~146k | $20.03 |
+Real costs from **platform billing** (INR converted at ₹96.66 = $1). The log was reconciled to
+billing with `python -m app.cli reconcile 17.15`.
 
-The real alignment cost isn't available from the API (no usage/billing endpoint; the paths
-checked return 404). Reconcile against platform.nugen.in billing; see OPEN_QUESTIONS Q1/Q7.
+| Item | Billed | Notes |
+|---|---|---|
+| Alignment #1 (0.5B, all docs) | **$7.86** (₹759.65) | the $10 placeholder was close |
+| Alignment #2 (0.5B re-align) | **$7.36** (₹711.27) | |
+| Inference for runs 1–2 (smoke, 2 evals × 2 models, feedback seed, Nugen auto-evals, UI) | **$1.93** | ≈ $0.6–0.8 per model per 40-question eval, about **100× the original $0.20/1M estimate** |
+| **Billed before Experiment 3** | **$17.15** | $50 credit − $32.85 remaining |
+| Experiment 3: alignment (3B) | ~$20 (guard estimate) | **pending billing**; 3B priced conservatively |
+| Experiment 3: inference (eval base + aligned, repairs) | ~$1.99 (guard estimate at $38/1M) | **pending billing** |
+| **Spend-guard total after Exp. 3** | **$39.14 of the $45.00 cap** | cap = $17.15 billed + ($32.85 − $5 buffer) |
+
+After the billing data came in, the guard was recalibrated: `NUGEN_PRICE_PER_MTOK_USD=38`,
+`NUGEN_ALIGNMENT_COST_EST_USD=20` (D28). The guard is meant to over-estimate.
 
 ## RAG vs Domain Alignment
 
@@ -284,7 +326,8 @@ agent and human-approved actions. This project takes the other route: it teaches
 the model through **Nugen domain alignment** and calls it with no retrieval step.
 Both repos use **synthetic data** (invented brands, customers and policies). The two projects
 were not scored on a shared eval, so this is not a head-to-head result. On its own eval, this
-repo's alignment of a 0.5B model did **not** beat its unaligned base model (see Eval results).
+repo's alignment did **not** beat the unaligned base model in any of three live experiments
+(0.5B, 0.5B re-aligned, 3B on active docs only; see Eval results).
 
 | Dimension | RAG (ecommerce-ai-ops-agent) | Domain alignment (this repo) |
 |---|---|---|
