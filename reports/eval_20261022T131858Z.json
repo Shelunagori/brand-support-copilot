@@ -1,0 +1,2531 @@
+{
+  "label": "initial alignment",
+  "generated_at": "2026-10-22T13:18:58.269683+00:00",
+  "summary": {
+    "base": {
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "n": 40,
+      "factual_accuracy": 0.275,
+      "policy_violation_rate": 0.05,
+      "escalation_accuracy": 0.925,
+      "model_escalation_accuracy": 0.85,
+      "json_validity": 1.0,
+      "json_validity_final": 1.0,
+      "policy_ref_accuracy": 0.325,
+      "latency_p50_ms": 5916.1,
+      "latency_p95_ms": 11990.52,
+      "total_tokens": 20879,
+      "est_cost_usd": 0.0041758
+    },
+    "aligned": {
+      "model_id": "model_01m5hvz1m0n0bn6r",
+      "n": 40,
+      "factual_accuracy": 0.25,
+      "policy_violation_rate": 0.1,
+      "escalation_accuracy": 0.9,
+      "model_escalation_accuracy": 0.85,
+      "json_validity": 0.95,
+      "json_validity_final": 1.0,
+      "policy_ref_accuracy": 0.025,
+      "latency_p50_ms": 5734.75,
+      "latency_p95_ms": 10820.42,
+      "total_tokens": 22470,
+      "est_cost_usd": 0.004494000000000001
+    }
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "category": "returns",
+      "question": "My linen shirt was delivered 5 days ago. I haven't worn it and the tags are still on. Can I return it?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-RET-001",
+      "expected_facts": [
+        "7 days"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q01",
+          "answer": "You can return the shirt within 5 days of delivery. Please ensure the tags are still attached to the shirt.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 7029.2,
+          "total_tokens": 525,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q01",
+          "answer": "Yes, you can return the shirt. If the tags are still on, they are valid. If the tags are not on, return it within 14 days from the delivery date.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7659,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 2291.9,
+          "total_tokens": 533,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q02",
+      "category": "returns",
+      "question": "My denim jacket was delivered 10 days ago and I want to return it for a refund. Is that possible?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-RET-001",
+      "expected_facts": [
+        "7 days",
+        "15 days"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q02",
+          "answer": "Yes, you can return the denim jacket for a refund. Please provide the tracking number from urbanethreads.in to track your return.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days",
+            "15 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 3171.2,
+          "total_tokens": 526,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q02",
+          "answer": "Yes, it is possible to return the denim jacket. You can return it within 14 days from the delivery date. If the item is returned within 14 days, a refund will be issued.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7585,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days",
+            "15 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 3804.2,
+          "total_tokens": 534,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q03",
+      "category": "exchange",
+      "question": "Can I exchange my chinos for a bigger size? They were delivered 12 days ago, unworn with tags.",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-EXC-002",
+      "expected_facts": [
+        "15 days"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q03",
+          "answer": "You can exchange your chinos for a bigger size. Please note that the chinos were delivered 12 days ago, unworn with tags. We will provide you with a replacement within 1-2 business days.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "15 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5846.9,
+          "total_tokens": 538,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q03",
+          "answer": "You can exchange your chinos for a bigger size. The item is unworn and has tags. We can exchange it for a larger size.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8087,
+          "facts_hit": [],
+          "facts_missed": [
+            "15 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4964.3,
+          "total_tokens": 522,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q04",
+      "category": "exchange",
+      "question": "I bought a dress marked Final Sale and it's too small. Can I exchange it for one size up?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-NRT-003",
+      "expected_facts": [
+        "final sale"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q04",
+          "answer": "You can exchange the dress for one size up if it's marked as Final Sale and it's still within the warranty period.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-EXC-002",
+          "confidence": 0.9,
+          "facts_hit": [
+            "final sale"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4394.4,
+          "total_tokens": 523,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q04",
+          "answer": "Yes, you can exchange the dress for a size up. If the dress is marked Final Sale, it is not eligible for exchange. If it is not marked Final Sale, you can return it within 7 days and we will exchange it for a size up.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7217,
+          "facts_hit": [
+            "final sale"
+          ],
+          "facts_missed": [],
+          "violations": [
+            "yes, you can exchange"
+          ],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6644.1,
+          "total_tokens": 543,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q05",
+      "category": "non_returnable",
+      "question": "I ordered a 3-pack of socks and it's still sealed. Can I return it? It was delivered 2 days ago.",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-NRT-003",
+      "expected_facts": [
+        "socks"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q05",
+          "answer": "You can return the 3-pack of socks within 30 days of delivery. Please ensure the socks are in good condition and return them to urbanethreads.in or a store of your choice.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [
+            "socks"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 11636.3,
+          "total_tokens": 542,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q05",
+          "answer": "Yes, you can return the 3-pack of socks. Just return it within 24-48 hours and we will process the refund.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7812,
+          "facts_hit": [
+            "socks"
+          ],
+          "facts_missed": [],
+          "violations": [
+            "yes, you can return"
+          ],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6766.4,
+          "total_tokens": 525,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q06",
+      "category": "non_returnable",
+      "question": "The boxer briefs I bought are too tight. Can I exchange them for size L?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-NRT-003",
+      "expected_facts": [
+        "innerwear"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q06",
+          "answer": "You can exchange the boxer briefs for size L if they are still within the warranty period and the fit is still acceptable. Please ensure the fit is still comfortable and the box is still in good condition.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "innerwear"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 11756.3,
+          "total_tokens": 527,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q06",
+          "answer": "Exchange the boxer briefs for size L. If the size is not available, return the item.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8008,
+          "facts_hit": [],
+          "facts_missed": [
+            "innerwear"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6283.6,
+          "total_tokens": 506,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q07",
+      "category": "refunds",
+      "question": "I paid by credit card and my returned item passed QC yesterday. When will I get my refund and where?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-REF-004",
+      "expected_facts": [
+        "5-7 business days",
+        "original"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q07",
+          "answer": "You will receive a refund within 10 days of the return date. Please check your account for the refund details.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "5-7 business days",
+            "original"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 11376.1,
+          "total_tokens": 514,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q07",
+          "answer": "You should expect a refund within 7-10 business days. If the return is not accepted or is rejected, you can request a refund within 14 days from the date of delivery.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7197,
+          "facts_hit": [],
+          "facts_missed": [
+            "5-7 business days",
+            "original"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6568.9,
+          "total_tokens": 530,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q08",
+      "category": "shipping",
+      "question": "My cart total is exactly \u20b9999 after the coupon. Do I get free shipping?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-SHP-005",
+      "expected_facts": [
+        "\u20b979"
+      ],
+      "expected_any": [
+        [
+          "above \u20b9999",
+          "more than \u20b9999",
+          "over \u20b9999",
+          "\u20b91,000"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q08",
+          "answer": "Yes, you will get free shipping on your order.",
+          "intent": "shipping",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b979",
+            "above \u20b9999|more than \u20b9999|over \u20b9999|\u20b91,000"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 10986.1,
+          "total_tokens": 498,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q08",
+          "answer": "\u20b9999 is exactly \u20b9999, so free shipping is not applicable.",
+          "intent": "shipping",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.883,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b979",
+            "above \u20b9999|more than \u20b9999|over \u20b9999|\u20b91,000"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5886.2,
+          "total_tokens": 505,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q09",
+      "category": "shipping",
+      "question": "I want to pay cash on delivery for a \u20b916,000 order of two watches. What will the COD charge be?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-SHP-005",
+      "expected_facts": [
+        "\u20b915,000"
+      ],
+      "expected_any": [
+        [
+          "not available",
+          "cannot",
+          "can't",
+          "not allowed"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q09",
+          "answer": "The COD charge for a \u20b916,000 order of two watches will be \u20b91,600.",
+          "intent": "payment",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-COD-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b915,000",
+            "not available|cannot|can't|not allowed"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4683.2,
+          "total_tokens": 528,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q09",
+          "answer": "\u20b916,000 COD",
+          "intent": "shipping",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8803,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b915,000",
+            "not available|cannot|can't|not allowed"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5197.1,
+          "total_tokens": 505,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q10",
+      "category": "delivery",
+      "question": "How long will delivery take to Srinagar after my order is dispatched?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-DLV-006",
+      "expected_facts": [
+        "7-10"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q10",
+          "answer": "The delivery time to Srinagar will depend on the shipping details and the delivery options available. Please check the shipping details and delivery options available on your order to know the exact delivery time.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8,
+          "facts_hit": [],
+          "facts_missed": [
+            "7-10"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4644.9,
+          "total_tokens": 521,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q10",
+          "answer": "The delivery time is 2-3 business days after dispatch. If the item is returned or damaged, delivery may be extended.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7225,
+          "facts_hit": [],
+          "facts_missed": [
+            "7-10"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5291.9,
+          "total_tokens": 509,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q11",
+      "category": "delivery",
+      "question": "I live in Bengaluru. How many days does delivery take after dispatch?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-DLV-006",
+      "expected_facts": [
+        "2-4"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q11",
+          "answer": "Delivery times vary depending on your location. In Bengaluru, it typically takes around 3-5 business days for your parcel to arrive.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-DLV-006",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "2-4"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4886.1,
+          "total_tokens": 518,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q11",
+          "answer": "Delivery is dispatched within 2-3 business days after dispatch. Delivery is free within 7-10 business days.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7748,
+          "facts_hit": [],
+          "facts_missed": [
+            "2-4"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4971.7,
+          "total_tokens": 508,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q12",
+      "category": "warranty",
+      "question": "Water got inside my watch after I wore it in the shower. It's only 2 months old. Will the warranty cover it?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-WAR-007",
+      "expected_facts": [
+        "water damage"
+      ],
+      "expected_any": [
+        [
+          "6 months",
+          "6-month",
+          "six months",
+          "six-month"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q12",
+          "answer": "The warranty covers any defects or damages that occur during the warranty period.",
+          "intent": "warranty",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "water damage",
+            "6 months|6-month|six months|six-month"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4984.3,
+          "total_tokens": 510,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q12",
+          "answer": "No, the warranty is valid only for 2 months. Wear and tear is not covered.",
+          "intent": "warranty",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8091,
+          "facts_hit": [],
+          "facts_missed": [
+            "water damage",
+            "6 months|6-month|six months|six-month"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5061.7,
+          "total_tokens": 515,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q13",
+      "category": "warranty",
+      "question": "The hinge on my Urbane Threads sunglasses broke after 3 months of normal use. Is that covered?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-WAR-007",
+      "expected_facts": [
+        "manufacturing"
+      ],
+      "expected_any": [
+        [
+          "6 months",
+          "6-month",
+          "six months",
+          "six-month"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q13",
+          "answer": "Yes, the hinge on your Urbane Threads sunglasses is covered under our warranty policy.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-WAR-007",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "manufacturing",
+            "6 months|6-month|six months|six-month"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 9230.6,
+          "total_tokens": 513,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q13",
+          "answer": "The hinge on your Urbane Threads sunglasses is not covered by our warranty. We recommend returning the item within 30 days of delivery.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8041,
+          "facts_hit": [],
+          "facts_missed": [
+            "manufacturing",
+            "6 months|6-month|six months|six-month"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4590.4,
+          "total_tokens": 517,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q14",
+      "category": "marketplace",
+      "question": "I bought a kurta on Amazon and it doesn't fit. Can you refund me?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-MKT-008",
+      "expected_facts": [
+        "amazon"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q14",
+          "answer": "Please return the kurta to the seller or the seller will refund the cost of the item.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8874.0,
+          "total_tokens": 505,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q14",
+          "answer": "Since the item is not returned, it is not refundable. If the item is returned, we can process the refund.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7248,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4616.0,
+          "total_tokens": 511,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q15",
+      "category": "marketplace",
+      "question": "Flipkart rejected my return request for your polo. Can you process the refund yourselves?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-MKT-008",
+      "expected_facts": [
+        "flipkart"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q15",
+          "answer": "Flipkart will process the refund for you. Please provide your order number and the reason for the return.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [
+            "flipkart"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8566.7,
+          "total_tokens": 506,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q15",
+          "answer": "Flipkart has rejected your return request. We can process the refund ourselves. If you need any further assistance, please contact our customer support.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7872,
+          "facts_hit": [
+            "flipkart"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4684.7,
+          "total_tokens": 513,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q16",
+      "category": "marketplace",
+      "question": "My order ID is 403-5566778-1122334. I want to exchange size M for L - how do I do it on your website?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-MKT-008",
+      "expected_facts": [
+        "amazon"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q16",
+          "answer": "You can exchange size M for L on our website by selecting the size you want to exchange from the dropdown menu on the product page.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8778.9,
+          "total_tokens": 538,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q16",
+          "answer": "Go to the size M size on the website and select the size L. If the size is not available, return the item and place a return order.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7222,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5864.8,
+          "total_tokens": 542,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q17",
+      "category": "damaged",
+      "question": "My shirt arrived torn. It was delivered 3 days ago and I only noticed today. I have photos. Can I get a replacement?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-DMG-009",
+      "expected_facts": [
+        "48 hours"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q17",
+          "answer": "You can return the shirt for a full refund or exchange it for a new one. Please provide photos of the torn part of the shirt.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "48 hours"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4726.3,
+          "total_tokens": 531,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q17",
+          "answer": "Yes, you can return the shirt. Provide photos and we can process the return within 7-10 business days.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7768,
+          "facts_hit": [],
+          "facts_missed": [
+            "48 hours"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5746.4,
+          "total_tokens": 521,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q18",
+      "category": "damaged",
+      "question": "I received the wrong colour trunks yesterday and I have an unboxing video. Innerwear is non-returnable, so am I stuck?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-DMG-009",
+      "expected_facts": [
+        "48 hours"
+      ],
+      "expected_any": [
+        [
+          "replacement",
+          "refund"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q18",
+          "answer": "You can get a full refund for the wrong colour trunks by unboxing the item and returning it to the store. Please ensure you have the correct colour trunks for the unboxing video.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-REF-004",
+          "confidence": 0.9,
+          "facts_hit": [
+            "replacement"
+          ],
+          "facts_missed": [
+            "48 hours"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5315.2,
+          "total_tokens": 542,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q18",
+          "answer": "No, you can return the trunks. Unboxing videos are valid and can be refunded.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7871,
+          "facts_hit": [
+            "replacement"
+          ],
+          "facts_missed": [
+            "48 hours"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5621.0,
+          "total_tokens": 515,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q19",
+      "category": "gst",
+      "question": "What GST rate applies to a shirt priced exactly \u20b91,000?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-GST-010",
+      "expected_facts": [
+        "5%"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q19",
+          "answer": "GST is applied at a rate of 10%. You can check your GST invoice on urbanethreads.in or with the GST invoice link in your dispatch email.",
+          "intent": "gst_invoice",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-GST-010",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "5%"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5587.8,
+          "total_tokens": 525,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q19",
+          "answer": "\u20b91,000 is \u20b9999.99 (\u20b91,000 \u00d7 99.99%) with GST applied.",
+          "intent": "gst_invoice",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7692,
+          "facts_hit": [],
+          "facts_missed": [
+            "5%"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5723.1,
+          "total_tokens": 518,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q20",
+      "category": "gst",
+      "question": "I forgot to add my company GSTIN while ordering yesterday. Can you add it to the invoice now?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-GST-010",
+      "expected_facts": [
+        "before"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q20",
+          "answer": "Please provide your company GSTIN number so that we can update the invoice accordingly.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-GST-010",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "before"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5514.8,
+          "total_tokens": 512,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q20",
+          "answer": "We will process the refund for the order. If you need any assistance, feel free to reach out.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7549,
+          "facts_hit": [],
+          "facts_missed": [
+            "before"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5635.7,
+          "total_tokens": 510,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q21",
+      "category": "cancellation",
+      "question": "My order status shows Shipped. I want to cancel it now. What can I do?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-CAN-011",
+      "expected_facts": [
+        "refuse"
+      ],
+      "expected_any": [
+        [
+          "return",
+          "7 days"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q21",
+          "answer": "You can cancel your order by following these steps: 1. Go to your My Orders on urbanethreads.in. 2. Locate your order and click on the 'Cancel' button. 3. Confirm the cancellation by clicking 'Yes' or 'Cancel' on the confirmation page.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-CAN-011",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "refuse",
+            "return|7 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8703.7,
+          "total_tokens": 554,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q21",
+          "answer": "Go to My Orders on urbanethreads.in and select the order. Click on the 'Cancel' button. Confirm the cancellation and track the status change.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-CAN-011",
+          "confidence": 0.7957,
+          "facts_hit": [],
+          "facts_missed": [
+            "refuse",
+            "return|7 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5946.1,
+          "total_tokens": 526,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q22",
+      "category": "cancellation",
+      "question": "I placed an order an hour ago and it hasn't been dispatched yet. Is there any fee if I cancel?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-CAN-011",
+      "expected_facts": [
+        "free"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q22",
+          "answer": "If you cancel your order within the next 24 hours, we will not charge you for the cancellation fee.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "free"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8217.6,
+          "total_tokens": 514,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q22",
+          "answer": "Canceling an order is free. If the item is returned within 7 days, a 5% refund is applied.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7501,
+          "facts_hit": [
+            "free"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6062.0,
+          "total_tokens": 516,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q23",
+      "category": "escalation",
+      "question": "If my refund isn't credited by Monday, I'm sending your company a legal notice.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q23",
+          "answer": "Please send a legal notice to your company stating that your refund is not credited by Monday. This will help us ensure that the refund is processed correctly and that you are not incurring any additional charges.",
+          "intent": "refund",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8268.2,
+          "total_tokens": 526,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q23",
+          "answer": "If your refund isn't credited by Monday, send a legal notice to the customer. We will escalate the issue to the legal team.",
+          "intent": "refund",
+          "escalate_to_human": true,
+          "model_escalate": true,
+          "policy_ref": null,
+          "confidence": 0.767,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5895.5,
+          "total_tokens": 513,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q24",
+      "category": "escalation",
+      "question": "I've already raised a chargeback with my bank for order UT2026051234 because the jacket never fit.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q24",
+          "answer": "You can request a refund from your bank for the order UT2026051234.",
+          "intent": "refund",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": "UT-REF-004",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 8409.0,
+          "total_tokens": 527,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q24",
+          "answer": "The order is refunded. The customer is refunded \u20b925,000.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7875,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5433.7,
+          "total_tokens": 515,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q25",
+      "category": "escalation",
+      "question": "I want to return my order worth \u20b932,000 - two watches and a blazer. It was delivered 4 days ago.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q25",
+          "answer": "You can return your watch and blazer within 48 hours of delivery. Please ensure they are in good condition and return them within this timeframe. We will process your return within 10 working days.",
+          "intent": "returns",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5312.3,
+          "total_tokens": 547,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q25",
+          "answer": "\u20b932,000 watch and blazer cannot be returned as it exceeds \u20b925,000. \u20b9500 COD fee is applied if the item is returned within 4 days.",
+          "intent": "other",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7877,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": false,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 16555.4,
+          "total_tokens": 1645,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q26",
+      "category": "escalation",
+      "question": "You people are frauds and thieves, worst f***ing brand ever, give me my money back right now.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q26",
+          "answer": "We are sorry to hear that you feel this way. Please feel free to contact our customer support team for a refund or exchange. We will do our best to assist you.",
+          "intent": "refund",
+          "escalate_to_human": true,
+          "model_escalate": true,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5607.3,
+          "total_tokens": 526,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q26",
+          "answer": "URBANE Threads is a legitimate brand and cannot be refunded. We are committed to providing a safe and ethical shopping experience. If you have any issues with your order, please contact our customer support. We will do our best to resolve the problem and refund your money.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.677,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": false,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 10281.4,
+          "total_tokens": 545,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q27",
+      "category": "escalation",
+      "question": "I know the return window is over, but please accept my return after 25 days as a special case. I'm a loyal customer.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q27",
+          "answer": "I'm sorry, but I'm unable to assist with that. Please contact our customer support team for further assistance.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": false,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5227.3,
+          "total_tokens": 520,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q27",
+          "answer": "We accept returns within 25 days of delivery. If the item is returned within 25 days, a full refund is issued. If the item is not returned within 25 days, a 5% return shipping fee is applied.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.75,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": false,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 10805.1,
+          "total_tokens": 547,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q28",
+      "category": "escalation",
+      "question": "I'll drag you to consumer court if my exchange isn't processed this week.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q28",
+          "answer": "I will escalate your exchange to consumer court if it is not processed within the next week.",
+          "intent": "exchange",
+          "escalate_to_human": true,
+          "model_escalate": true,
+          "policy_ref": "UT-ESC-012",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5108.2,
+          "total_tokens": 509,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q28",
+          "answer": "If your exchange isn't processed within the next 7 days, we can escalate the case to consumer court. We'll provide you with a court date and a timeline to process your exchange.",
+          "intent": "exchange",
+          "escalate_to_human": true,
+          "model_escalate": true,
+          "policy_ref": null,
+          "confidence": 0.7166,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 11111.5,
+          "total_tokens": 522,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q29",
+      "category": "superseded_trap",
+      "question": "Your website said 30-day returns. My top was delivered 20 days ago, so I'm still eligible to return it, right?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-RET-001",
+      "expected_facts": [
+        "7 days"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q29",
+          "answer": "Yes, you are eligible to return the item within the 30-day return period as per the policy.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5704.1,
+          "total_tokens": 527,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q29",
+          "answer": "Yes, if the item is returned within the 30-day return window, it is eligible for a refund.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8209,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6218.3,
+          "total_tokens": 521,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q30",
+      "category": "superseded_trap",
+      "question": "Free shipping is only above \u20b91,499, right? My cart is \u20b91,200 so I'll have to pay for shipping?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-SHP-005",
+      "expected_facts": [
+        "\u20b9999"
+      ],
+      "expected_any": [
+        [
+          "free"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q30",
+          "answer": "Yes, you can get free shipping for orders above \u20b91,499.",
+          "intent": "shipping",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [
+            "free"
+          ],
+          "facts_missed": [
+            "\u20b9999"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5273.6,
+          "total_tokens": 517,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q30",
+          "answer": "\u20b91,200 is above \u20b91,499, so free shipping is \u20b90.",
+          "intent": "shipping",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.929,
+          "facts_hit": [
+            "free"
+          ],
+          "facts_missed": [
+            "\u20b9999"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": false,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 10143.5,
+          "total_tokens": 1092,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q31",
+      "category": "superseded_trap",
+      "question": "Last time I ordered, the COD fee was \u20b939. Is it still \u20b939?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-SHP-005",
+      "expected_facts": [
+        "\u20b949"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q31",
+          "answer": "COD (Collect On Delivery) is a shipping option that may incur a fee. If the COD fee is still \u20b939, you may need to contact the shipping company or the seller to resolve the issue.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b949"
+          ],
+          "violations": [
+            "still \u20b939"
+          ],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5706.5,
+          "total_tokens": 530,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q31",
+          "answer": "COD is \u20b939, so \u20b939 is still \u20b939.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8304,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b949"
+          ],
+          "violations": [
+            "still \u20b939"
+          ],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4527.2,
+          "total_tokens": 504,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q32",
+      "category": "superseded_trap",
+      "question": "Your FAQ says socks can be exchanged within 30 days. I want to exchange my socks for a bigger size.",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-NRT-003",
+      "expected_facts": [
+        "socks"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q32",
+          "answer": "You can exchange your socks for a bigger size within 30 days. Please provide the size you want to exchange for.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [
+            "socks"
+          ],
+          "facts_missed": [],
+          "violations": [
+            "you can exchange"
+          ],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5749.3,
+          "total_tokens": 517,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q32",
+          "answer": "Exchange your socks within 30 days. If not, return them and get a refund.",
+          "intent": "exchange",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8185,
+          "facts_hit": [
+            "socks"
+          ],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4094.2,
+          "total_tokens": 511,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q33",
+      "category": "superseded_trap",
+      "question": "During the Diwali sale you advertised 20-day returns. My shirt was delivered 14 days ago, so I'd like to return it.",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-RET-001",
+      "expected_facts": [
+        "7 days"
+      ],
+      "expected_any": [
+        [
+          "15 days",
+          "exchange"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q33",
+          "answer": "You can return your shirt within the 20-day return period. Please send a return email with your order details and return shipping address.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-RET-001",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days",
+            "15 days|exchange"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 12329.3,
+          "total_tokens": 535,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q33",
+          "answer": "Since the return is within the 20-day window, you can return the shirt within 14 days. If the item is not returned within 14 days, it will be treated as a non-returnable item.",
+          "intent": "returns",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7286,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days",
+            "15 days|exchange"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4524.8,
+          "total_tokens": 546,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q34",
+      "category": "hinglish",
+      "question": "Mera kurta 4 din pehle deliver hua, size chhota hai, return kar sakte hain?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-RET-001",
+      "expected_facts": [],
+      "expected_any": [
+        [
+          "7 days",
+          "7 din",
+          "7-day"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q34",
+          "answer": "The size of the garment is 4, but it is not returned.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days|7 din|7-day"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 12323.4,
+          "total_tokens": 510,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q34",
+          "answer": "The size is not available. We cannot return a size. Please check the size and return the item.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.7138,
+          "facts_hit": [],
+          "facts_missed": [
+            "7 days|7 din|7-day"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4770.3,
+          "total_tokens": 516,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q35",
+      "category": "hinglish",
+      "question": "COD order return kiya tha, \u20b91,200 ka refund store credit mein lun toh kitna milega?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-REF-004",
+      "expected_facts": [
+        "\u20b91,260"
+      ],
+      "expected_any": [
+        [
+          "5%",
+          "5 %",
+          "5 percent"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q35",
+          "answer": "You can get a \u20b91,200 refund for your order.",
+          "intent": "refund",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": "UT-REF-004",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b91,260",
+            "5%|5 %|5 percent"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": false,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 11973.0,
+          "total_tokens": 516,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q35",
+          "answer": "\u20b91,200 is \u20b91,200 store credit. \u20b91,200 is \u20b91,200 store credit.",
+          "intent": "refund",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8555,
+          "facts_hit": [],
+          "facts_missed": [
+            "\u20b91,260",
+            "5%|5 %|5 percent"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": false,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5007.4,
+          "total_tokens": 526,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q36",
+      "category": "hinglish",
+      "question": "Amazon se jacket liya tha, size galat hai, aap refund kar do please.",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-MKT-008",
+      "expected_facts": [
+        "amazon"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q36",
+          "answer": "You can request a refund for the jacket if the size is incorrect. Please provide the size you intended.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 11908.0,
+          "total_tokens": 508,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q36",
+          "answer": "If the size is not correct, return the item and get a refund.",
+          "intent": "refund",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8238,
+          "facts_hit": [],
+          "facts_missed": [
+            "amazon"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 4420.0,
+          "total_tokens": 502,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q37",
+      "category": "hinglish",
+      "question": "Guwahati mein delivery kitne din mein hogi?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-DLV-006",
+      "expected_facts": [
+        "7-10"
+      ],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q37",
+          "answer": "Your parcel is expected to be delivered to your address in Guwahati within 2-3 business days.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-DLV-006",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "7-10"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5891.1,
+          "total_tokens": 511,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q37",
+          "answer": "Delivery is available in Guwahati.",
+          "intent": "delivery",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8904,
+          "facts_hit": [],
+          "facts_missed": [
+            "7-10"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6343.5,
+          "total_tokens": 490,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q38",
+      "category": "hinglish",
+      "question": "Order ship ho gaya hai, ab cancel karna hai, kya karun?",
+      "expected_escalate": false,
+      "expected_policy_ref": "UT-CAN-011",
+      "expected_facts": [],
+      "expected_any": [
+        [
+          "refuse",
+          "mana",
+          "accept na"
+        ]
+      ],
+      "results": {
+        "base": {
+          "question_id": "q38",
+          "answer": "You can cancel your order by visiting the My Orders page on urbanethreads.in or contacting customer support.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": "UT-CAN-011",
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [
+            "refuse|mana|accept na"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": true,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6114.5,
+          "total_tokens": 514,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q38",
+          "answer": "Cancel the order and return the item.",
+          "intent": "other",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.8698,
+          "facts_hit": [],
+          "facts_missed": [
+            "refuse|mana|accept na"
+          ],
+          "violations": [],
+          "correct": false,
+          "escalation_correct": true,
+          "model_escalation_correct": true,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5963.6,
+          "total_tokens": 494,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q39",
+      "category": "hinglish",
+      "question": "Tum log chor ho, consumer court mein case karunga, mera paisa wapas do!",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q39",
+          "answer": "Please provide your delivery details so we can track your parcel.",
+          "intent": "delivery",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 5941.1,
+          "total_tokens": 501,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q39",
+          "answer": "The courier has delivered your order. You can track it from My Orders on urbanethreads.in or with the tracking link in your dispatch email.",
+          "intent": "delivery",
+          "escalate_to_human": true,
+          "model_escalate": false,
+          "policy_ref": "UT-ORD-013",
+          "confidence": 0.8607,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": true,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6078.6,
+          "total_tokens": 525,
+          "error": null
+        }
+      }
+    },
+    {
+      "id": "q40",
+      "category": "out_of_scope",
+      "question": "Do you offer franchise or wholesale partnerships? I run a boutique in Jaipur and want to stock your kurtas.",
+      "expected_escalate": true,
+      "expected_policy_ref": "UT-ESC-012",
+      "expected_facts": [],
+      "expected_any": [],
+      "results": {
+        "base": {
+          "question_id": "q40",
+          "answer": "Yes, we have a partnership with Urban Threads in Jaipur. You can stock our kurtas through our online store on urbanethreads.in or by contacting us directly.",
+          "intent": "marketplace",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.9,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [],
+          "correct": true,
+          "escalation_correct": false,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6120.8,
+          "total_tokens": 528,
+          "error": null
+        },
+        "aligned": {
+          "question_id": "q40",
+          "answer": "Yes, we offer franchise and wholesale partnerships. You can reach out to us for a consultation or a quote on a wholesale order. We can also provide you with a free consultation on our website.",
+          "intent": "marketplace",
+          "escalate_to_human": false,
+          "model_escalate": false,
+          "policy_ref": null,
+          "confidence": 0.6728,
+          "facts_hit": [],
+          "facts_missed": [],
+          "violations": [
+            "yes, we offer franchise"
+          ],
+          "correct": false,
+          "escalation_correct": false,
+          "model_escalation_correct": false,
+          "policy_ref_correct": false,
+          "json_valid": true,
+          "json_valid_final": true,
+          "fallback": false,
+          "latency_ms": 6554.8,
+          "total_tokens": 532,
+          "error": null
+        }
+      }
+    }
+  ]
+}

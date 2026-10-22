@@ -10,32 +10,37 @@ harness and a feedback → re-alignment loop.
 > Stack: Python 3.12 · FastAPI · SQLAlchemy 2 + Alembic · PostgreSQL · Redis · arq · httpx ·
 > Docker · Kubernetes · Terraform (Azure) · GitHub Actions · React/Vite UI.
 
-## Status (2026-10-21)
+## Status (2026-10-22)
 
 | Area | State |
 |---|---|
-| Nugen client, resumable alignment pipeline, CLI | ✅ built · unit-tested against an HTTP mock |
-| Support API (strict JSON, repair/fallback, SSE, cache, rate limit, auth, logs) | ✅ built · tested |
-| Eval harness (base vs aligned, 40 held-out questions) | ✅ built · tested |
-| Feedback loop + re-alignment (manual + nightly) | ✅ built · tested |
+| Nugen client, resumable alignment pipeline, CLI | ✅ built · tested · **run live against Nugen** |
+| Support API (strict JSON, repair/fallback, SSE, cache, rate limit, auth, logs) | ✅ built · tested · served the live models |
+| Eval harness (base vs aligned, 40 held-out questions) | ✅ run live twice (after alignment, after re-alignment) |
+| Feedback loop + re-alignment (manual + nightly) | ✅ run live: 24 real inferences → 19 corrections → re-aligned model deployed |
 | Docker / compose / k8s / Terraform / CI | ✅ images build · kubeconform 8/8 · `terraform validate` clean |
-| Demo UI (5 screens, dark + light) | ✅ build + lint + WCAG contrast + 18 Playwright tests |
-| **Live Nugen run (align → deploy → eval → re-align)** | ⏳ **blocked by a Nugen API outage** |
+| Demo UI (5 screens, dark + light) | ✅ build + lint + WCAG contrast + 18 Playwright tests · screenshots with live data |
 
-**Test suite:** 70 passing (`pytest`, against real Postgres + Redis) · ruff · mypy `--strict` clean ·
-3 Alembic migrations, `alembic check` clean.
+**Tests (2026-10-22):** 74 unit/integration tests passing (`pytest`, real Postgres + Redis), 2 live
+Nugen tests passing (`pytest -m live`), ruff + mypy `--strict` clean, 3 Alembic migrations with
+`alembic check` clean.
 
-**Outage:** `api.nugen.in` worked at ~18:20 IST (OpenAPI spec fetched). From **18:44 IST on
-2026-10-21** every request, `/health` included, has returned **HTTP 522** (Cloudflare can't reach
-the origin). The user confirmed this independently at 19:05 IST, `cf-ray a4e0a435dc76052e-DEL`.
-`docs.nugen.in` and `platform.nugen.in` load, but the platform can't call the API (CORS / 522).
-`status.nugen.in` still showed "operational". No paid call has been made, so **spend so far is
-$0.00**.
+**Live run (2026-10-22, IST):**
 
-**Live run cost estimate** (`make estimate`, written to the spend log): 2 alignments × $10
-(conservative placeholder: the API does not report alignment cost) + ~146k inference tokens
-(~$0.03) = **$20.03, within the $40 cap**. The spend guard charges every alignment at that
-estimate and refuses any call that would cross the cap.
+| Step | Result |
+|---|---|
+| Smoke inference | ✅ `Qwen/Qwen2.5-0.5B-Instruct`, 40 tokens, 373 ms |
+| Upload 18 docs + benchmark | ✅ docs READY in 22 s · `benchmark_01m5hvpw5g0evege` |
+| Alignment | ✅ `alignment_01m5hvpwrp9eah3n`: QUEUED → PROCESSING → READY in 5 min 44 s → **`model_01m5hvz1m0n0bn6r`** |
+| Deploy | ✅ DEPLOYED in 21 s |
+| Eval: base vs aligned | ✅ 80 real inferences (table below) |
+| Feedback seed | ✅ 24 real inferences on the aligned model; 19 thumbs-down + correction; 21 flagged |
+| Re-alignment | ⚠️ first attempt failed with **HTTP 409**: Nugen deduplicates documents (undocumented). Fixed by uploading per file and reusing the existing `document_id`. Retry ✅ `alignment_01m5hwbrn58t8bjz`, READY in 5 min 34 s → **`model_01m5hwkzsc790kf4`**, deployed in 15 s |
+| Eval after re-align | ✅ 80 real inferences (table below) |
+| Cleanup | Superseded model `model_01m5hvz1m0n0bn6r` undeployed |
+
+Earlier outage, for the record: `api.nugen.in` returned HTTP 522 on every path from 18:44 IST on
+2026-10-21 (cf-ray `a4e0a435dc76052e-DEL`). It was back by 2026-10-22 (cf-ray `a4e8bb10af649387-DEL`).
 
 ### Reproduce the live run (one command)
 
@@ -181,21 +186,42 @@ uv run arq app.worker.WorkerSettings
 uv run pytest -q                # needs the postgres/redis containers
 ```
 
-## Eval results
+## Eval results (real, 2026-10-22)
 
-**Pending live run.** These cells stay empty until the Nugen API is reachable, and no numbers
-here are simulated. `make align-and-eval` fills in
-[reports/eval_report.md](reports/eval_report.md).
+Same prompt for every model, with no retrieval, on 40 held-out questions. Each run sent all 40
+questions to the base model and to the aligned model; base was re-run each time to show
+run-to-run variance. Full reports: [reports/](reports/) (JSON per run + `eval_report.md`).
 
-| Metric | Base `Qwen2.5-0.5B-Instruct` | Aligned | Aligned after re-align |
-|---|---|---|---|
-| Factual accuracy | pending live run | pending live run | pending live run |
-| Policy violations | pending live run | pending live run | pending live run |
-| Escalation correctness (with guardrails / model only) | pending live run | pending live run | pending live run |
-| JSON valid (first try / after repair) | pending live run | pending live run | pending live run |
-| Correct `policy_ref` | pending live run | pending live run | pending live run |
-| Latency p50 / p95 | pending live run | pending live run | pending live run |
-| Tokens / est. cost | pending live run | pending live run | pending live run |
+| Metric | Base (run 1) | **Aligned** `model_01m5hvz1m0n0bn6r` | Base (run 2) | **Re-aligned** `model_01m5hwkzsc790kf4` |
+|---|---|---|---|---|
+| Factual accuracy | 27.5% | 25.0% | 25.0% | 22.5% |
+| Policy violations (lower is better) | 5.0% | 10.0% | 5.0% | 12.5% |
+| Escalation correct (with guardrails) | 92.5% | 90.0% | 87.5% | 92.5% |
+| Escalation correct (model only) | 85.0% | 85.0% | 80.0% | 85.0% |
+| JSON valid first try / after repair | 100% / 100% | 95.0% / 100% | 100% / 100% | 92.5% / 92.5% |
+| Correct `policy_ref` | 32.5% | 2.5% | 30.0% | 12.5% |
+| Latency p50 / p95 | 5.9 s / 12.0 s | 5.7 s / 10.8 s | 29.5 s / 210.9 s* | 23.0 s / 186.6 s* |
+| Tokens / est. cost | 20,879 / $0.0042 | 22,470 / $0.0045 | 20,833 / $0.0042 | 24,562 / $0.0049 |
+
+\* Run 2 latency hit both models equally (base included) while Nugen was also running its own
+evaluation and two deployments. Treat it as queueing on Nugen's side, not a model effect.
+
+Nugen's built-in evaluation on our 30-sample curated benchmark agrees:
+binary correctness was 0.000 for base vs **0.067** for aligned, and 0.000 vs 0.000 after
+re-align. Response relevance was 0.300 vs 0.283, and 0.307 vs 0.187 after re-align.
+
+**What the numbers say.** On this setup, domain alignment of a **0.5B** model did **not** improve
+policy accuracy. Aligned and base are within noise (±1 question of 40) on facts and
+escalation. The aligned models got worse at citing a `policy_ref`, and slightly worse on JSON
+validity and violations. Looking at the answers, the aligned model has picked up the brand's
+*vocabulary* ("unworn and tagged", store credit, dispatch email) but not its *numbers*: it
+invents windows such as "14 days" or "2-3 business days", and on the superseded-policy traps it
+repeats the old "30-day" rule. A likely cause is that the distractor docs (SUPERSEDED policy,
+archived FAQ) were in the training upload. The safety net held: guardrails kept escalation
+correctness at 87.5–92.5%, and the repair/fallback path left no invalid JSON reaching a
+customer. Next experiments, in order: train on ACTIVE docs only, then try a larger base
+(`Qwen2.5-1.5B` / `Llama-3.2-3B` are alignment-ready), then go hybrid with retrieval of the
+cited policy.
 
 The 40 questions ([data/eval/questions.jsonl](data/eval/questions.jsonl)) cover in-window and
 out-of-window returns, non-returnables, refunds, shipping/COD thresholds, delivery zones,
@@ -206,9 +232,10 @@ so the re-aligned model is never trained on eval questions.
 
 ## Screenshots
 
-The UI was captured with the backend up but before any live Nugen data existed, so these show
-the designed empty, error and offline states. They will be re-captured with real data after the
-live run (`make screenshots`).
+Captured on 2026-10-22 against the live backend and the deployed re-aligned model. Chat and
+compare show real model answers (`LIVE=1 npx playwright test e2e/live.spec.ts`); pipeline,
+eval and feedback show the real run, eval and feedback data. The mobile shots show the chat
+landing state.
 
 | | Dark | Light |
 |---|---|---|
@@ -227,10 +254,15 @@ past `NUGEN_SPEND_HARD_LIMIT_USD` ($40). Nugen does not publish prices in its AP
 inference is estimated with `NUGEN_PRICE_PER_MTOK_USD` and each alignment is charged
 `NUGEN_ALIGNMENT_COST_EST_USD` ($10, conservative). See [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
 
-| Item | Calls | Tokens | Est. cost |
+| Item (live run, 2026-10-22) | Calls | Tokens | Cost in the spend log |
 |---|---|---|---|
-| Actual spend so far | 0 | 0 | **$0.00** |
-| Estimate for the full live run (logged) | 2 alignments + ~150 inferences | ~146k | $20.03 |
+| Inference: smoke, sanity, 2 evals, feedback seed, repairs, UI screenshots | 196 | 104,889 | $0.021 (at $0.20 / 1M tokens, estimated) |
+| Alignment runs | 2 | n/a | $20.00 (**placeholder**, $10 each; the real price is not exposed by the API) |
+| **Total charged by the guard** | | | **$20.02 of the $40 cap** |
+| Pre-run estimate (logged before any paid call) | | ~146k | $20.03 |
+
+The real alignment cost isn't available from the API (no usage/billing endpoint; the paths
+checked return 404). Reconcile against platform.nugen.in billing; see OPEN_QUESTIONS Q1/Q7.
 
 ## RAG vs Domain Alignment
 
@@ -238,14 +270,15 @@ My earlier project, [ecommerce-ai-ops-agent](https://github.com/Shelunagori/ecom
 tackles the same e-commerce support-policy problem with **RAG**: pgvector retrieval, a LangGraph
 agent and human-approved actions. This project takes the other route: it teaches the policies to
 the model through **Nugen domain alignment** and calls it with no retrieval step.
-Both repos use **synthetic data** (invented brands, customers and policies). The alignment
-numbers here are **pending live run**, so neither approach is claimed to beat the other yet.
+Both repos use **synthetic data** (invented brands, customers and policies). The two projects
+were not scored on a shared eval, so this is not a head-to-head result. On its own eval, this
+repo's alignment of a 0.5B model did **not** beat its unaligned base model (see Eval results).
 
 | Dimension | RAG (ecommerce-ai-ops-agent) | Domain alignment (this repo) |
 |---|---|---|
 | Knowledge updates | Re-index the changed docs (minutes) | Re-align the model (a training run) |
 | Citations / grounding | Native: answer cites the retrieved chunk | `policy_ref` produced by the model, validated against the policy catalog and scored in the eval |
-| Behaviour consistency + structured output | Depends on prompt + retrieved context | Stronger: tone, escalation rules and JSON shape are trained in |
+| Behaviour consistency + structured output | Depends on prompt + retrieved context | Intended strength (trained-in tone/format). Here, with a 0.5B base, JSON validity was 92.5–95% vs 100% for base; repair/fallback covered the gap |
 | Latency / infra | Embedding + vector search hop; needs a vector DB | No retrieval hop, no vector DB |
 | Uncovered topics (hallucination risk) | Needs an escalation path | Needs an escalation path (guardrails + `UT-ESC-012`) |
 
@@ -255,8 +288,9 @@ held-out eval.
 
 ## Trade-offs
 
-- **0.5B base model** — cheap and fast, so alignment gains are easy to see, but strict JSON is
-  hard for it. That is why the repair and fallback path and the guardrails exist.
+- **0.5B base model** — cheap and fast, but the live eval shows it is too small to absorb the
+  policy numbers through alignment on this corpus. That is why the repair/fallback path and the
+  guardrails exist, and why the next run should use a larger base.
 - **No RAG at answer time** — on purpose, so the eval measures what alignment taught the model.
   In production I'd add retrieval of the cited policy as a second line of defence.
 - **Guardrails can only escalate** — false positives send a few extra tickets to humans, which
