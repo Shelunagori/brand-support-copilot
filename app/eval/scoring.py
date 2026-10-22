@@ -49,6 +49,7 @@ class QuestionResult(BaseModel):
     latency_ms: float
     total_tokens: int
     error: str | None = None
+    raw_output: str | None = None
 
 
 class ModelSummary(BaseModel):
@@ -105,7 +106,7 @@ def score(q: EvalQuestion, r: SupportResponse) -> QuestionResult:
         policy_ref_correct=r.policy_ref == q.expected_policy_ref,
         json_valid=r.json_valid_first_try, json_valid_final=not r.fallback,
         fallback=r.fallback, latency_ms=r.latency_ms, total_tokens=r.total_tokens,
-        error=r.error,
+        error=r.error, raw_output=r.raw_output,
     )
 
 

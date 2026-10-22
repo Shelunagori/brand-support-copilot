@@ -204,3 +204,19 @@ async def test_alignment_failure_marks_run_failed(session_factory, docs_dir, ben
     run = await make_pipeline(session_factory, fake, docs_dir, benchmark).align(confirm=True)
     assert run.state == RunState.FAILED
 
+
+
+def test_collect_documents_active_only_filters_by_status_header(docs_dir: Path) -> None:
+    (docs_dir / "returns.md").write_text("Policy-ID: UT-RET-001\nStatus: ACTIVE\n" + WORDS)
+    (docs_dir / "legacy.md").write_text("Status: SUPERSEDED (replaced)\n" + WORDS)
+    (docs_dir / "blog.md").write_text("Status: NOT A POLICY\n" + WORDS)
+    names = [f.name for f in collect_documents(docs_dir, active_only=True)]
+    assert names == ["returns.md"]  # shipping.md has no Status header -> excluded too
+    assert len(collect_documents(docs_dir)) == 4
+
+
+def test_real_doc_pack_active_only_excludes_distractors() -> None:
+    names = {f.name for f in collect_documents(Path("data/docs"), active_only=True)}
+    assert len(names) == 15
+    assert not names & {"legacy_returns_policy_2024.md", "faq_2024_archive.md",
+                        "blog_style_guide_marketing.md"}

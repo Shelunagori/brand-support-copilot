@@ -13,3 +13,11 @@ def test_ops_cli_commands() -> None:
     out = CliRunner().invoke(ops_cli, ["--help"])
     for cmd in ("align", "deploy", "status", "realign", "estimate", "wait-api", "smoke"):
         assert cmd in out.output
+
+
+def test_experiment_flags_exist() -> None:
+    align_help = CliRunner().invoke(ops_cli, ["align", "--help"]).output
+    assert "--base-model" in align_help and "--active-only" in align_help
+    eval_help = CliRunner().invoke(eval_cli, ["run", "--help"]).output
+    assert "--aligned-model" in eval_help and "--base-model" in eval_help
+    assert "undeploy" in CliRunner().invoke(ops_cli, ["--help"]).output

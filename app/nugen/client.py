@@ -286,6 +286,12 @@ class NugenClient:
         deployed: str = resp.json().get("model_id", model_id)
         return deployed
 
+    async def undeploy_model(self, model_id: str) -> str:
+        resp = await self._request("DELETE", f"/api/v3/models/{model_id}/deployment",
+                                   idempotent=True, op="undeploy_model")
+        message: str = resp.json().get("message", "")
+        return message
+
     async def get_deployment_status(self, model_id: str) -> DeploymentStatus:
         return DeploymentStatus.model_validate(
             await self._get(f"/api/v3/models/{model_id}/deployment/status", "deployment_status")

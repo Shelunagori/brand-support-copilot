@@ -9,6 +9,7 @@ same run; any change -> a new run.
 import asyncio
 import hashlib
 import logging
+import re
 import time
 import uuid
 from collections.abc import Awaitable, Callable, Sequence
@@ -63,8 +64,20 @@ class PipelineClient(Protocol):
     async def get_deployment_status(self, model_id: str) -> DeploymentStatus: ...
 
 
-def collect_documents(docs_dir: Path, extra: Sequence[Path] = ()) -> list[Path]:
-    files = sorted(p for p in docs_dir.glob("*.md") if p.name not in EXCLUDED_DOCS)
+_STATUS = re.compile(r"^Status:\s*(\S+)", re.M)
+
+
+def doc_status(path: Path) -> str | None:
+    m = _STATUS.search(path.read_text(encoding="utf-8")[:2000])
+    return m.group(1).upper() if m else None
+
+
+def collect_documents(docs_dir: Path, extra: Sequence[Path] = (), *,
+                      active_only: bool = False) -> list[Path]:
+    """All policy docs, or (active_only) just those whose header says `Status: ACTIVE`.
+    `extra` files (e.g. a corrections addendum) are always included."""
+    files = sorted(p for p in docs_dir.glob("*.md") if p.name not in EXCLUDED_DOCS
+                   and (not active_only or doc_status(p) == "ACTIVE"))
     files += sorted(set(extra) - set(files))
     if not files:
         raise DocValidationError(f"no .md documents found in {docs_dir}")
@@ -95,6 +108,7 @@ class AlignmentPipeline:
         poll_interval: float = 15.0,
         poll_timeout: float = 3 * 3600,
         name_prefix: str = "urbane-threads-support",
+        active_only: bool = False,
         on_event: Callable[[str, str, dict[str, Any]], None] | None = None,
     ) -> None:
         self._sf = session_factory
@@ -105,6 +119,7 @@ class AlignmentPipeline:
         self._poll_interval = poll_interval
         self._poll_timeout = poll_timeout
         self._prefix = name_prefix
+        self._active_only = active_only
         self.on_event = on_event
 
     # ------------------------------------------------------------------ helpers
@@ -164,7 +179,7 @@ class AlignmentPipeline:
         extra_docs: Sequence[Path] = (),
         parent_run_id: uuid.UUID | None = None,
     ) -> AlignmentRun:
-        files = collect_documents(self._docs_dir, extra_docs)
+        files = collect_documents(self._docs_dir, extra_docs, active_only=self._active_only)
         async with self._sf() as s:
             run = await self._find_or_create(s, files, kind, parent_run_id)
             if run.state in DONE_STATES:

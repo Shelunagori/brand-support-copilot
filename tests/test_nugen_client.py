@@ -202,3 +202,13 @@ async def test_upload_409_without_document_id_still_raises(tmp_path: Path) -> No
     async with make_client() as c:
         with pytest.raises(NugenAPIError):
             await c.upload_documents([a])
+
+
+@respx.mock
+async def test_undeploy_model() -> None:
+    route = respx.delete(f"{BASE}/api/v3/models/m1/deployment").mock(
+        return_value=httpx.Response(200, json={"model_id": "m1",
+                                               "message": "Undeployment started"}))
+    async with make_client() as c:
+        assert await c.undeploy_model("m1") == "Undeployment started"
+    assert route.call_count == 1

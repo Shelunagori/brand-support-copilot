@@ -203,6 +203,18 @@ run-to-run variance. Full reports: [reports/](reports/) (JSON per run + `eval_re
 | Latency p50 / p95 | 5.9 s / 12.0 s | 5.7 s / 10.8 s | 29.5 s / 210.9 s* | 23.0 s / 186.6 s* |
 | Tokens / est. cost | 20,879 / $0.0042 | 22,470 / $0.0045 | 20,833 / $0.0042 | 24,562 / $0.0049 |
 
+**Significance:** with 40 questions, ±2.5 pp is exactly **1 question**, so differences of
+2.5–5 pp (1–2 questions) are **not significant**. Only the `policy_ref` drop is a clear effect.
+
+**Why `policy_ref` dropped (32.5% → 2.5%): model output, not scoring.** The aligned model's raw
+JSON literally contains `"policy_ref": null`; this was checked on the logged raw outputs, 22 of 24
+non-fallback answers. Typical example:
+`{"intent": "returns", "answer": "If the blazer is returned within 7 days of delivery, a 5%
+return shipping fee is applied.", "policy_ref": null, ...}`. The parser only normalises case and
+whitespace and never discards a well-formed id, so there is no scoring bug. Alignment shifted the
+model away from the prompt's id catalog, and it also invents intents such as `return_window`.
+Eval reports now keep each raw output for this kind of diagnosis.
+
 \* Run 2 latency hit both models equally (base included) while Nugen was also running its own
 evaluation and two deployments. Treat it as queueing on Nugen's side, not a model effect.
 

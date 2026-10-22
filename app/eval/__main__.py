@@ -39,6 +39,9 @@ def run(
     label: str = typer.Option("eval", help="Label stored with the run"),
     limit: int = typer.Option(0, help="Only the first N questions (0 = all)"),
     concurrency: int = typer.Option(4),
+    aligned_model: str | None = typer.Option(None, help="Aligned model id (default: latest "
+                                             "DEPLOYED run)"),
+    base_model: str | None = typer.Option(None, help="Override NUGEN_BASE_MODEL_ID"),
 ) -> None:
     """Run the held-out eval and write reports/eval_report.md + eval_latest.json."""
     settings = get_settings()
@@ -52,8 +55,9 @@ def run(
         spend = build_spend(settings)
         async with build_client(settings, spend) as client:
             svc = SupportService(client=client, cache=None,
-                                 aligned_model_id=await _aligned_model_id(),
-                                 base_model_id=settings.nugen_base_model_id, purpose="eval")
+                                 aligned_model_id=aligned_model or await _aligned_model_id(),
+                                 base_model_id=base_model or settings.nugen_base_model_id,
+                                 purpose="eval")
             if "aligned" in kinds and not svc.aligned_model_id:
                 raise typer.BadParameter("no deployed aligned model; run align + deploy first, "
                                          "or pass --models base")

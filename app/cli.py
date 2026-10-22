@@ -45,12 +45,16 @@ def models() -> None:
 def align(
     yes: bool = typer.Option(False, "--yes", help="Confirm the paid alignment run."),
     poll_interval: float = typer.Option(15.0, help="Seconds between status polls."),
+    base_model: str | None = typer.Option(None, help="Override NUGEN_BASE_MODEL_ID."),
+    active_only: bool = typer.Option(False, "--active-only",
+                                     help="Only docs with `Status: ACTIVE` (no distractors)."),
 ) -> None:
     """Upload docs + benchmark, then (with --yes) start alignment and wait until it is READY."""
 
     async def main() -> None:
         async with build_client() as c:
-            pipe = build_pipeline(c, poll_interval=poll_interval)
+            pipe = build_pipeline(c, poll_interval=poll_interval, base_model_id=base_model,
+                                  active_only=active_only)
             pipe.on_event = _print_event
             run = await pipe.align(confirm=yes)
             typer.echo(f"run={run.id} state={run.state} alignment_id={run.alignment_id} "
@@ -102,6 +106,17 @@ def status(refresh: bool = typer.Option(False, help="Also query Nugen for live s
                         if r.model_id:
                             dep = await c.get_deployment_status(r.model_id)
                             typer.echo(f"  live deployment status: {dep.status} {dep.error or ''}")
+
+    _run(main())
+
+
+@cli.command()
+def undeploy(model_id: str) -> None:
+    """Undeploy an aligned model (frees a deployment slot)."""
+
+    async def main() -> None:
+        async with build_client() as c:
+            typer.echo(await c.undeploy_model(model_id))
 
     _run(main())
 

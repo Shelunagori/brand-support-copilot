@@ -60,3 +60,9 @@ def test_summary_metrics_and_percentiles() -> None:
     assert s.latency_p50_ms == 200 and s.total_tokens == 100
     assert s.est_cost_usd == 100 / 1_000_000
     assert percentile([1, 2, 3, 4], 95) == 3.85
+
+
+def test_score_keeps_raw_output_for_diagnosis() -> None:
+    r = resp("7 days")
+    r.raw_output = '{"policy_ref": null}'
+    assert score(q(expected_facts=["7 days"]), r).raw_output == '{"policy_ref": null}'
