@@ -173,3 +173,32 @@ async def test_retry_honours_429_then_succeeds() -> None:
         st = await c.get_alignment_status("a1")
     assert st.status == "PROCESSING"
     assert route.call_count == 2
+
+
+@respx.mock
+async def test_upload_reuses_existing_document_on_409(tmp_path: Path) -> None:
+    a, b = tmp_path / "a.md", tmp_path / "b.md"
+    a.write_text("a")
+    b.write_text("b")
+    route = respx.post(f"{BASE}/api/v3/documents/create").mock(side_effect=[
+        # real Nugen shape: payload nested under FastAPI's "detail"
+        httpx.Response(409, json={"detail": {"message": "This document has already been "
+                                             "uploaded. Existing document: 'a.md'",
+                                             "document_id": "document_old"}}),
+        httpx.Response(200, json={"document_ids": ["document_new"]}),
+    ])
+    async with make_client() as c:
+        ids = await c.upload_documents([a, b])
+    assert ids == ["document_old", "document_new"]
+    assert route.call_count == 2
+
+
+@respx.mock
+async def test_upload_409_without_document_id_still_raises(tmp_path: Path) -> None:
+    a = tmp_path / "a.md"
+    a.write_text("a")
+    respx.post(f"{BASE}/api/v3/documents/create").mock(
+        return_value=httpx.Response(409, json={"detail": "conflict"}))
+    async with make_client() as c:
+        with pytest.raises(NugenAPIError):
+            await c.upload_documents([a])

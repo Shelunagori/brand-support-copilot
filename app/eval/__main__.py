@@ -18,6 +18,11 @@ from app.support.service import SupportService
 cli = typer.Typer(no_args_is_help=True, add_completion=False)
 
 
+@cli.callback()
+def _group() -> None:
+    """Eval harness (keeps `run` as an explicit subcommand)."""
+
+
 async def _aligned_model_id() -> str | None:
     s = get_settings()
     if s.aligned_model_id:

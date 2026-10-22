@@ -101,7 +101,7 @@ function StageNode({ stage, index, last }: { stage: Stage; index: number; last: 
           )}
         >
           {s === 'active' ? 'In progress' : s === 'waiting' ? 'Waiting' : s}
-          {stage.seconds != null && <span className="num font-normal text-ink-subtle"> · {duration(stage.seconds)}</span>}
+          {stage.seconds != null && <span className="num font-normal normal-case text-ink-subtle"> · {duration(stage.seconds)}</span>}
         </p>
         {stage.note && (
           <p

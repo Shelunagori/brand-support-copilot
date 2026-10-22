@@ -71,6 +71,15 @@ def _detail(resp: httpx.Response) -> str:
     return json.dumps(body)[:500]
 
 
+def _find_key(body: object, key: str) -> object:
+    """`key` at the top level or under FastAPI's `detail` wrapper."""
+    if isinstance(body, dict):
+        if key in body:
+            return body[key]
+        return _find_key(body.get("detail"), key) if "detail" in body else None
+    return None
+
+
 def estimate_tokens(text: str) -> int:
     return max(1, len(text) // 4)
 
@@ -139,7 +148,11 @@ class NugenClient:
             else:
                 if resp.status_code < 400:
                     return resp
-                err = NugenAPIError(resp.status_code, _detail(resp), op)
+                try:
+                    body = resp.json()
+                except ValueError:
+                    body = None
+                err = NugenAPIError(resp.status_code, _detail(resp), op, body)
                 if not (idempotent and err.retryable) or attempt >= self._max_retries:
                     raise err
                 log.warning("nugen.retry", extra={"op": op, "attempt": attempt,
@@ -158,16 +171,29 @@ class NugenClient:
         categories: list[str] | None = None,
         names: list[str] | None = None,
     ) -> list[str]:
-        files = [("files", (p.name, await asyncio.to_thread(p.read_bytes), "text/markdown"))
-                 for p in paths]
-        data: dict[str, Any] = {}
-        if categories:
-            data["categories"] = categories
-        if names:
-            data["names"] = names
-        resp = await self._request("POST", "/api/v3/documents/create", idempotent=False,
-                                   op="upload_documents", files=files, data=data)
-        ids: list[str] = resp.json()["document_ids"]
+        """One request per file: Nugen deduplicates documents by content and answers 409
+        (with the existing `document_id`) for a repeat, which would otherwise reject the
+        whole batch. A repeat is reused instead of failing."""
+        ids: list[str] = []
+        for i, p in enumerate(paths):
+            files = [("files", (p.name, await asyncio.to_thread(p.read_bytes), "text/markdown"))]
+            data: dict[str, Any] = {}
+            if categories:
+                data["categories"] = categories
+            if names:
+                data["names"] = [names[i]]
+            try:
+                resp = await self._request("POST", "/api/v3/documents/create", idempotent=False,
+                                           op="upload_documents", files=files, data=data)
+            except NugenAPIError as err:
+                existing = _find_key(err.body, "document_id")
+                if err.status_code == 409 and isinstance(existing, str):
+                    log.info("nugen.document_reused", extra={"file": p.name,
+                                                             "document_id": existing})
+                    ids.append(existing)
+                    continue
+                raise
+            ids.extend(resp.json()["document_ids"])
         return ids
 
     async def get_document_status(self, document_id: str) -> DocumentStatus:

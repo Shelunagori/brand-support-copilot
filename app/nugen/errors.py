@@ -3,8 +3,10 @@ class NugenError(Exception):
 
 
 class NugenAPIError(NugenError):
-    def __init__(self, status_code: int, detail: str, operation: str) -> None:
+    def __init__(self, status_code: int, detail: str, operation: str,
+                 body: object = None) -> None:
         self.status_code = status_code
+        self.body = body
         self.detail = detail
         self.operation = operation
         super().__init__(f"{operation} failed with HTTP {status_code}: {detail}")
