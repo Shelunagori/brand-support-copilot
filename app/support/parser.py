@@ -10,8 +10,18 @@ from app.support.schema import ModelAnswer
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S | re.I)
 
 
+# Aligned models sometimes emit `"policy_ref": UT-RET-001,` (bare) or `UT-RET-001"` (half-quoted).
+# Only the policy_ref value position is touched, never text inside other strings.
+_BARE_POLICY_REF = re.compile(r'("policy_ref"\s*:\s*)"?(UT-[A-Z]{3}-\d{3})"?(?=\s*[,}])')
+
+
 class ParseError(ValueError):
     pass
+
+
+def repair_json(text: str) -> str:
+    """Deterministic, minimal fixes for known model formatting slips."""
+    return _BARE_POLICY_REF.sub(r'\1"\2"', text)
 
 
 def _balanced_objects(text: str) -> list[str]:
@@ -46,6 +56,7 @@ def _balanced_objects(text: str) -> list[str]:
 def parse_support_json(raw: str) -> ModelAnswer:
     if not raw or not raw.strip():
         raise ParseError("empty output")
+    raw = repair_json(raw)
     candidates = [m.group(1) for m in _FENCE.finditer(raw)] + [raw]
     last_err = "no JSON object found"
     for cand in candidates:

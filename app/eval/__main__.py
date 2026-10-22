@@ -74,5 +74,36 @@ def run(
     asyncio.run(main())
 
 
+@cli.command()
+def rescore(
+    report: str = typer.Argument(..., help="Saved eval JSON, e.g. reports/eval_<ts>.json"),
+    label: str = typer.Option(..., help="Label for the re-scored report"),
+    out: str = typer.Option(..., help="Output stem, e.g. reports/eval_exp3_rescored"),
+) -> None:
+    """Re-score a SAVED report with the current parser (no API calls, $0)."""
+    import json
+    from pathlib import Path
+
+    from app.eval.rescore import rescore_result
+    from app.eval.runner import build_report, render_markdown
+    from app.eval.scoring import summarize
+
+    settings = get_settings()
+    saved = json.loads(Path(report).read_text())
+    questions = {q.id: q for q in load_questions(settings.eval_path)}
+    qs = [questions[q["id"]] for q in saved["questions"]]
+    results, summaries = {}, {}
+    for kind, summ in saved["summary"].items():
+        model_id = summ["model_id"]
+        results[kind] = [rescore_result(questions[q["id"]], q["results"][kind], model_id)
+                         for q in saved["questions"]]
+        summaries[kind] = summarize(model_id, results[kind], settings.nugen_price_per_mtok_usd)
+    new = build_report(qs, results, summaries, label)
+    new["rescored_from"] = Path(report).name
+    Path(f"{out}.json").write_text(json.dumps(new, indent=2))
+    Path(f"{out}.md").write_text(render_markdown(new))
+    typer.echo(render_markdown(new).split("## Accuracy by category")[0])
+
+
 if __name__ == "__main__":
     cli()

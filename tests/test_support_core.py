@@ -66,3 +66,21 @@ def test_escalation_triggers(query: str, trigger: str) -> None:
                                    "Shipping on ₹999 order?"])
 def test_no_trigger_for_normal_queries(query: str) -> None:
     assert escalation_triggers(query) == []
+
+
+@pytest.mark.parametrize("raw", [
+    # exact failure shapes seen live from the aligned Llama-3.2-3B model (Experiment 3)
+    '{"intent": "returns", "answer": "a", "policy_ref": UT-RET-001, '
+    '"escalate_to_human": false, "confidence": 0.8}',
+    '{"intent": "shipping", "answer": "a", "policy_ref": UT-SHP-005", '
+    '"escalate_to_human": false, "confidence": 0.8}',
+])
+def test_bare_policy_ids_are_quoted_before_parsing(raw: str) -> None:
+    out = parse_support_json(raw)
+    assert out.policy_ref is not None and out.policy_ref.startswith("UT-")
+
+
+def test_repair_never_touches_ids_inside_strings() -> None:
+    raw = ('{"intent": "returns", "answer": "See policy UT-RET-001 for details", '
+           '"policy_ref": "UT-RET-001", "escalate_to_human": false, "confidence": 0.8}')
+    assert parse_support_json(raw).answer == "See policy UT-RET-001 for details"

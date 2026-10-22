@@ -69,6 +69,27 @@ uv run python -m app.cli spend
 Each step is idempotent: re-running `make align-and-eval` after a failure resumes from the last
 completed Nugen step.
 
+## Key findings
+
+1. **The repair step changes the verdict.** Aligned 3B lost 17/40 answers to one formatting
+   slip, an unquoted `policy_ref`. With a deterministic repair, re-scored offline, it goes from
+   12.5% to **37.5%** factual accuracy vs 30.0% for its base, and from 72.5% to 92.5% on
+   escalation. This is the only setup where aligned is ahead, and by 3 questions, which is not
+   significant at n = 40.
+2. **A 0.5B model doesn't absorb policy numbers through alignment.** Across 2 alignments it
+   learned the brand's vocabulary but invented windows and fees, and stopped citing policy ids
+   (`policy_ref` 32.5% → 2.5%, null in the raw output).
+3. **The superseded-policy traps were never answered correctly** (0/5 in every run, base and
+   aligned, with or without distractor docs). That points to retrieval, or explicit "replaced
+   by" training pairs, rather than more alignment.
+4. **The safety net works independently of the model.** Guardrails plus the escalate fallback
+   kept escalation correctness at 87.5–92.5% whenever the JSON parsed, and no invalid JSON
+   ever reached a customer.
+5. **Cost and ops reality:** an alignment cost $7.4–7.9 (0.5B), and inference was about
+   $0.6–0.8 per model per 40-question eval, ~100× the first guess. Nugen's automatic evaluation
+   blocks undeploying, and deployments should be treated as billed per hour. A spend guard
+   calibrated from billing, plus undeploying after use, kept the whole study under the cap.
+
 ## The problem
 
 Support agents (human or AI) for a multi-channel D2C brand get the details wrong in the costly
@@ -220,6 +241,25 @@ latency is comparable. Same prompt and same 40 questions; no prompt tuning (D25)
 | Correct `policy_ref` | 47.5% | 40.0% | −7.5 pp |
 | Latency p50 / p95 | 9.2 s / 17.3 s | 18.2 s / 31.2 s | +9.1 s / +13.9 s |
 | Tokens / guard est. cost | 21,030 / $0.80 | 31,378 / $1.19 | |
+
+**Exp 3 + JSON repair (offline re-score, not a new run).** The saved raw answers above were
+re-scored at $0 with the new deterministic parser step, which quotes bare policy ids
+(`"policy_ref": UT-RET-001` → `"UT-RET-001"`), replaying the service's exact path: first
+answer, then the saved repair answer, then fallback (`python -m app.eval rescore`). The
+original numbers above are unchanged. As a check, base re-scores to exactly its original
+numbers. Latency and tokens are the measured ones, including the repair calls that local
+repair would now avoid, so they are pessimistic for the aligned model.
+Report: [reports/eval_exp3_rescored.md](reports/eval_exp3_rescored.md).
+
+| Metric | Base `Llama-3.2-3B` | Exp 3 aligned (as run) | **Exp 3 + JSON repair (offline re-score)** |
+|---|---|---|---|
+| Factual accuracy | 30.0% | 12.5% | **37.5%** (+7.5 pp vs base = 3 questions, not significant) |
+| Policy violations (lower is better) | 2.5% | 2.5% | 2.5% |
+| Escalation correct (with guardrails) | 92.5% | 72.5% | 92.5% |
+| Escalation correct (model only) | 92.5% | 80.0% | 92.5% |
+| JSON valid (after local repair) | 100% | 57.5% | **100%** |
+| Correct `policy_ref` | 47.5% | 40.0% | 45.0% |
+| Latency p50 / p95 (measured) | 9.2 s / 17.3 s | 18.2 s / 31.2 s | 18.2 s / 31.2 s |
 
 Nugen's built-in evaluation on the 30-sample benchmark: binary correctness was 0.000 for base vs 0.033
 for aligned, and relevance 0.427 vs 0.337.
