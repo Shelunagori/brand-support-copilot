@@ -156,3 +156,28 @@ async def test_feedback_flow_via_api(api) -> None:  # type: ignore[no-untyped-de
     assert too_small.status_code == 409
     bad = await c.post("/v1/feedback", headers=KEY, json={"inference_id": "nope", "rating": "up"})
     assert bad.status_code == 404
+
+
+async def test_models_reports_aligned_offline(api, session_factory) -> None:  # type: ignore[no-untyped-def]
+    from app.models import AlignmentRun, RunState
+
+    c, _ = api
+    services = c._transport.app.state.services  # type: ignore[attr-defined]
+    services.support.aligned_model_id = None
+    async with session_factory() as s:
+        s.add(AlignmentRun(name="r", base_model_id="b", docs_hash="h", state=RunState.ALIGNED,
+                           model_id="model_x", deployment_status="UNDEPLOYED"))
+        await s.commit()
+    body = (await c.get("/v1/models", headers=KEY)).json()
+    assert body["aligned_available"] is False
+    assert body["offline_aligned_model_id"] == "model_x"
+    assert "undeployed" in body["aligned_notice"]
+
+
+async def test_refresh_clears_aligned_model_after_undeploy(api) -> None:  # type: ignore[no-untyped-def]
+    c, _ = api
+    app = c._transport.app  # type: ignore[attr-defined]
+    app.state.services.support.aligned_model_id = "model_gone"
+    app.state.model_checked_at = 0.0
+    r = (await c.post("/v1/support/query", json={"query": "Return window?"}, headers=KEY)).json()
+    assert r["model_kind"] == "base" and r["notice"] == "aligned_offline"

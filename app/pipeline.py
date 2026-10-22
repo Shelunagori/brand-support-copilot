@@ -298,10 +298,30 @@ class AlignmentPipeline:
             AlignmentRun.state.in_(DONE_STATES))
         return await s.scalar(q.order_by(AlignmentRun.created_at.desc()).limit(1))
 
-    async def deploy(self, run_id: uuid.UUID | None = None) -> AlignmentRun:
+    async def mark_undeployed(self, model_id: str) -> AlignmentRun | None:
+        """Record an undeploy so the API stops routing to this model."""
+        async with self._sf() as s:
+            run = await s.scalar(select(AlignmentRun).where(AlignmentRun.model_id == model_id)
+                                 .order_by(AlignmentRun.created_at.desc()).limit(1))
+            if run is None:
+                return None
+            if run.state in {RunState.DEPLOYED, RunState.DEPLOYING}:
+                run.state = RunState.ALIGNED
+            run.deployment_status = "UNDEPLOYED"
+            await s.commit()
+            await self._event(s, run, "undeployed", "ok", model_id=model_id)
+            return run
+
+    async def deploy(self, run_id: uuid.UUID | None = None, model_id: str | None = None
+                     ) -> AlignmentRun:
         c = self._client
         async with self._sf() as s:
-            run = await self.latest_run(s, run_id)
+            if model_id:
+                run = await s.scalar(select(AlignmentRun)
+                                     .where(AlignmentRun.model_id == model_id)
+                                     .order_by(AlignmentRun.created_at.desc()).limit(1))
+            else:
+                run = await self.latest_run(s, run_id)
             if run is None or not run.model_id:
                 raise ValueError("no aligned run with a model_id to deploy; run `align` first")
             if run.state == RunState.DEPLOYED:

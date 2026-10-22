@@ -8,6 +8,7 @@ import {
   Database,
   Hash,
   LifeBuoy,
+  PowerOff,
   RefreshCw,
   ShieldAlert,
   ShieldCheck,
@@ -289,6 +290,11 @@ export function AnswerCard({
 
         {f && (
           <div className="mt-3 flex flex-wrap gap-1.5">
+            {f.notice === 'aligned_offline' && (
+              <Pill tone="warn" icon={<PowerOff className="h-3 w-3" aria-hidden />} title="Aligned model is undeployed; the base model answered.">
+                aligned offline · base answered
+              </Pill>
+            )}
             {f.cached && (
               <Pill tone="violet" icon={<Database className="h-3 w-3" aria-hidden />}>
                 cached

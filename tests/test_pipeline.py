@@ -220,3 +220,16 @@ def test_real_doc_pack_active_only_excludes_distractors() -> None:
     assert len(names) == 15
     assert not names & {"legacy_returns_policy_2024.md", "faq_2024_archive.md",
                         "blog_style_guide_marketing.md"}
+
+
+async def test_mark_undeployed_and_deploy_by_model_id(session_factory, docs_dir, benchmark):  # type: ignore[no-untyped-def]
+    fake = FakeNugen()
+    pipe = make_pipeline(session_factory, fake, docs_dir, benchmark)
+    await pipe.align(confirm=True)
+    await pipe.deploy()
+    run = await pipe.mark_undeployed("model_1")
+    assert run is not None and run.state == RunState.ALIGNED
+    assert run.deployment_status == "UNDEPLOYED"
+    fake.deploy_statuses = ["UNDEPLOYED", "DEPLOYED"]
+    again = await pipe.deploy(model_id="model_1")
+    assert again.state == RunState.DEPLOYED and fake.calls["deploy_model"] == 2

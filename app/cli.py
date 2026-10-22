@@ -68,6 +68,7 @@ def align(
 
 @cli.command()
 def deploy(run_id: str | None = typer.Option(None, help="Defaults to the latest aligned run."),
+           model_id: str | None = typer.Option(None, help="Deploy this aligned model id."),
            poll_interval: float = 15.0) -> None:
     """Deploy the aligned model and wait until it serves inference."""
 
@@ -75,7 +76,7 @@ def deploy(run_id: str | None = typer.Option(None, help="Defaults to the latest 
         async with build_client() as c:
             pipe = build_pipeline(c, poll_interval=poll_interval)
             pipe.on_event = _print_event
-            run = await pipe.deploy(uuid.UUID(run_id) if run_id else None)
+            run = await pipe.deploy(uuid.UUID(run_id) if run_id else None, model_id=model_id)
             typer.echo(f"run={run.id} state={run.state} model_id={run.model_id} "
                        f"deployment={run.deployment_status}")
 
@@ -117,8 +118,23 @@ def undeploy(model_id: str) -> None:
     async def main() -> None:
         async with build_client() as c:
             typer.echo(await c.undeploy_model(model_id))
+            await build_pipeline(c).mark_undeployed(model_id)
 
     _run(main())
+
+
+@cli.command("demo-cost")
+def demo_cost(queries: int = typer.Option(20, help="Chat/compare messages you expect to send")
+              ) -> None:
+    """Expected cost of a live demo (free: prints only)."""
+    s = get_settings()
+    per_call = 550 / 1_000_000 * s.nugen_price_per_mtok_usd
+    typer.echo(f"Deploy call: not billed per request (as far as billing shows).\n"
+               f"Deployment uptime: UNKNOWN hourly rate; treat as billed per hour, so run "
+               f"`make demo-undeploy` right after the demo.\n"
+               f"Inference: ~${per_call:.3f} per chat message, ~${2 * per_call:.3f} per compare "
+               f"(~550 tokens per call at ${s.nugen_price_per_mtok_usd:.0f}/1M, from billing).\n"
+               f"{queries} messages ~ ${queries * per_call:.2f} (compare doubles it).")
 
 
 @cli.command()

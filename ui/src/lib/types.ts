@@ -8,6 +8,9 @@ export interface Health {
 export interface ModelsInfo {
   aligned_model_id: string | null;
   base_model_id: string;
+  aligned_available?: boolean;
+  offline_aligned_model_id?: string | null;
+  aligned_notice?: string | null;
 }
 
 export interface SupportResponse {
@@ -26,6 +29,7 @@ export interface SupportResponse {
   json_valid_first_try: boolean;
   guardrail_triggers: string[];
   error: string | null;
+  notice?: string | null;
   total_tokens: number;
   inference_id: string | null;
 }

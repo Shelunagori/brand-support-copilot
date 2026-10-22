@@ -67,3 +67,28 @@ ui:
 
 screenshots:       ## needs api (:8000) running
 	cd ui && npx playwright test e2e/screenshots.spec.ts
+
+# ---------------------------------------------------------------- local demo
+# The Exp 3 aligned model (Llama-3.2-3B, ACTIVE docs). Undeployed by default to save credits:
+# the UI then answers with the base model and shows an "aligned model offline" badge.
+EXP3_MODEL ?= model_01m5hz9nr9gr5wqv
+DEMO_BASE_MODEL ?= meta-llama/Llama-3.2-3B-Instruct
+
+.PHONY: demo-api demo-ui demo-cost demo-redeploy demo-undeploy
+
+demo-api: migrate  ## API on :8000 with the Exp 3 base model (like-for-like with the aligned one)
+	NUGEN_BASE_MODEL_ID=$(DEMO_BASE_MODEL) uv run uvicorn --factory app.api.main:create_app --port 8000
+
+demo-ui:           ## UI on :5173 (proxies /api to :8000)
+	cd ui && npm install && npm run dev
+
+demo-cost:         ## free: expected cost of a live demo
+	$(PY) -m app.cli demo-cost
+
+demo-redeploy: demo-cost  ## PAID: redeploy the Exp 3 aligned model (asks first)
+	@printf "Redeploy $(EXP3_MODEL)? Deployment uptime may be billed per hour. [y/N] "; \
+	read a; [ "$$a" = "y" ] || { echo "aborted, nothing deployed"; exit 1; }
+	$(PY) -m app.cli deploy --model-id $(EXP3_MODEL) --poll-interval 15
+
+demo-undeploy:     ## turn the aligned model off again (free)
+	$(PY) -m app.cli undeploy $(EXP3_MODEL)

@@ -241,7 +241,7 @@ export function Segmented<T extends string>({
 }: {
   value: T;
   onChange: (v: T) => void;
-  options: { value: T; label: ReactNode; icon?: ReactNode; title?: string }[];
+  options: { value: T; label: ReactNode; icon?: ReactNode; title?: string; disabled?: boolean }[];
   label: string;
   size?: 'sm' | 'md';
   className?: string;
@@ -257,7 +257,7 @@ export function Segmented<T extends string>({
         e.preventDefault();
         const i = options.findIndex((o) => o.value === value);
         const n = options[(i + (e.key === 'ArrowRight' ? 1 : options.length - 1)) % options.length];
-        if (n) onChange(n.value);
+        if (n && !n.disabled) onChange(n.value);
         const btn = (e.currentTarget as HTMLElement).querySelector<HTMLElement>(`[data-value="${n?.value}"]`);
         btn?.focus();
       }}
@@ -273,11 +273,14 @@ export function Segmented<T extends string>({
             tabIndex={active ? 0 : -1}
             data-value={o.value}
             title={o.title}
-            onClick={() => onChange(o.value)}
+            disabled={o.disabled}
+            aria-disabled={o.disabled}
+            onClick={() => !o.disabled && onChange(o.value)}
             className={clsx(
               'relative z-10 inline-flex items-center gap-1.5 rounded-[10px] font-medium transition-colors',
               size === 'md' ? 'h-8 px-3 text-[13px]' : 'h-7 px-2.5 text-xs',
               active ? 'text-ink' : 'text-ink-muted hover:text-ink',
+              o.disabled && 'cursor-not-allowed opacity-50 hover:text-ink-muted',
             )}
           >
             {active && (

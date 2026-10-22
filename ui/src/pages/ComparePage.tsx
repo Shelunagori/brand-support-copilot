@@ -2,7 +2,10 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, GitCompareArrows, Minus, Scale, Trophy } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { AlignedOfflineBadge, AlignedOfflineCard } from '../components/support/AlignedOffline';
 import { AnswerCard } from '../components/support/AnswerCard';
+import { api } from '../lib/api';
+import { useResource } from '../lib/useResource';
 import { Button, Card, CardHeader, PageHeader, Pill, Stagger } from '../components/ui/primitives';
 import { EmptyState } from '../components/ui/states';
 import { diffStats, wordDiff } from '../lib/diff';
@@ -171,8 +174,13 @@ function FieldTable({ base, aligned }: { base: SupportResponse; aligned: Support
 export function ComparePage() {
   const [q, setQ] = useState('');
   const [pair, setPair] = useState<Pair | null>(null);
+  // aligned model undeployed at the time of the run: base only, offline card for aligned
+  const [offlineRun, setOfflineRun] = useState(false);
   const ctrl = useRef<AbortController | null>(null);
-  const busy = !!pair && (pair.base.status === 'streaming' || pair.aligned.status === 'streaming');
+  const models = useResource(({ signal }) => api.models({ signal }));
+  const alignedOffline = !!models.data && !models.data.aligned_model_id;
+  const busy =
+    !!pair && (pair.base.status === 'streaming' || (!offlineRun && pair.aligned.status === 'streaming'));
 
   useEffect(() => () => ctrl.current?.abort(), []);
 
@@ -184,12 +192,13 @@ export function ComparePage() {
     const c = new AbortController();
     ctrl.current = c;
     setPair({ base: initialStream(query, 'base'), aligned: initialStream(query, 'aligned') });
-    (['base', 'aligned'] as const).forEach((k) => {
+    setOfflineRun(alignedOffline);
+    (alignedOffline ? (['base'] as const) : (['base', 'aligned'] as const)).forEach((k) => {
       void runStream(query, k, (fn) => setPair((p) => (p ? { ...p, [k]: fn(p[k]) } : p)), c.signal);
     });
   };
 
-  const bothDone = pair?.base.final && pair.aligned.final;
+  const bothDone = !offlineRun && pair?.base.final && pair.aligned.final;
 
   return (
     <div>
@@ -198,6 +207,11 @@ export function ComparePage() {
         icon={<GitCompareArrows className="h-5 w-5" aria-hidden />}
         description="Send one customer question to both models in parallel and see how domain alignment changes the answer."
       />
+      {alignedOffline && (
+        <div className="-mt-2 mb-4">
+          <AlignedOfflineBadge modelId={models.data?.offline_aligned_model_id} />
+        </div>
+      )}
 
       <form
         onSubmit={(e) => {
@@ -251,7 +265,11 @@ export function ComparePage() {
                   <span className={clsx('h-2 w-2 rounded-full', k === 'aligned' ? 'bg-accent' : 'bg-violet')} aria-hidden />
                   {k === 'aligned' ? 'Aligned model' : 'Base model'}
                 </h2>
-                <AnswerCard s={pair[k]} compact onRetry={() => run(pair[k].query)} />
+                {k === 'aligned' && offlineRun ? (
+                  <AlignedOfflineCard modelId={models.data?.offline_aligned_model_id} />
+                ) : (
+                  <AnswerCard s={pair[k]} compact onRetry={() => run(pair[k].query)} />
+                )}
               </motion.section>
             ))}
           </div>

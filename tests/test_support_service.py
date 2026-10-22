@@ -110,3 +110,16 @@ async def test_stream_emits_answer_deltas_then_final(redis: Redis) -> None:
     assert answer.startswith("Return within 7 days")
     final = json.loads(events[-1]["data"])
     assert final["policy_ref"] == "UT-RET-001"
+
+
+async def test_aligned_offline_is_served_by_base_with_notice(redis: Redis) -> None:
+    client = ScriptedClient([VALID, VALID])
+    svc = SupportService(client=client, cache=None, aligned_model_id=None,  # type: ignore[arg-type]
+                         base_model_id="base")
+    out = await svc.answer("Return window?", model_kind="aligned")
+    assert out.model_id == "base" and out.model_kind == "base"
+    assert out.notice == "aligned_offline" and not out.fallback
+    events = [e async for e in svc.stream("Return window?", model_kind="aligned")]
+    meta, final = json.loads(events[0]["data"]), json.loads(events[-1]["data"])
+    assert meta["model_kind"] == "base" and meta["notice"] == "aligned_offline"
+    assert final["notice"] == "aligned_offline"

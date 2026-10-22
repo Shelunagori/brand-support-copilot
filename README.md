@@ -190,6 +190,40 @@ JSON lines with the request id, and secrets are redacted by the formatter.
 deterministic guardrails that can only *raise* escalation. Upstream errors also fall back to a
 human hand-off, flagged in the log.
 
+## Local demo (UI + API)
+
+The aligned models are **undeployed to save credits**. Chat and Compare still work: they
+default to the base model and show an **"Aligned model offline (undeployed to save credits)"**
+badge, the header reads *aligned offline · base serving*, and Compare shows an offline card in
+the aligned column.
+
+```bash
+# terminal 1: Postgres + Redis + migrations + API on :8000
+#   (base model = Llama-3.2-3B-Instruct, like-for-like with the Exp 3 aligned model)
+make demo-api
+
+# terminal 2: UI on :5173 (proxies /api -> :8000, API key dev-key-change-me)
+make demo-ui
+```
+
+| What | URL |
+|---|---|
+| Demo UI | http://localhost:5173 |
+| API docs (Swagger) | http://localhost:8000/docs |
+| Health / readiness | http://localhost:8000/health · http://localhost:8000/ready |
+
+Optional, to bring the aligned model back for a side-by-side demo:
+
+```bash
+make demo-cost        # free: prints the expected cost
+make demo-redeploy    # PAID: shows the cost, asks y/N, deploys model_01m5hz9nr9gr5wqv (~20 s)
+make demo-undeploy    # turn it off right after the demo
+```
+
+Expected cost (from billing calibration): ~$0.02 per chat message on either model, ~$0.04 per
+compare. Deployment uptime has an **unknown hourly rate**, treated as billed, so undeploy when
+you're done. Every message, base or aligned, is a paid Nugen call.
+
 ## Quickstart
 
 ```bash

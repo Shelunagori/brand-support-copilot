@@ -71,6 +71,8 @@ class SupportResponse(BaseModel):
     # The model's own escalation decision, before guardrails (None when it gave no valid JSON).
     model_escalate: bool | None = None
     error: str | None = None
+    # e.g. "aligned_offline": aligned was requested but none is deployed, base answered
+    notice: str | None = None
     total_tokens: int = 0
     inference_id: str | None = None
     raw_output: str | None = Field(default=None, exclude=True)

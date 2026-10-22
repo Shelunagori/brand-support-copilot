@@ -18,8 +18,8 @@ async def refresh_aligned_model(request: Request, svc: AppServices) -> None:
     if now - getattr(request.app.state, "model_checked_at", 0.0) < MODEL_REFRESH_S:
         return
     request.app.state.model_checked_at = now
-    if model_id := await resolve_aligned_model_id(svc, request.app.state.settings):
-        svc.support.aligned_model_id = model_id
+    # may be None after an undeploy: the service then answers with base + "aligned_offline"
+    svc.support.aligned_model_id = await resolve_aligned_model_id(svc, request.app.state.settings)
 
 
 @router.post("/query", response_model=SupportResponse)

@@ -1,7 +1,7 @@
-import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUp, Eraser, MessagesSquare, Sparkles } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AlignedOfflineBadge } from '../components/support/AlignedOffline';
 import { AnswerCard } from '../components/support/AnswerCard';
 import { Button, Kbd, PageHeader } from '../components/ui/primitives';
 import { Segmented } from '../components/ui/widgets';
@@ -21,7 +21,15 @@ interface Turn {
 let cache: Turn[] = [];
 let nextId = 1;
 
-export function ModelToggle({ value, onChange }: { value: ModelKind; onChange: (m: ModelKind) => void }) {
+export function ModelToggle({
+  value,
+  onChange,
+  alignedOffline = false,
+}: {
+  value: ModelKind;
+  onChange: (m: ModelKind) => void;
+  alignedOffline?: boolean;
+}) {
   return (
     <Segmented
       label="Model"
@@ -33,7 +41,8 @@ export function ModelToggle({ value, onChange }: { value: ModelKind; onChange: (
           value: 'aligned',
           label: 'Aligned',
           icon: <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />,
-          title: 'Nugen domain-aligned model',
+          title: alignedOffline ? 'Aligned model offline (undeployed to save credits)' : 'Nugen domain-aligned model',
+          disabled: alignedOffline,
         },
         {
           value: 'base',
@@ -101,7 +110,12 @@ export function ChatPage() {
     if (last?.stream.status === 'streaming') endRef.current?.scrollIntoView({ block: 'end' });
   }, [last?.stream.text.length, last?.stream.status]);
 
-  const alignedMissing = model === 'aligned' && models.data && !models.data.aligned_model_id;
+  const alignedOffline = !!models.data && !models.data.aligned_model_id;
+
+  // No deployed aligned model: default to base instead of erroring.
+  useEffect(() => {
+    if (alignedOffline) setModel('base');
+  }, [alignedOffline]);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -223,14 +237,14 @@ export function ChatPage() {
             className="block max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 py-2 text-[15px] text-ink placeholder:text-ink-subtle focus:outline-none focus-visible:outline-none"
           />
           <div className="flex items-center gap-2 px-1 pb-0.5">
-            <ModelToggle value={model} onChange={setModel} />
-            <span className={clsx('hidden text-xs text-ink-subtle sm:inline', alignedMissing && 'text-warn')}>
-              {alignedMissing ? 'No aligned model deployed yet' : (
-                <>
-                  <Kbd>Enter</Kbd> to send · <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> newline
-                </>
-              )}
-            </span>
+            <ModelToggle value={model} onChange={setModel} alignedOffline={alignedOffline} />
+            {alignedOffline ? (
+              <AlignedOfflineBadge modelId={models.data?.offline_aligned_model_id} className="min-w-0 truncate" />
+            ) : (
+              <span className="hidden text-xs text-ink-subtle sm:inline">
+                <Kbd>Enter</Kbd> to send · <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> newline
+              </span>
+            )}
             <Button
               type="submit"
               variant="primary"

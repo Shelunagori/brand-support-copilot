@@ -76,16 +76,31 @@ function EnvPill() {
   const models = useResource(({ signal }) => api.models({ signal }), 60000);
   if (models.loading) return <div className="skeleton hidden h-8 w-44 rounded-full md:block" />;
   const id = models.data?.aligned_model_id;
+  const offline = !id && models.data?.offline_aligned_model_id;
   return (
     <div
       className={clsx(
         'hidden h-8 min-w-0 max-w-[18rem] items-center gap-2 rounded-full border px-3 text-xs md:flex',
-        id ? 'border-accent/30 bg-accent/10 text-accent-text' : 'border-line bg-surface/70 text-ink-muted',
+        id
+          ? 'border-accent/30 bg-accent/10 text-accent-text'
+          : offline
+            ? 'border-warn/30 bg-warn/10 text-warn'
+            : 'border-line bg-surface/70 text-ink-muted',
       )}
-      title={id ? `Aligned model: ${id}` : models.error ? 'Model info unavailable' : 'No aligned model deployed yet'}
+      title={
+        id
+          ? `Aligned model: ${id}`
+          : offline
+            ? `${offline} undeployed to save credits; base model answers. make demo-redeploy`
+            : models.error
+              ? 'Model info unavailable'
+              : 'No aligned model deployed yet'
+      }
     >
-      <span className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', id ? 'bg-accent' : 'bg-ink-subtle')} aria-hidden />
-      <span className="truncate font-mono">{id ?? (models.error ? 'models unavailable' : 'no aligned model')}</span>
+      <span className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', id ? 'bg-accent' : offline ? 'bg-warn' : 'bg-ink-subtle')} aria-hidden />
+      <span className={clsx('truncate', !offline && 'font-mono')}>
+        {id ?? (offline ? 'aligned offline · base serving' : models.error ? 'models unavailable' : 'no aligned model')}
+      </span>
     </div>
   );
 }

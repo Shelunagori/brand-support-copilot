@@ -20,6 +20,7 @@ ModelKind = Literal["aligned", "base"]
 FALLBACK_ANSWER = ("Thanks for reaching out. I want to make sure you get the right answer, so "
                    "I'm connecting you with a member of our support team who will follow up "
                    "shortly.")
+ALIGNED_OFFLINE = "aligned_offline"
 MAX_TOKENS = 300
 TEMPERATURE = 0.1
 
@@ -92,7 +93,15 @@ class SupportService:
         resp.latency_ms = round((time.perf_counter() - started) * 1000, 1)
         return resp
 
-    async def _finish(self, query: str, resp: SupportResponse, use_cache: bool) -> SupportResponse:
+    def _effective_kind(self, kind: ModelKind) -> tuple[ModelKind, str | None]:
+        """No deployed aligned model (e.g. undeployed to save credits): serve base, say so."""
+        if kind == "aligned" and not self.aligned_model_id:
+            return "base", ALIGNED_OFFLINE
+        return kind, None
+
+    async def _finish(self, query: str, resp: SupportResponse, use_cache: bool,
+                      notice: str | None = None) -> SupportResponse:
+        resp.notice = notice
         if self.cache and use_cache and not resp.fallback:
             await self.cache.set(resp.model_id, query, resp)
         if self.recorder:
@@ -119,6 +128,7 @@ class SupportService:
     async def answer(self, query: str, model_kind: ModelKind = "aligned",
                      request_id: str | None = None, use_cache: bool = True) -> SupportResponse:
         started = time.perf_counter()
+        model_kind, notice = self._effective_kind(model_kind)
         try:
             model_id = self.model_for(model_kind)
         except NugenError as exc:
@@ -126,7 +136,7 @@ class SupportService:
                                query=query, started=started, request_id=request_id,
                                repaired=False, first_ok=False, raw="", tokens=0, error=str(exc))
         if hit := await self._cached(model_id, query, started, request_id, use_cache):
-            return await self._finish(query, hit, use_cache=False)
+            return await self._finish(query, hit, use_cache=False, notice=notice)
 
         raw, tokens, result = "", 0, None
         try:
@@ -149,7 +159,7 @@ class SupportService:
                                query=query, started=started, request_id=request_id,
                                repaired=False, first_ok=False, raw=raw, tokens=tokens,
                                error=f"upstream_error: {str(exc)[:200]}")
-        return await self._finish(query, resp, use_cache)
+        return await self._finish(query, resp, use_cache, notice)
 
     async def _repair(self, query: str, raw: str, error: str, model_id: str, kind: ModelKind,
                       started: float, request_id: str | None, tokens: int) -> SupportResponse:
@@ -181,6 +191,7 @@ class SupportService:
         def ev(event: str, data: Any) -> dict[str, str]:
             return {"event": event, "data": json.dumps(data)}
 
+        model_kind, notice = self._effective_kind(model_kind)
         try:
             model_id = self.model_for(model_kind)
         except NugenError as exc:
@@ -194,10 +205,11 @@ class SupportService:
             return
 
         yield ev("meta", {"request_id": request_id, "model_id": model_id,
-                          "model_kind": model_kind})
+                          "model_kind": model_kind, "notice": notice})
         if hit := await self._cached(model_id, query, started, request_id, use_cache):
             yield ev("answer_delta", {"text": hit.answer})
-            yield ev("final", (await self._finish(query, hit, use_cache=False)).model_dump())
+            yield ev("final", (await self._finish(query, hit, use_cache=False,
+                                                  notice=notice)).model_dump())
             return
 
         extractor = AnswerStreamExtractor()
@@ -237,4 +249,4 @@ class SupportService:
                                query=query, started=started, request_id=request_id,
                                repaired=False, first_ok=False, raw="".join(parts), tokens=tokens,
                                error=f"upstream_error: {str(exc)[:200]}")
-        yield ev("final", (await self._finish(query, resp, use_cache)).model_dump())
+        yield ev("final", (await self._finish(query, resp, use_cache, notice)).model_dump())

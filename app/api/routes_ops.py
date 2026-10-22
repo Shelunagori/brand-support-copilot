@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 
 from app.api.deps import Authed, Services
-from app.models import AlignmentRun, RunEvent
+from app.models import AlignmentRun, RunEvent, RunState
 from app.spend import SpendTracker
 
 router = APIRouter(tags=["ops"])
@@ -29,8 +29,25 @@ async def ready(svc: Services) -> JSONResponse:
 
 @router.get("/v1/models")
 async def models(_: Authed, svc: Services) -> dict[str, Any]:
-    return {"aligned_model_id": svc.support.aligned_model_id,
-            "base_model_id": svc.support.base_model_id}
+    aligned = svc.support.aligned_model_id
+    offline: str | None = None
+    if not aligned:
+        async with svc.session_factory() as s:
+            last = await s.scalar(select(AlignmentRun)
+                                  .where(AlignmentRun.model_id.is_not(None),
+                                         AlignmentRun.state == RunState.ALIGNED)
+                                  .order_by(AlignmentRun.updated_at.desc()).limit(1))
+        offline = last.model_id if last else None
+    return {
+        "aligned_model_id": aligned,
+        "base_model_id": svc.support.base_model_id,
+        "aligned_available": bool(aligned),
+        "offline_aligned_model_id": offline,
+        "aligned_notice": None if aligned else (
+            "Aligned model offline (undeployed to save credits). Requests are answered by the "
+            "base model; run `make demo-redeploy` to bring it back."
+            if offline else "No aligned model has been trained yet."),
+    }
 
 
 @router.get("/v1/pipeline/runs")
