@@ -74,7 +74,10 @@ def main(api: str = typer.Option(..., help="Render API base URL"),
 
         def models() -> tuple[bool, str]:
             m = c.get(f"{api}/v1/models").json()
-            return m.get("aligned_available") is False, f"base={m.get('base_model_id')}"
+            live = m.get("aligned_available") is True
+            consistent = bool(m.get("aligned_model_id")) == live and bool(m.get("base_model_id"))
+            state = f"aligned LIVE ({m.get('aligned_model_id')})" if live else "aligned offline"
+            return consistent, f"{state}, base={m.get('base_model_id')}"
 
         def admin_disabled() -> tuple[bool, str]:
             codes = [c.post(f"{api}{p}", json=b).status_code for p, b in [
@@ -114,7 +117,7 @@ def main(api: str = typer.Option(..., help="Render API base URL"),
 
         for name, fn in [("ready (Neon + Upstash)", ready), ("demo status", status),
                          ("public read endpoints (real data)", public_reads),
-                         ("aligned offline, base serving", models),
+                         ("model availability is consistent", models),
                          ("paid/admin endpoints -> 403", admin_disabled),
                          ("chat requires access code", chat_needs_code),
                          ("CORS allows the Vercel origin", cors_allows_ui),
@@ -155,7 +158,7 @@ def main(api: str = typer.Option(..., help="Render API base URL"),
                            f"conf={b.get('confidence')}({b.get('confidence_source')}) "
                            f"{b.get('latency_ms')}ms {b.get('total_tokens')}tok")
                 typer.echo(f"      answer: {str(b.get('answer'))[:220]}")
-            typer.echo(f"compare cost (demo budget, est. at $38/1M): ${after - before:.4f}")
+            typer.echo(f"compare cost (demo budget, Nugen rate card): ${after - before:.4f}")
 
     failed = [n for n, ok, _ in results if not ok]
     typer.echo(f"\n{len(results) - len(failed)}/{len(results)} checks passed")
