@@ -58,6 +58,8 @@ def main(api: str = typer.Option(..., help="Render API base URL"),
 
         def status() -> tuple[bool, str]:
             s = c.get(f"{api}/v1/demo/status").json()
+            if s.get("demo_mode") is not True:
+                return False, "DEMO_MODE is not true on the API (check the Render env vars)"
             return s.get("demo_mode") is True, f"cap ${s.get('daily_cap_usd')}, spent " \
                 f"${s.get('spent_today_usd')}, ip limit {s.get('ip_limit_per_hour')}/h"
 

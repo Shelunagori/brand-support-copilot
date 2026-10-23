@@ -82,6 +82,9 @@ def create_app(settings: Settings | None = None, services: AppServices | None = 
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         owned = services is None
         app.state.services = services or await build_services(settings)
+        if settings.hosted and not settings.demo_mode:
+            log.warning("api.hosted_without_demo_mode", extra={
+                "hint": "set DEMO_MODE=true for the public demo; the dev API key is disabled"})
         log.info("api.started", extra={
             "aligned_model_id": app.state.services.support.aligned_model_id})
         yield

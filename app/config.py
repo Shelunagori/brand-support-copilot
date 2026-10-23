@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
@@ -6,6 +7,7 @@ from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parent.parent
+DEV_API_KEY = "dev-key-change-me"
 
 
 _DROP_PARAMS = {"channel_binding"}  # libpq-only; asyncpg rejects it
@@ -48,7 +50,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://copilot:copilot@localhost:5432/copilot"
     redis_url: str = "redis://localhost:6379/0"
 
-    client_api_keys: str = "dev-key-change-me"
+    client_api_keys: str = DEV_API_KEY
     rate_limit_per_minute: int = 60
     cache_ttl_seconds: int = 3600
     log_level: str = "INFO"
@@ -81,8 +83,16 @@ class Settings(BaseSettings):
         return normalize_database_url(v)
 
     @property
+    def hosted(self) -> bool:
+        """Running on a hosting platform (Render sets RENDER=true)."""
+        return bool(os.environ.get("RENDER"))
+
+    @property
     def api_keys(self) -> set[str]:
-        return {k.strip() for k in self.client_api_keys.split(",") if k.strip()}
+        keys = {k.strip() for k in self.client_api_keys.split(",") if k.strip()}
+        if self.hosted:  # the dev default is published in the repo: never valid when hosted
+            keys.discard(DEV_API_KEY)
+        return keys
 
     @property
     def cors_origin_list(self) -> list[str]:

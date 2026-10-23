@@ -196,3 +196,27 @@ async def test_lifetime_cap_blocks_even_on_a_fresh_day(session_factory) -> None:
         await b.ensure_budget("chat")
     await redis.flushdb()
     await redis.aclose()
+
+
+def test_public_dev_key_is_never_valid_on_a_hosted_platform(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    # Render sets RENDER=true. A deploy that forgot DEMO_MODE / CLIENT_API_KEYS must not fall
+    # back to the dev key that is published in the repo.
+    monkeypatch.setenv("RENDER", "true")
+    assert Settings(client_api_keys="dev-key-change-me").api_keys == set()
+    assert Settings(client_api_keys="dev-key-change-me,real-k").api_keys == {"real-k"}
+    monkeypatch.delenv("RENDER")
+    assert Settings(client_api_keys="dev-key-change-me").api_keys == {"dev-key-change-me"}
+
+
+async def test_hosted_misconfig_rejects_dev_key_over_http(monkeypatch, session_factory) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("RENDER", "true")
+    redis: Redis = Redis.from_url("redis://localhost:6379/15", decode_responses=True)
+    support = SupportService(client=ScriptedClient([VALID]), cache=None,  # type: ignore[arg-type]
+                             aligned_model_id=None, base_model_id="base")
+    app = create_app(Settings(demo_mode=False, client_api_keys="dev-key-change-me"),
+                     AppServices(redis=redis, session_factory=session_factory, support=support,
+                                 nugen=None))
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+        r = await c.get("/v1/pipeline/runs", headers={"X-API-Key": "dev-key-change-me"})
+    assert r.status_code == 401
+    await redis.aclose()

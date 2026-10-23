@@ -89,6 +89,14 @@ Time needed: about 25 minutes, most of it waiting for the first Render build.
    - `…/ready` should show `{"status":"ready","checks":{"postgres":"ok","redis":"ok"}}`
    - `…/v1/demo/status` should show `"demo_mode":true`
 
+> **Created the service by hand instead of via Blueprint?** Then `render.yaml`'s values were not
+> applied. In the service, open **Environment** and add **every** variable from
+> [`deploy/render.env.example`](../deploy/render.env.example). The non-secret ones are
+> `DEMO_MODE=true`, the caps, `NUGEN_BASE_MODEL_ID` and `NUGEN_PRICE_PER_MTOK_USD`. Also set
+> `CLIENT_API_KEYS` to a long random string. Check that `…/v1/demo/status` shows
+> `"demo_mode":true`. (When hosted, the API never accepts the public dev key, even if
+> misconfigured.)
+
 ## 4. Vercel (UI): ~4 min
 
 1. Open <https://vercel.com/signup>, then **Continue with GitHub**.

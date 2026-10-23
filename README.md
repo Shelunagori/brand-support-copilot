@@ -192,8 +192,9 @@ human hand-off, flagged in the log.
 
 ## Public demo
 
-**Live link:** *coming soon (being deployed)*. The access code for live chat is shared
-privately on request.
+**Live demo:** <https://brand-support-copilot.vercel.app> (API: <https://brand-support-copilot.onrender.com>).
+The results screens are open to everyone. Live chat needs an access code, which is shared privately
+on request. The free-tier API sleeps when idle, so the first visit can take up to a minute to wake it.
 
 The public demo runs the same code in `DEMO_MODE`:
 - **Real results, public:** Pipeline, Eval (all 4 runs, including the labelled offline
