@@ -253,7 +253,7 @@ async def test_spend_reports_billed_total_cap_and_demo_caps(demo) -> None:  # ty
     assert body["billed_total_usd"] == pytest.approx(21.04)
     assert body["last_reconciled_at"] is not None
     assert body["hard_limit_usd"] == 45.0
-    assert body["demo"]["daily_cap_usd"] == 1.0 and body["demo"]["total_cap_usd"] == 5.0
+    assert body["demo"]["daily_cap_usd"] == 1.0 and body["demo"]["total_cap_usd"] == 1.25
 
 
 class FakeNugenDeploy:

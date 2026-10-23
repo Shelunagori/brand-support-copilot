@@ -17,14 +17,12 @@ services:
         value: "true"
       - key: NUGEN_BASE_MODEL_ID
         value: meta-llama/Llama-3.2-3B-Instruct
-      - key: DEMO_DAILY_CAP_USD
-        value: "1"
-      - key: DEMO_TOTAL_CAP_USD        # lifetime demo spend cap
-        value: "5"
+      - key: DEMO_DAILY_CAP_USD        # rate-card dollars (billing ran ~4-5x higher)
+        value: "0.25"
+      - key: DEMO_TOTAL_CAP_USD        # lifetime demo spend cap, rate-card dollars
+        value: "1.25"
       - key: DEMO_IP_MESSAGES_PER_HOUR
         value: "10"
-      - key: NUGEN_PRICE_PER_MTOK_USD
-        value: "38"
       - key: LOG_LEVEL
         value: INFO
       - key: CLIENT_API_KEYS          # unused in demo mode; random so the dev default is never valid

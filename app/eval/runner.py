@@ -3,6 +3,7 @@
 import asyncio
 import json
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -153,7 +154,7 @@ async def run_eval(
     questions: list[EvalQuestion],
     kinds: list[ModelKind],
     label: str,
-    price_per_mtok: float,
+    price_per_mtok: float | Callable[[str], float],
     reports_dir: Path,
     session_factory: async_sessionmaker[AsyncSession] | None,
     concurrency: int = 4,
@@ -162,7 +163,9 @@ async def run_eval(
     summaries: dict[str, ModelSummary] = {}
     for kind in kinds:
         results[kind] = await run_model(service, kind, questions, concurrency)
-        summaries[kind] = summarize(service.model_for(kind), results[kind], price_per_mtok)
+        model_id = service.model_for(kind)
+        price = price_per_mtok(model_id) if callable(price_per_mtok) else price_per_mtok
+        summaries[kind] = summarize(model_id, results[kind], price)
     report = build_report(questions, results, summaries, label)
     await asyncio.to_thread(write_reports, report, reports_dir)
     if session_factory is not None:

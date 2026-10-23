@@ -414,6 +414,8 @@ billing with `python -m app.cli reconcile 17.15`.
 | **Billed total (2026-10-23)** | **$21.04** (₹2,025.52 at ₹96.28 = $1) | balance ₹2,788.41 ≈ **$28.96** |
 | Spend-guard lifetime cap | $45.00 | $21.04 billed + ($28.96 − $5 buffer) |
 
+Estimates use Nugen's published rate card (per million **words**, ~0.75 words per token; nano ≤1B
+$7.35 / $14.71 and small 1–10B $3.68 / $7.35 per 1M tokens, for general and aligned models), D44.
 After each billing check the log is reconciled (`python -m app.cli reconcile <billed total>`), and the
 guard is recalibrated: `NUGEN_PRICE_PER_MTOK_USD=38` and `NUGEN_ALIGNMENT_COST_EST_USD=8`, just above
 the most expensive alignment billed ($7.86); D28 and D39. The guard is meant to over-estimate. The

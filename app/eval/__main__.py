@@ -6,7 +6,7 @@ from typing import Literal, cast
 import typer
 from sqlalchemy import select
 
-from app.config import get_settings
+from app.config import get_pricing, get_settings
 from app.db import get_session_factory
 from app.eval.runner import render_markdown, run_eval
 from app.eval.scoring import load_questions
@@ -28,9 +28,12 @@ async def _aligned_model_id() -> str | None:
     if s.aligned_model_id:
         return s.aligned_model_id
     async with get_session_factory()() as sess:
-        run = await sess.scalar(select(AlignmentRun).where(AlignmentRun.state == RunState.DEPLOYED)
-                                .order_by(AlignmentRun.updated_at.desc()).limit(1))
-    return run.model_id if run else None
+        runs = (await sess.scalars(select(AlignmentRun)
+                                   .where(AlignmentRun.model_id.is_not(None)))).all()
+    for r in runs:  # price each aligned model on its base model's tier
+        get_pricing().register_aligned(r.model_id, r.base_model_id)  # type: ignore[arg-type]
+    live = sorted((r for r in runs if r.state == RunState.DEPLOYED), key=lambda r: r.updated_at)
+    return live[-1].model_id if live else None
 
 
 @cli.command()
@@ -62,7 +65,7 @@ def run(
                 raise typer.BadParameter("no deployed aligned model; run align + deploy first, "
                                          "or pass --models base")
             report = await run_eval(service=svc, questions=questions, kinds=kinds, label=label,
-                                    price_per_mtok=settings.nugen_price_per_mtok_usd,
+                                    price_per_mtok=get_pricing().usd_per_mtok,
                                     reports_dir=settings.reports_dir,
                                     session_factory=get_session_factory(),
                                     concurrency=concurrency)
@@ -97,7 +100,7 @@ def rescore(
         model_id = summ["model_id"]
         results[kind] = [rescore_result(questions[q["id"]], q["results"][kind], model_id)
                          for q in saved["questions"]]
-        summaries[kind] = summarize(model_id, results[kind], settings.nugen_price_per_mtok_usd)
+        summaries[kind] = summarize(model_id, results[kind], get_pricing().usd_per_mtok(model_id))
     new = build_report(qs, results, summaries, label)
     new["rescored_from"] = Path(report).name
     Path(f"{out}.json").write_text(json.dumps(new, indent=2))

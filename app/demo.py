@@ -4,11 +4,14 @@ import hashlib
 import logging
 import time
 from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from redis.asyncio import Redis
 
 from app.nugen.errors import SpendLimitExceeded
+
+if TYPE_CHECKING:
+    from app.pricing import Pricing
 
 DAY_TTL_S = 3 * 24 * 3600
 
@@ -20,9 +23,10 @@ class DemoBudget:
     TOTAL_KEY = "demo:spend:total"
 
     def __init__(self, redis: Redis, price_per_mtok_usd: float, daily_cap_usd: float,
-                 total_cap_usd: float | None = None) -> None:
+                 total_cap_usd: float | None = None, pricing: "Pricing | None" = None) -> None:
         self._r = redis
         self._price = price_per_mtok_usd
+        self._pricing = pricing
         self.cap_usd = daily_cap_usd
         self.total_cap_usd = total_cap_usd
 
@@ -64,7 +68,12 @@ class DemoBudget:
         note: str | None = None,
         est_cost_usd: float | None = None,
     ) -> None:
-        cost = est_cost_usd if est_cost_usd is not None else total_tokens / 1e6 * self._price
+        if est_cost_usd is not None:
+            cost = est_cost_usd
+        elif self._pricing is not None:
+            cost = self._pricing.cost_usd(model, total_tokens)
+        else:
+            cost = total_tokens / 1e6 * self._price
         key = self.key()
         await self._r.incrbyfloat(key, cost)
         await self._r.expire(key, DAY_TTL_S)

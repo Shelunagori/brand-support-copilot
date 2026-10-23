@@ -1,10 +1,14 @@
 import os
 from functools import lru_cache
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+if TYPE_CHECKING:
+    from app.pricing import Pricing
 
 ROOT = Path(__file__).resolve().parent.parent
 DEV_API_KEY = "dev-key-change-me"
@@ -42,7 +46,10 @@ class Settings(BaseSettings):
     nugen_max_retries: int = 3
     # Nugen does not publish per-token prices in its API docs; this is an estimate (VETOABLE).
     # Calibrated from platform billing on 2026-10-22 (see DECISIONS D28).
-    nugen_price_per_mtok_usd: float = 38.0
+    nugen_price_per_mtok_usd: float = 38.0  # fallback only; per-model rates live in app/pricing.py
+    # Nugen bills per million WORDS (INR, charged in USD): see app/pricing.py and D44.
+    nugen_inr_per_usd: float = 96.28
+    nugen_words_per_token: float = 0.75
     # Lifetime cap = billed total + (remaining balance - $5 buffer); 2026-10-23: 21.04 + 23.96.
     nugen_spend_hard_limit_usd: float = 45.0
     # Alignment cost is not returned by the API; budget conservatively per run (VETOABLE).
@@ -68,9 +75,11 @@ class Settings(BaseSettings):
     # --- public demo (Render + Vercel) ---
     demo_mode: bool = False
     demo_access_code: SecretStr = SecretStr("")
-    demo_daily_cap_usd: float = 1.0
+    # Rate-card estimates; billing ran ~4-5x above the rate card, so these keep real spend
+    # near $1/day and $5 lifetime (D45).
+    demo_daily_cap_usd: float = 0.25
     # Lifetime cap across all days (Redis counter), so a leaked code can't drain the credit.
-    demo_total_cap_usd: float = 5.0
+    demo_total_cap_usd: float = 1.25
     demo_ip_messages_per_hour: int = 10
     demo_verify_attempts_per_hour: int = 20
     # Only used by `make demo-seed` (local -> Neon); never set on the deployed API.
@@ -98,6 +107,14 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+
+@lru_cache
+def get_pricing() -> "Pricing":
+    from app.pricing import Pricing
+
+    s = get_settings()
+    return Pricing(s.nugen_inr_per_usd, s.nugen_words_per_token)
 
 
 @lru_cache

@@ -11,7 +11,7 @@ from redis.asyncio import Redis
 from sqlalchemy import select, text
 
 from app.api.deps import AppServices
-from app.config import Settings, get_settings
+from app.config import Settings, get_pricing, get_settings
 from app.db import get_session_factory
 from app.demo import ALIGNED_KILL_KEY, DemoBudget
 from app.logging_setup import configure_logging, request_id_var
@@ -34,6 +34,8 @@ async def resolve_aligned_model_id(services: AppServices, settings: Settings) ->
         run = await s.scalar(select(AlignmentRun)
                              .where(AlignmentRun.state == RunState.DEPLOYED)
                              .order_by(AlignmentRun.updated_at.desc()).limit(1))
+    if run and run.model_id:  # price the aligned model on its base model's tier
+        get_pricing().register_aligned(run.model_id, run.base_model_id)
     return run.model_id if run else None
 
 
@@ -46,7 +48,8 @@ async def build_services(settings: Settings) -> AppServices:
         # Public demo: Postgres stays read-only (seeded real data). Spend is capped per day
         # in Redis, inferences are not logged, and there is no job queue.
         demo_budget = DemoBudget(redis, settings.nugen_price_per_mtok_usd,
-                                 settings.demo_daily_cap_usd, settings.demo_total_cap_usd)
+                                 settings.demo_daily_cap_usd, settings.demo_total_cap_usd,
+                                 pricing=get_pricing())
         nugen = build_client(settings, demo_budget)
     else:
         nugen = build_client(settings, build_spend(settings))

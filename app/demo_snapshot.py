@@ -46,7 +46,8 @@ async def build_snapshot(session_factory: async_sessionmaker[AsyncSession], *,
     settings = Settings(demo_mode=True, demo_access_code="snapshot-only",
                         nugen_base_model_id=base_model_id, client_api_keys="snapshot-only")
     redis: Redis = Redis.from_url(redis_url, decode_responses=True)
-    budget = DemoBudget(redis, settings.nugen_price_per_mtok_usd, settings.demo_daily_cap_usd)
+    budget = DemoBudget(redis, settings.nugen_price_per_mtok_usd, settings.demo_daily_cap_usd,
+                        settings.demo_total_cap_usd)
     support = SupportService(client=_NoModel(), cache=None,
                              aligned_model_id=None, base_model_id=base_model_id)
     app = create_app(settings, AppServices(redis=redis, session_factory=session_factory,

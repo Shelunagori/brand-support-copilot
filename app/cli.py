@@ -127,14 +127,21 @@ def undeploy(model_id: str) -> None:
 def demo_cost(queries: int = typer.Option(20, help="Chat/compare messages you expect to send")
               ) -> None:
     """Expected cost of a live demo (free: prints only)."""
+    from app.config import get_pricing
+
     s = get_settings()
-    per_call = 550 / 1_000_000 * s.nugen_price_per_mtok_usd
-    typer.echo(f"Deploy call: not billed per request (as far as billing shows).\n"
-               f"Deployment uptime: UNKNOWN hourly rate; treat as billed per hour, so run "
-               f"`make demo-undeploy` right after the demo.\n"
-               f"Inference: ~${per_call:.3f} per chat message, ~${2 * per_call:.3f} per compare "
-               f"(~550 tokens per call at ${s.nugen_price_per_mtok_usd:.0f}/1M, from billing).\n"
-               f"{queries} messages ~ ${queries * per_call:.2f} (compare doubles it).")
+    p = get_pricing()
+    p.register_aligned("model_01m5hz9nr9gr5wqv", "meta-llama/Llama-3.2-3B-Instruct")
+    base = p.cost_usd("meta-llama/Llama-3.2-3B-Instruct", 550)
+    aligned = p.cost_usd("model_01m5hz9nr9gr5wqv", 550)
+    typer.echo(f"Deploy / hosting: no per-hour charge on Nugen's pricing page (verify with the "
+               f"1-hour idle check).\n"
+               f"Inference (rate card, ~550 tokens/call): base ${base:.4f}, aligned "
+               f"${aligned:.4f} per message; compare ${base + aligned:.4f}.\n"
+               f"{queries} aligned messages ~ ${queries * aligned:.3f}. Billing has run up to "
+               f"~4-5x the rate card, so budget ~${queries * aligned * 5:.2f}.\n"
+               f"Demo caps: ${s.demo_daily_cap_usd:.2f}/day, ${s.demo_total_cap_usd:.2f} lifetime "
+               f"(rate-card dollars).")
 
 
 @cli.command()
@@ -202,7 +209,9 @@ def estimate(alignments: int = typer.Option(2, help="initial + re-align"),
 
     async def main() -> None:
         tokens = int((eval_calls + other_calls) * tokens_per_call * repair_factor)
-        inference = tokens / 1_000_000 * s.nugen_price_per_mtok_usd
+        from app.config import get_pricing
+
+        inference = get_pricing().cost_usd("unknown", tokens)  # dearest tier: conservative
         align = alignments * s.nugen_alignment_cost_est_usd
         spent = await build_spend(s).total_usd()
         total = spent + inference + align

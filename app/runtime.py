@@ -1,6 +1,6 @@
 """Factories wiring settings -> client / spend tracker / pipeline (shared by CLI, API, worker)."""
 
-from app.config import Settings, get_settings
+from app.config import Settings, get_pricing, get_settings
 from app.db import get_session_factory
 from app.nugen.client import NugenClient, SpendGuard
 from app.pipeline import AlignmentPipeline
@@ -10,7 +10,8 @@ from app.spend import SpendTracker
 def build_spend(settings: Settings | None = None) -> SpendTracker:
     s = settings or get_settings()
     return SpendTracker(get_session_factory(), s.nugen_price_per_mtok_usd,
-                        s.nugen_spend_hard_limit_usd, s.nugen_alignment_cost_est_usd)
+                        s.nugen_spend_hard_limit_usd, s.nugen_alignment_cost_est_usd,
+                        pricing=get_pricing())
 
 
 def build_client(settings: Settings | None = None, spend: SpendGuard | None = None

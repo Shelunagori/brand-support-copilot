@@ -1,13 +1,16 @@
 """Spend log + hard budget guard for paid Nugen calls."""
 
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.models import SpendEntry
 from app.nugen.errors import SpendLimitExceeded
+
+if TYPE_CHECKING:
+    from app.pricing import Pricing
 
 log = logging.getLogger(__name__)
 
@@ -19,11 +22,13 @@ class SpendTracker:
         price_per_mtok_usd: float,
         hard_limit_usd: float,
         alignment_cost_est_usd: float = 0.0,
+        pricing: "Pricing | None" = None,
     ) -> None:
         self._sf = session_factory
         self._price = price_per_mtok_usd
         self._limit = hard_limit_usd
         self._alignment_est = alignment_cost_est_usd
+        self._pricing = pricing
 
     def estimate(self, total_tokens: int) -> float:
         return total_tokens / 1_000_000 * self._price
@@ -59,6 +64,8 @@ class SpendTracker:
             cost = est_cost_usd
         elif purpose == "alignment":
             cost = self._alignment_est  # the API does not report alignment cost
+        elif self._pricing is not None:
+            cost = self._pricing.cost_usd(model, total_tokens)
         else:
             cost = self.estimate(total_tokens)
         async with self._sf() as s:
