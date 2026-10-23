@@ -73,18 +73,22 @@ class SupportService:
         if parsed is None:
             resp = SupportResponse(
                 intent="other", answer=FALLBACK_ANSWER, policy_ref="UT-ESC-012",
-                escalate_to_human=True, confidence=0.0, model_id=model_id, model_kind=kind,
+                escalate_to_human=True, confidence=0.0, confidence_source="none",
+                model_id=model_id, model_kind=kind,
                 latency_ms=0, request_id=request_id, repaired=repaired, fallback=True,
                 json_valid_first_try=first_ok, error=error, raw_output=raw, total_tokens=tokens,
             )
         else:
             confidence = parsed.confidence
+            source: Literal["nugen", "model_reported"] = "model_reported"
             if result is not None and result.confidence_score is not None:
                 confidence = min(max(result.confidence_score / 100, 0.0), 1.0)
+                source = "nugen"
             resp = SupportResponse(
                 intent=parsed.intent, answer=parsed.answer, policy_ref=parsed.policy_ref,
                 escalate_to_human=parsed.escalate_to_human or bool(triggers),
-                confidence=round(confidence, 4), model_id=model_id, model_kind=kind,
+                confidence=round(confidence, 4), confidence_source=source,
+                model_id=model_id, model_kind=kind,
                 latency_ms=0, request_id=request_id, repaired=repaired,
                 json_valid_first_try=first_ok, raw_output=raw, total_tokens=tokens,
                 model_escalate=parsed.escalate_to_human,

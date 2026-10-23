@@ -410,12 +410,14 @@ billing with `python -m app.cli reconcile 17.15`.
 | Alignment #2 (0.5B re-align) | **$7.36** (₹711.27) | |
 | Inference for runs 1–2 (smoke, 2 evals × 2 models, feedback seed, Nugen auto-evals, UI) | **$1.93** | ≈ $0.6–0.8 per model per 40-question eval, about **100× the original $0.20/1M estimate** |
 | **Billed before Experiment 3** | **$17.15** | $50 credit − $32.85 remaining |
-| Experiment 3: alignment (3B) | ~$20 (guard estimate) | **pending billing**; 3B priced conservatively |
-| Experiment 3: inference (eval base + aligned, repairs) | ~$1.99 (guard estimate at $38/1M) | **pending billing** |
-| **Spend-guard total after Exp. 3** | **$39.14 of the $45.00 cap** | cap = $17.15 billed + ($32.85 − $5 buffer) |
+| Experiment 3 (3B alignment + eval + Nugen auto-eval) + first live demo chats | **$3.89** | billing 2026-10-23; the guard had budgeted $20 for the 3B alignment alone |
+| **Billed total (2026-10-23)** | **$21.04** (₹2,025.52 at ₹96.28 = $1) | balance ₹2,788.41 ≈ **$28.96** |
+| Spend-guard lifetime cap | $45.00 | $21.04 billed + ($28.96 − $5 buffer) |
 
-After the billing data came in, the guard was recalibrated: `NUGEN_PRICE_PER_MTOK_USD=38`,
-`NUGEN_ALIGNMENT_COST_EST_USD=20` (D28). The guard is meant to over-estimate.
+After each billing check the log is reconciled (`python -m app.cli reconcile <billed total>`), and the
+guard is recalibrated: `NUGEN_PRICE_PER_MTOK_USD=38` and `NUGEN_ALIGNMENT_COST_EST_USD=8`, just above
+the most expensive alignment billed ($7.86); D28 and D39. The guard is meant to over-estimate. The
+public demo has its own Redis caps on top ($1/day, $5 lifetime).
 
 ## RAG vs Domain Alignment
 

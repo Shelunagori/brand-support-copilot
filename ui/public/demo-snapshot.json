@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-23T14:13:25.892664+00:00",
+ "generated_at": "2026-10-23T15:37:33.677839+00:00",
  "source": "local database (real runs, evals and feedback)",
  "responses": {
   "/v1/models": {
@@ -507,15 +507,15 @@
    }
   ],
   "/v1/spend": {
-   "total_est_usd": 39.141504,
+   "total_est_usd": 21.04,
    "hard_limit_usd": 45.0,
    "breakdown": [
     {
      "purpose": "reconciliation",
      "endpoint": "(billing reconciliation)",
-     "calls": 1,
+     "calls": 2,
      "tokens": 0,
-     "est_cost_usd": 1.909007
+     "est_cost_usd": -16.192497
     },
     {
      "purpose": "eval_repair",
@@ -3810,6 +3810,7 @@
    "daily_cap_usd": 1.0,
    "spent_today_usd": 0.0,
    "limit_reached": false,
+   "limit_reason": null,
    "ip_limit_per_hour": 10,
    "base_model_id": "meta-llama/Llama-3.2-3B-Instruct"
   },

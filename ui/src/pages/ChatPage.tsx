@@ -63,6 +63,17 @@ export function ChatPage() {
   const [model, setModel] = useState<ModelKind>('aligned');
   const controllers = useRef(new Map<number, AbortController>());
   const endRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
+
+  /** Scroll so the newest message clears the sticky composer (and the mobile tab bar). */
+  const scrollToEnd = useCallback((behavior: ScrollBehavior = 'auto') => {
+    const end = endRef.current;
+    if (!end) return;
+    const composerTop = composerRef.current?.getBoundingClientRect().top ?? window.innerHeight;
+    const covered = Math.max(0, window.innerHeight - composerTop);
+    end.style.scrollMarginBottom = `${covered + 16}px`;
+    end.scrollIntoView({ behavior, block: 'end' });
+  }, []);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const models = useResource(({ signal }) => api.models({ signal }));
   const busy = turns.some((t) => t.stream.status === 'streaming');
@@ -100,7 +111,7 @@ export function ChatPage() {
     setTurns((ts) => [...ts, { id, stream: initialStream(q, model) }]);
     setInput('');
     start(id, q, model);
-    requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }));
+    requestAnimationFrame(() => scrollToEnd('smooth'));
   };
 
   const retry = (t: Turn) => {
@@ -108,11 +119,13 @@ export function ChatPage() {
     start(t.id, t.stream.query, t.stream.model);
   };
 
-  // keep the newest reply in view while it streams
+  // keep the newest reply in view while it streams, and once more when it completes
+  // (the finished card grows: confidence, badges, footer)
   const last = turns[turns.length - 1];
+  const lastStatus = last?.stream.status;
   useEffect(() => {
-    if (last?.stream.status === 'streaming') endRef.current?.scrollIntoView({ block: 'end' });
-  }, [last?.stream.text.length, last?.stream.status]);
+    if (lastStatus === 'streaming' || lastStatus === 'done') requestAnimationFrame(() => scrollToEnd());
+  }, [last?.stream.text.length, lastStatus, scrollToEnd]);
 
   const alignedOffline = !!models.data && !models.data.aligned_model_id;
 
@@ -204,7 +217,7 @@ export function ChatPage() {
           </section>
 
           {/* composer */}
-          <div className="sticky bottom-20 z-30 mt-6 md:bottom-6">
+          <div ref={composerRef} className="sticky bottom-20 z-30 mt-6 md:bottom-6">
             <form
               onSubmit={(e) => {
                 e.preventDefault();

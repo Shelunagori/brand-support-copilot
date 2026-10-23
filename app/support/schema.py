@@ -59,6 +59,10 @@ class SupportResponse(BaseModel):
     policy_ref: str | None
     escalate_to_human: bool
     confidence: float
+    # "nugen": Nugen's inference-time confidence_score (aligned models);
+    # "model_reported": the number the model wrote in its own JSON (uncalibrated);
+    # "none": fallback answer, no confidence.
+    confidence_source: Literal["nugen", "model_reported", "none"] = "model_reported"
     model_id: str
     latency_ms: float
     model_kind: Literal["aligned", "base"] = "aligned"

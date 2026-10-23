@@ -7,6 +7,7 @@ import {
   Cpu,
   Database,
   Hash,
+  Info,
   LifeBuoy,
   PowerOff,
   RefreshCw,
@@ -22,6 +23,7 @@ import { api, DEMO_DISABLED_MESSAGE } from '../../lib/api';
 import { useIsDemo } from '../../lib/demo';
 import { POLICY_REF_RE, humanize, int, ms } from '../../lib/format';
 import { useToast } from '../../lib/toast';
+import type { SupportResponse } from '../../lib/types';
 import type { StreamState } from '../../lib/useStream';
 import { Button, Pill, SkeletonText } from '../ui/primitives';
 import { ConfidenceBar, CopyButton } from '../ui/widgets';
@@ -280,6 +282,12 @@ export function AnswerCard({
             ) : (
               <p className={clsx('whitespace-pre-wrap text-[15px] leading-7 text-ink', typing && 'caret')}>{shown}</p>
             )}
+            {f && f.model_kind === 'base' && !f.fallback && (
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-subtle" data-testid="base-note">
+                <Info className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                Base model, not aligned; answers may be generic.
+              </p>
+            )}
           </div>
         )}
 
@@ -288,8 +296,11 @@ export function AnswerCard({
             <div className="mb-1.5 flex items-center justify-between">
               <span className="eyebrow">Confidence</span>
               {!f && s.confidence != null && <span className="text-2xs text-ink-subtle">live</span>}
+              {f && <ConfidenceSource source={f.confidence_source} />}
             </div>
-            <ConfidenceBar value={s.confidence} live={!f} />
+            <div className={clsx(f?.confidence_source === 'model_reported' && 'opacity-60 saturate-50')}>
+              <ConfidenceBar value={s.confidence} live={!f} />
+            </div>
           </div>
         )}
 
@@ -398,5 +409,25 @@ export function AnswerCard({
         )}
       </div>
     </motion.article>
+  );
+}
+
+/** Where the confidence number comes from; only Nugen's score is a measured signal. */
+function ConfidenceSource({ source }: { source?: SupportResponse['confidence_source'] }) {
+  if (source === 'nugen')
+    return (
+      <span className="text-2xs text-ink-subtle" title="Nugen's inference-time confidence score for aligned models">
+        Nugen confidence score
+      </span>
+    );
+  if (source === 'none') return <span className="text-2xs text-ink-subtle">none (fallback)</span>;
+  return (
+    <span
+      className="text-2xs font-medium text-warn"
+      title="The number the model wrote in its own JSON. It is not a calibrated probability."
+      data-testid="confidence-model-reported"
+    >
+      model-reported · uncalibrated
+    </span>
   );
 }

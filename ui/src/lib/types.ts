@@ -19,6 +19,8 @@ export interface SupportResponse {
   policy_ref: string | null;
   escalate_to_human: boolean;
   confidence: number;
+  /** nugen = Nugen confidence_score; model_reported = the model's own (uncalibrated) number. */
+  confidence_source?: 'nugen' | 'model_reported' | 'none';
   model_id: string;
   latency_ms: number;
   model_kind: ModelKind;

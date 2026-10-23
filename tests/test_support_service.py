@@ -123,3 +123,15 @@ async def test_aligned_offline_is_served_by_base_with_notice(redis: Redis) -> No
     meta, final = json.loads(events[0]["data"]), json.loads(events[-1]["data"])
     assert meta["model_kind"] == "base" and meta["notice"] == "aligned_offline"
     assert final["notice"] == "aligned_offline"
+
+
+async def test_confidence_source_is_reported(redis: Redis) -> None:
+    # aligned model: Nugen's inference-time confidence_score
+    aligned = await make_service(ScriptedClient([VALID], confidence=72.0), redis).answer("q")
+    assert aligned.confidence_source == "nugen" and aligned.confidence == pytest.approx(0.72)
+    # base model: no confidence_score, so the number is whatever the model wrote in its JSON
+    base = await make_service(ScriptedClient([VALID]), redis).answer("q2", model_kind="base")
+    assert base.confidence_source == "model_reported" and base.confidence == 0.9
+    # fallback: no confidence at all
+    fb = await make_service(ScriptedClient(["x", "y"]), redis).answer("q3")
+    assert fb.confidence_source == "none" and fb.confidence == 0.0
