@@ -29,6 +29,9 @@ async def ready(svc: Services) -> JSONResponse:
 
 @router.get("/v1/models")
 async def models(request: Request, _: ReadAuthed, svc: Services) -> dict[str, Any]:
+    from app.api.routes_support import refresh_aligned_model
+
+    await refresh_aligned_model(request, svc)  # a (re)deploy shows up without anyone chatting
     aligned = svc.support.aligned_model_id
     offline: str | None = None
     if not aligned:

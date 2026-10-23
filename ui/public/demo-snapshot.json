@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-10-23T15:37:33.677839+00:00",
+ "generated_at": "2026-10-23T15:47:43.828245+00:00",
  "source": "local database (real runs, evals and feedback)",
  "responses": {
   "/v1/models": {
    "aligned_model_id": null,
    "base_model_id": "meta-llama/Llama-3.2-3B-Instruct",
    "aligned_available": false,
-   "offline_aligned_model_id": "model_01m5hz9nr9gr5wqv",
+   "offline_aligned_model_id": "model_01m5hwkzsc790kf4",
    "aligned_notice": "Aligned model offline (undeployed to save credits). The base model answers live; the aligned models' measured results are on the Eval dashboard."
   },
   "/v1/pipeline/runs": [
@@ -14,7 +14,7 @@
     "id": "04d6d8b8-a97f-4fd8-92b2-b27f83b90984",
     "name": "urbane-threads-support-fb4e9b6c",
     "kind": "initial",
-    "state": "ALIGNED",
+    "state": "DEPLOYED",
     "base_model_id": "meta-llama/Llama-3.2-3B-Instruct",
     "document_ids": [
      "document_01m5hvp69gy1d1ce",
@@ -55,11 +55,11 @@
     "alignment_status": "READY",
     "evaluation_id": "evaluation_01m5hzbgvtyq3jve",
     "model_id": "model_01m5hz9nr9gr5wqv",
-    "deployment_status": "UNDEPLOYED",
+    "deployment_status": "DEPLOYED",
     "last_error": null,
     "parent_run_id": null,
     "created_at": "2026-10-22T14:07:52.536080+00:00",
-    "updated_at": "2026-10-22T14:33:03.647423+00:00",
+    "updated_at": "2026-10-23T15:47:17.492632+00:00",
     "events": [
      {
       "step": "created",
@@ -162,6 +162,23 @@
        "model_id": "model_01m5hz9nr9gr5wqv"
       },
       "at": "2026-10-22T14:33:03.648456+00:00"
+     },
+     {
+      "step": "deploy",
+      "status": "DEPLOYING",
+      "detail": {
+       "model_id": "model_01m5hz9nr9gr5wqv"
+      },
+      "at": "2026-10-23T15:47:01.715294+00:00"
+     },
+     {
+      "step": "deployed",
+      "status": "ok",
+      "detail": {
+       "model_id": "model_01m5hz9nr9gr5wqv",
+       "seconds": 16.51
+      },
+      "at": "2026-10-23T15:47:17.494288+00:00"
      }
     ]
    },
@@ -508,6 +525,8 @@
   ],
   "/v1/spend": {
    "total_est_usd": 21.04,
+   "billed_total_usd": 21.04,
+   "last_reconciled_at": "2026-10-23T15:36:54.514430+00:00",
    "hard_limit_usd": 45.0,
    "breakdown": [
     {
@@ -587,7 +606,13 @@
      "tokens": 0,
      "est_cost_usd": 35.22
     }
-   ]
+   ],
+   "demo": {
+    "daily_cap_usd": 0.25,
+    "total_cap_usd": 1.25,
+    "spent_today_usd": 0.0,
+    "spent_total_usd": 0.0
+   }
   },
   "/v1/eval/latest": {
    "label": "exp3: Llama-3.2-3B, active docs only",
@@ -3233,7 +3258,9 @@
       "total_tokens": 22470,
       "est_cost_usd": 0.004494000000000001
      }
-    }
+    },
+    "base_model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "rescored": false
    },
    {
     "id": "5434fe68-ea33-4a54-9d0b-9ede315b0440",
@@ -3270,7 +3297,9 @@
       "total_tokens": 24562,
       "est_cost_usd": 0.004912400000000001
      }
-    }
+    },
+    "base_model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "rescored": false
    },
    {
     "id": "a6a740c6-bdee-4d6a-becd-8fcc5ca27c96",
@@ -3307,7 +3336,9 @@
       "total_tokens": 31378,
       "est_cost_usd": 1.1923640000000002
      }
-    }
+    },
+    "base_model_id": "meta-llama/Llama-3.2-3B-Instruct",
+    "rescored": false
    },
    {
     "id": "b9b424c9-9d68-4950-b9c6-f6b8d6d46170",
@@ -3344,7 +3375,9 @@
       "total_tokens": 31378,
       "est_cost_usd": 1.1923640000000002
      }
-    }
+    },
+    "base_model_id": "meta-llama/Llama-3.2-3B-Instruct",
+    "rescored": true
    }
   ],
   "/v1/feedback/flagged": [
@@ -3807,7 +3840,7 @@
   "/v1/demo/status": {
    "demo_mode": true,
    "access_code_required": true,
-   "daily_cap_usd": 1.0,
+   "daily_cap_usd": 0.25,
    "spent_today_usd": 0.0,
    "limit_reached": false,
    "limit_reason": null,

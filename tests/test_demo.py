@@ -294,3 +294,18 @@ async def test_lifetime_cap_auto_undeploys_aligned_and_falls_back_to_base(sessio
     assert await resolve_aligned_model_id(svc, settings) is None
     await redis.flushdb()
     await redis.aclose()
+
+
+async def test_models_endpoint_picks_up_a_redeploy_without_a_chat(demo) -> None:  # type: ignore[no-untyped-def]
+    from app.models import AlignmentRun, RunState
+
+    c, _ = demo
+    app = c._transport.app  # type: ignore[attr-defined]
+    assert (await c.get("/v1/models")).json()["aligned_available"] is False
+    async with app.state.services.session_factory() as s:
+        s.add(AlignmentRun(name="r", base_model_id="meta-llama/Llama-3.2-3B-Instruct",
+                           docs_hash="h", state=RunState.DEPLOYED, model_id="model_new"))
+        await s.commit()
+    app.state.model_checked_at = 0.0  # refresh interval elapsed
+    body = (await c.get("/v1/models")).json()
+    assert body["aligned_available"] is True and body["aligned_model_id"] == "model_new"
