@@ -1,8 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUp, Eraser, Info, MessagesSquare, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowUp, Eraser, MessagesSquare, Sparkles } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AlignedOfflineBadge } from '../components/support/AlignedOffline';
+import { AlignedOfflineBadge, AlignedReliabilityNote } from '../components/support/AlignedOffline';
 import { AnswerCard } from '../components/support/AnswerCard';
 import { AccessGate, DemoLimitCard } from '../components/demo/DemoGate';
 import { useDemoAccess } from '../lib/demo';
@@ -222,21 +221,7 @@ export function ChatPage() {
 
           {/* composer */}
           <div ref={composerRef} className="sticky bottom-20 z-30 mt-6 md:bottom-6">
-            {model === 'aligned' && !alignedOffline && (
-              <p
-                data-testid="aligned-note"
-                className="mb-2 flex items-start gap-1.5 rounded-xl bg-surface/90 px-3 py-2 text-xs text-ink-muted shadow-glass ring-1 ring-inset ring-line/70 backdrop-blur"
-              >
-                <Info className="mt-px h-3.5 w-3.5 shrink-0 text-accent-text" aria-hidden />
-                <span>
-                  Exp 3 aligned model: learned the brand&apos;s format and policy citations, but not reliable on facts.{' '}
-                  <Link to="/eval" className="font-medium text-accent-text underline-offset-2 hover:underline">
-                    See Eval Dashboard
-                  </Link>
-                  .
-                </span>
-              </p>
-            )}
+            {model === 'aligned' && !alignedOffline && <AlignedReliabilityNote className="mb-2" />}
             <form
               onSubmit={(e) => {
                 e.preventDefault();

@@ -21,7 +21,9 @@ from app.config import ROOT, Settings, get_settings
 from app.db import get_session_factory
 
 OUT = ROOT / "ui" / "public" / "demo-snapshot.json"
-READ_PATHS = ["/v1/models", "/v1/pipeline/runs", "/v1/spend", "/v1/eval/latest",
+# /v1/models is deliberately absent: model availability is live state (deploys change it), so
+# the UI must ask the API rather than trust a file built at some earlier point.
+READ_PATHS = ["/v1/pipeline/runs", "/v1/spend", "/v1/eval/latest",
               "/v1/eval/history", "/v1/feedback/flagged", "/v1/feedback/stats",
               "/v1/realign/dataset", "/v1/demo/status"]
 

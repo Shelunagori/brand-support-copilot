@@ -1,14 +1,7 @@
 {
- "generated_at": "2026-10-23T15:47:43.828245+00:00",
+ "generated_at": "2026-10-23T16:10:57.805468+00:00",
  "source": "local database (real runs, evals and feedback)",
  "responses": {
-  "/v1/models": {
-   "aligned_model_id": null,
-   "base_model_id": "meta-llama/Llama-3.2-3B-Instruct",
-   "aligned_available": false,
-   "offline_aligned_model_id": "model_01m5hwkzsc790kf4",
-   "aligned_notice": "Aligned model offline (undeployed to save credits). The base model answers live; the aligned models' measured results are on the Eval dashboard."
-  },
   "/v1/pipeline/runs": [
    {
     "id": "04d6d8b8-a97f-4fd8-92b2-b27f83b90984",

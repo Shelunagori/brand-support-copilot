@@ -24,6 +24,17 @@ async function backend(page: Page, alignedId: string | null) {
     if (path === '/v1/models')
       return json(r, { aligned_model_id: alignedId, base_model_id: LLAMA, aligned_available: !!alignedId, offline_aligned_model_id: alignedId ? null : 'a3' });
     if (path === '/v1/eval/history') return json(r, HISTORY);
+    if (path === '/v1/support/stream') {
+      const kind = (r.request().postDataJSON() as { model: string }).model;
+      const final = { intent: 'returns', answer: `${kind} says hi`, policy_ref: 'UT-RET-001', escalate_to_human: false,
+        confidence: 0.8, confidence_source: kind === 'base' ? 'model_reported' : 'nugen', model_id: kind === 'base' ? LLAMA : 'a3',
+        latency_ms: 5, model_kind: kind, request_id: 'r', cached: false, repaired: false, fallback: false,
+        json_valid_first_try: true, guardrail_triggers: [], model_escalate: false, error: null, notice: null,
+        total_tokens: 10, inference_id: null };
+      const ev = (e: string, d: unknown) => `event: ${e}\ndata: ${JSON.stringify(d)}\n\n`;
+      return r.fulfill({ status: 200, headers: { 'content-type': 'text/event-stream' },
+        body: ev('meta', { request_id: 'r', model_id: final.model_id, model_kind: kind }) + ev('answer_delta', { text: final.answer }) + ev('final', final) });
+    }
     if (path === '/v1/feedback/flagged') return json(r, []);
     if (path === '/v1/feedback/stats') return json(r, { total_inferences: 0, flagged: 0, thumbs_down: 0, corrections: 0, by_flag: {} });
     if (path === '/v1/realign/dataset') return json(r, { items: [], count: 0 });
@@ -70,4 +81,16 @@ test('before/after defaults to a same-base-model pair and blocks cross-model pai
   await before.selectOption('e3');
   await expect(after).toHaveValue('e4');
   await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+test('compare: aligned column carries the reliability note when the aligned model is live', async ({ page }) => {
+  await setTheme(page, 'light');
+  await backend(page, 'model_01m5hz9nr9gr5wqv');
+  await page.goto('/compare');
+  await page.locator('#cmp-q').fill('q');
+  await page.getByRole('button', { name: 'Compare' }).click();
+  const aligned = page.getByRole('region', { name: 'aligned model' });
+  await expect(aligned.getByTestId('aligned-note')).toContainText('not reliable on facts');
+  await expect(page.getByRole('region', { name: 'base model' }).getByTestId('aligned-note')).toHaveCount(0);
+  await expect(aligned.getByText('Aligned model offline')).toHaveCount(0);
 });

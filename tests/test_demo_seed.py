@@ -92,13 +92,13 @@ async def test_build_snapshot_has_every_read_endpoint(session_factory) -> None: 
     await _seed_source(session_factory)
     snap = await build_snapshot(session_factory, base_model_id="meta-llama/Llama-3.2-3B-Instruct")
     r = snap["responses"]
-    for path in ("/v1/models", "/v1/pipeline/runs", "/v1/spend", "/v1/eval/latest",
+    assert "/v1/models" not in r  # availability is live state, never snapshotted
+    for path in ("/v1/pipeline/runs", "/v1/spend", "/v1/eval/latest",
                  "/v1/eval/history", "/v1/feedback/flagged", "/v1/feedback/stats",
                  "/v1/realign/dataset", "/v1/demo/status"):
         assert path in r, path
     hist = r["/v1/eval/history"]
     assert f"/v1/eval/runs/{hist[0]['id']}" in r
     assert r["/v1/demo/status"]["demo_mode"] is True
-    assert r["/v1/models"]["aligned_available"] is False
     assert snap["generated_at"]
     assert "NUGEN" not in json.dumps(snap)

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, GitCompareArrows, Minus, Scale, Trophy } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { AlignedOfflineBadge, AlignedOfflineCard } from '../components/support/AlignedOffline';
+import { AlignedOfflineBadge, AlignedOfflineCard, AlignedReliabilityNote } from '../components/support/AlignedOffline';
 import { AnswerCard } from '../components/support/AnswerCard';
 import { AccessGate, DemoLimitCard } from '../components/demo/DemoGate';
 import { useDemoAccess } from '../lib/demo';
@@ -281,6 +281,7 @@ export function ComparePage() {
                       <span className={clsx('h-2 w-2 rounded-full', k === 'aligned' ? 'bg-accent' : 'bg-violet')} aria-hidden />
                       {k === 'aligned' ? 'Aligned model' : 'Base model'}
                     </h2>
+                    {k === 'aligned' && !offlineRun && <AlignedReliabilityNote className="mb-2" />}
                     {k === 'aligned' && offlineRun ? (
                       <AlignedOfflineCard modelId={models.data?.offline_aligned_model_id} />
                     ) : (
