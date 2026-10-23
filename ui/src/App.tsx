@@ -13,6 +13,7 @@ import { EvalPage } from './pages/EvalPage';
 import { FeedbackPage } from './pages/FeedbackPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { PipelinePage } from './pages/PipelinePage';
+import { ReviewPage } from './pages/review/ReviewPage';
 
 function Page({ children }: { children: React.ReactNode }) {
   return (
@@ -42,7 +43,9 @@ export function App() {
       : item
         ? `${item.label} · Urbane Threads Copilot`
         : 'Urbane Threads Copilot';
-    window.scrollTo({ top: 0 });
+    // deep links such as /review#cost scroll to their section themselves
+    if (!location.hash) window.scrollTo({ top: 0 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on route changes, not hash changes
   }, [location.pathname, waking]);
 
   return (
@@ -77,6 +80,7 @@ export function App() {
                       <Route path="/pipeline" element={<Page><PipelinePage /></Page>} />
                       <Route path="/eval" element={<Page><EvalPage /></Page>} />
                       <Route path="/feedback" element={<Page><FeedbackPage /></Page>} />
+                      <Route path="/review" element={<Page><ReviewPage /></Page>} />
                       <Route path="*" element={<Page><NotFoundPage /></Page>} />
                     </Routes>
                   </AnimatePresence>

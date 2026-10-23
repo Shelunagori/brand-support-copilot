@@ -31,6 +31,9 @@
     --success: 6 118 84;
     --warn: 166 82 6;
     --danger: 196 30 50;
+    /* sky: "state" layer in the /review architecture diagram */
+    --info: 3 105 161;
+    --info-text: 3 99 152;
     --series-base: 132 120 196;
     --series-aligned: 14 150 134;
     --glass-alpha: 0.72;
@@ -68,6 +71,8 @@
     --success: 74 222 160;
     --warn: 251 191 72;
     --danger: 255 112 128;
+    --info: 96 190 250;
+    --info-text: 125 205 255;
     --series-base: 126 111 214;
     --series-aligned: 20 170 150;
     --glass-alpha: 0.55;

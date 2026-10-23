@@ -1,4 +1,4 @@
-import { ChartColumn, GitCompareArrows, MessagesSquare, Repeat2, Workflow } from 'lucide-react';
+import { BookOpenText, ChartColumn, GitCompareArrows, MessagesSquare, Repeat2, Workflow } from 'lucide-react';
 
 export const NAV = [
   { to: '/chat', label: 'Support Chat', short: 'Chat', icon: MessagesSquare },
@@ -6,4 +6,5 @@ export const NAV = [
   { to: '/pipeline', label: 'Alignment Pipeline', short: 'Pipeline', icon: Workflow },
   { to: '/eval', label: 'Eval Dashboard', short: 'Eval', icon: ChartColumn },
   { to: '/feedback', label: 'Feedback Loop', short: 'Feedback', icon: Repeat2 },
+  { to: '/review', label: 'Review', short: 'Review', icon: BookOpenText },
 ] as const;

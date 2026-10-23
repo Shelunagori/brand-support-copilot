@@ -25,6 +25,8 @@ export default {
         success: token('success'),
         warn: token('warn'),
         danger: token('danger'),
+        info: token('info'),
+        'info-text': token('info-text'),
         'series-base': token('series-base'),
         'series-aligned': token('series-aligned'),
       },

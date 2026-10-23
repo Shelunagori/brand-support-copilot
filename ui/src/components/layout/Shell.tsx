@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { BookOpenText, Monitor, Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -190,6 +190,22 @@ export function Shell({ children }: { children: ReactNode }) {
             </div>
           </NavLink>
           <div className="ml-auto flex items-center gap-2">
+            <NavLink
+              to="/review"
+              aria-label="Case study"
+              title="Engineering case study"
+              className={({ isActive }) =>
+                clsx(
+                  'flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium transition-colors',
+                  isActive
+                    ? 'border-accent/35 bg-accent/10 text-accent-text'
+                    : 'border-line bg-surface/70 text-ink-muted hover:border-line-strong hover:text-ink',
+                )
+              }
+            >
+              <BookOpenText className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="hidden whitespace-nowrap sm:inline">Case study</span>
+            </NavLink>
             <DemoModePill />
             <EnvPill />
             <HealthDot />
@@ -266,7 +282,7 @@ export function Shell({ children }: { children: ReactNode }) {
         aria-label="Primary"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-line/70 bg-bg/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
       >
-        <ul className="grid grid-cols-5">
+        <ul className="grid grid-cols-6">
           {NAV.map(({ to, short, icon: Icon }) => (
             <li key={to}>
               <NavLink
