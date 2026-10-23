@@ -24,3 +24,10 @@ test('theme toggle persists to localStorage', async ({ page }) => {
   await page.getByRole('radio', { name: 'Dark theme' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
+
+test('the demo lands on Compare (base vs aligned side by side)', async ({ page }) => {
+  await healthUp(page);
+  await page.goto('/');
+  await expect(page).toHaveURL(/\/compare$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Base vs Aligned' })).toBeVisible();
+});

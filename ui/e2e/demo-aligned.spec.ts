@@ -34,18 +34,23 @@ async function backend(page: Page, alignedId: string | null) {
 test('aligned deployed: Aligned is selectable + default, no offline badges', async ({ page }) => {
   await setTheme(page, 'dark');
   await backend(page, 'model_01m5hz9nr9gr5wqv');
-  await page.goto('/');
+  await page.goto('/chat');
   const aligned = page.getByRole('radio', { name: /aligned/i });
   await expect(aligned).toBeEnabled();
   await expect(aligned).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByText('Aligned model offline (undeployed to save credits)')).toHaveCount(0);
   await expect(page.getByText(/aligned offline/i)).toHaveCount(0);
+  const note = page.getByTestId('aligned-note');
+  await expect(note).toContainText('Exp 3 aligned model: learned the brand');
+  await expect(note.getByRole('link', { name: 'See Eval Dashboard' })).toHaveAttribute('href', '/eval');
+  await page.getByRole('radio', { name: /base/i }).click();
+  await expect(note).toHaveCount(0);
 });
 
 test('aligned offline: Base is the default and the badge shows', async ({ page }) => {
   await setTheme(page, 'dark');
   await backend(page, null);
-  await page.goto('/');
+  await page.goto('/chat');
   await expect(page.getByRole('radio', { name: /base/i })).toHaveAttribute('aria-checked', 'true');
   await expect(page.getByText('Aligned model offline (undeployed to save credits)')).toBeVisible();
 });

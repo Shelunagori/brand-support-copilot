@@ -210,7 +210,7 @@ export function Shell({ children }: { children: ReactNode }) {
               <li key={to}>
                 <NavLink
                   to={to}
-                  end={to === '/'}
+                  end
                   className={({ isActive }) =>
                     clsx(
                       'group relative flex h-9 items-center gap-3 rounded-lg px-3 text-sm transition-colors',
@@ -271,7 +271,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <li key={to}>
               <NavLink
                 to={to}
-                end={to === '/'}
+                end
                 className={({ isActive }) =>
                   clsx(
                     'relative flex h-16 flex-col items-center justify-center gap-1 text-2xs font-medium',

@@ -1,6 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Shell } from './components/layout/Shell';
 import { WakeScreen } from './components/layout/WakeScreen';
 import { useServerPhase } from './lib/serverStatus';
@@ -28,7 +28,7 @@ function Page({ children }: { children: React.ReactNode }) {
 }
 
 /** Routes that need the live API (chat); they show the wake-up screen while it sleeps. */
-const LIVE_ROUTES = ['/', '/compare'];
+const LIVE_ROUTES = ['/', '/chat', '/compare'];
 
 export function App() {
   const location = useLocation();
@@ -71,7 +71,8 @@ export function App() {
                 <Shell>
                   <AnimatePresence mode="wait" initial={false}>
                     <Routes location={location} key={location.pathname}>
-                      <Route path="/" element={<Page><ChatPage /></Page>} />
+                      <Route path="/" element={<Navigate to="/compare" replace />} />
+                <Route path="/chat" element={<Page><ChatPage /></Page>} />
                       <Route path="/compare" element={<Page><ComparePage /></Page>} />
                       <Route path="/pipeline" element={<Page><PipelinePage /></Page>} />
                       <Route path="/eval" element={<Page><EvalPage /></Page>} />

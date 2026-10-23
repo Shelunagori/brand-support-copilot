@@ -38,7 +38,7 @@ for (const theme of THEMES) {
     await setTheme(page, theme);
     await snapshot(page, { generated_at: null, responses: {} });
     await asleep(page);
-    await page.goto('/');
+    await page.goto('/chat');
 
     const status = page.getByRole('status').filter({ hasText: HEADLINE });
     await expect(page.getByRole('heading', { level: 1, name: HEADLINE })).toBeVisible();

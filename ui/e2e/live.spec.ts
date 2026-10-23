@@ -20,7 +20,7 @@ async function open(page: Page, path: string, theme: string) {
 
 for (const theme of THEMES) {
   test(`chat-live-${theme}`, async ({ page }) => {
-    await open(page, '/', theme);
+    await open(page, '/chat', theme);
     await page.getByPlaceholder('Type a customer message…').fill(QUESTION);
     await page.getByRole('button', { name: 'Send message' }).click();
     await expect(page.getByRole('button', { name: 'Helpful', exact: true })).toBeVisible({ timeout: 200_000 });

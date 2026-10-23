@@ -61,7 +61,7 @@ test.use({ viewport: { width: 1440, height: 900 } });
 test('chat is gated by the access code', async ({ page }) => {
   await setTheme(page, 'dark');
   await demoBackend(page);
-  await page.goto('/');
+  await page.goto('/chat');
   await expect(page.getByRole('heading', { level: 1, name: 'Support Chat' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Enter the demo access code' })).toBeVisible();
   await expect(page.getByText('Ask the person who shared this link for the code.')).toBeVisible();
@@ -93,7 +93,7 @@ test('chat is gated by the access code', async ({ page }) => {
 test('a rejected code clears it and shows the gate again', async ({ page }) => {
   await page.addInitScript((c) => localStorage.setItem('ut-demo-code', c), 'stale-code');
   await demoBackend(page, demoStatus(), { status: 401, detail: 'invalid access code' });
-  await page.goto('/');
+  await page.goto('/chat');
   await page.getByLabel('Customer message').fill('Where is my order?');
   await page.getByRole('button', { name: 'Send message' }).click();
   await expect(page.getByRole('heading', { name: 'Enter the demo access code' })).toBeVisible();
@@ -103,7 +103,7 @@ test('a rejected code clears it and shows the gate again', async ({ page }) => {
 test('per-IP limit shows the hourly message', async ({ page }) => {
   await page.addInitScript((c) => localStorage.setItem('ut-demo-code', c), CODE);
   await demoBackend(page, demoStatus(), { status: 429, detail: 'ip_rate_limited' });
-  await page.goto('/');
+  await page.goto('/chat');
   await page.getByLabel('Customer message').fill('Where is my order?');
   await page.getByRole('button', { name: 'Send message' }).click();
   await expect(page.getByText("You've reached the demo limit of 10 messages per hour. Try again later.")).toBeVisible();
@@ -113,7 +113,7 @@ test('daily limit reached shows the designed state and disables the composer', a
   await setTheme(page, 'dark');
   await page.addInitScript((c) => localStorage.setItem('ut-demo-code', c), CODE);
   await demoBackend(page, demoStatus({ limit_reached: true, limit_reason: 'daily', spent_today_usd: 1.01 }));
-  await page.goto('/');
+  await page.goto('/chat');
   await expect(page.getByRole('heading', { name: 'Demo limit reached for today' })).toBeVisible();
   await expect(page.getByText('00:00 UTC')).toBeVisible();
   await expect(page.getByLabel('Customer message')).toBeDisabled();
@@ -128,7 +128,7 @@ test('daily limit reached shows the designed state and disables the composer', a
 
 test('total budget used shows the paused state without a reset time', async ({ page }) => {
   await demoBackend(page, demoStatus({ limit_reached: true, limit_reason: 'total' }));
-  await page.goto('/');
+  await page.goto('/chat');
   await expect(page.getByRole('heading', { name: "The demo's total budget has been used" })).toBeVisible();
   await expect(page.getByText('Eval, Pipeline and Feedback results are still available.')).toBeVisible();
   await expect(page.getByText('00:00 UTC')).toHaveCount(0);
@@ -174,7 +174,7 @@ test('non-demo backend: no gate, controls enabled', async ({ page }) => {
     if (path.endsWith('/v1/pipeline/runs')) return json(r, []);
     return json(r, { detail: 'not found' }, 404);
   });
-  await page.goto('/');
+  await page.goto('/chat');
   await expect(page.getByLabel('Customer message')).toBeEnabled();
   await expect(page.getByText('Public demo · read-only')).toHaveCount(0);
   await page.goto('/pipeline');

@@ -54,7 +54,7 @@ for (const vp of [{ name: 'desktop', width: 1440, height: 900 }, { name: 'mobile
     await page.emulateMedia({ reducedMotion: 'reduce' }); // deterministic layout (no exit animations)
     await setTheme(page, 'light');
     await backend(page);
-    await page.goto('/');
+    await page.goto('/chat');
     const box = page.getByPlaceholder('Type a customer message…');
     for (const n of [1, 2, 3]) {
       await box.fill(`question ${n}`);

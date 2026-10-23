@@ -41,7 +41,7 @@ test.describe('mobile 390x844', () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   for (const theme of THEMES) {
     test(`chat-mobile-${theme}`, async ({ page }) => {
-      await open(page, '/', theme);
+      await open(page, '/chat', theme);
       await page.screenshot({ path: join(OUT, `chat-mobile-${theme}.png`) });
     });
   }
