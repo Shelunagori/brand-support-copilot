@@ -28,7 +28,9 @@ async def history(_: ReadAuthed, svc: Services, limit: int = 20) -> list[dict[st
         runs = (await s.scalars(select(EvalRun).order_by(EvalRun.created_at.asc())
                                 .limit(min(limit, 100)))).all()
     return [{"id": str(r.id), "label": r.label, "generated_at": r.created_at.isoformat(),
-             "summary": r.summary} for r in runs]
+             "summary": r.summary,
+             "base_model_id": (r.summary.get("base") or {}).get("model_id"),
+             "rescored": "rescored_from" in (r.report or {})} for r in runs]
 
 
 @router.get("/runs/{run_id}")

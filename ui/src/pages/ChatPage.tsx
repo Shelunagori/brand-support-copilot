@@ -75,7 +75,8 @@ export function ChatPage() {
     end.scrollIntoView({ behavior, block: 'end' });
   }, []);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const models = useResource(({ signal }) => api.models({ signal }));
+  // re-check availability: the aligned model can be (re)deployed or auto-undeployed at any time
+  const models = useResource(({ signal }) => api.models({ signal }), 60000);
   const busy = turns.some((t) => t.stream.status === 'streaming');
   const { access, status: demo } = useDemoAccess();
   const canSend = access === 'open';
@@ -129,10 +130,12 @@ export function ChatPage() {
 
   const alignedOffline = !!models.data && !models.data.aligned_model_id;
 
-  // No deployed aligned model: default to base instead of erroring.
+  // Follow availability: aligned is the default whenever it is deployed, base when it is not
+  // (runs on transitions only, so a manual choice sticks until availability changes).
+  const alignedKnown = !!models.data;
   useEffect(() => {
-    if (alignedOffline) setModel('base');
-  }, [alignedOffline]);
+    if (alignedKnown) setModel(alignedOffline ? 'base' : 'aligned');
+  }, [alignedOffline, alignedKnown]);
 
   return (
     <div className="mx-auto max-w-3xl">

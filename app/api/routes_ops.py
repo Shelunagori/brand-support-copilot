@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 
 from app.api.deps import AdminAuthed, ReadAuthed, Services, settings
-from app.models import AlignmentRun, RunEvent, RunState
+from app.models import AlignmentRun, RunEvent, RunState, SpendEntry
 from app.spend import SpendTracker
 
 router = APIRouter(tags=["ops"])
@@ -103,12 +103,30 @@ async def enqueue_deploy(_: AdminAuthed, svc: Services) -> dict[str, Any]:
 
 
 @router.get("/v1/spend")
-async def spend(_: ReadAuthed, svc: Services) -> dict[str, Any]:
-    from app.config import get_settings
-
-    s = get_settings()
-    tracker = SpendTracker(svc.session_factory, s.nugen_price_per_mtok_usd,
-                           s.nugen_spend_hard_limit_usd)
+async def spend(request: Request, _: ReadAuthed, svc: Services) -> dict[str, Any]:
+    cfg = settings(request)
+    tracker = SpendTracker(svc.session_factory, cfg.nugen_price_per_mtok_usd,
+                           cfg.nugen_spend_hard_limit_usd)
     rows = await tracker.summary()
-    return {"total_est_usd": round(sum(r["est_cost_usd"] for r in rows), 6),
-            "hard_limit_usd": s.nugen_spend_hard_limit_usd, "breakdown": rows}
+    total = round(sum(r["est_cost_usd"] for r in rows), 6)
+    async with svc.session_factory() as s:
+        last_rec = await s.scalar(select(SpendEntry.at)
+                                  .where(SpendEntry.purpose == "reconciliation")
+                                  .order_by(SpendEntry.at.desc()).limit(1))
+    out: dict[str, Any] = {
+        "total_est_usd": total,
+        # after a reconciliation the log total equals the platform-billed total
+        "billed_total_usd": total if last_rec else None,
+        "last_reconciled_at": last_rec.isoformat() if last_rec else None,
+        "hard_limit_usd": cfg.nugen_spend_hard_limit_usd,
+        "breakdown": rows,
+    }
+    if cfg.demo_mode:
+        budget = svc.demo_budget
+        out["demo"] = {
+            "daily_cap_usd": cfg.demo_daily_cap_usd,
+            "total_cap_usd": cfg.demo_total_cap_usd,
+            "spent_today_usd": round(await budget.spent_today(), 4) if budget else 0.0,
+            "spent_total_usd": round(await budget.spent_total(), 4) if budget else 0.0,
+        }
+    return out

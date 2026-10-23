@@ -13,7 +13,7 @@ from sqlalchemy import select, text
 from app.api.deps import AppServices
 from app.config import Settings, get_settings
 from app.db import get_session_factory
-from app.demo import DemoBudget
+from app.demo import ALIGNED_KILL_KEY, DemoBudget
 from app.logging_setup import configure_logging, request_id_var
 from app.models import AlignmentRun, RunState
 from app.runtime import build_client, build_spend
@@ -26,6 +26,8 @@ __all__ = ["AppServices", "create_app"]
 
 
 async def resolve_aligned_model_id(services: AppServices, settings: Settings) -> str | None:
+    if settings.demo_mode and await services.redis.get(ALIGNED_KILL_KEY):
+        return None  # lifetime demo cap hit: aligned model was auto-undeployed
     if settings.aligned_model_id:
         return settings.aligned_model_id
     async with services.session_factory() as s:

@@ -143,6 +143,15 @@ it sends one real message (about $0.02 against the daily cap).
 
 ## Day-2 operations
 
+- **Aligned model on/off for the public demo:** run `make demo-redeploy` (paid: shows the cost and
+  asks y/N) or `make demo-undeploy`. Both also reseed Neon, so the live API follows within ~30 s
+  and the UI switches its default (Aligned when deployed, Base otherwise) and its badges by itself.
+- **Lifetime cap safety:** when `DEMO_TOTAL_CAP_USD` is reached, the API undeploys the aligned model
+  once and sets the Redis key `demo:aligned_disabled`, so all replicas answer with the base model.
+  Chat stays paused until you raise the cap. To re-enable the aligned model afterwards: raise the
+  cap, delete that key (`redis-cli -u "$UPSTASH_URL" DEL demo:aligned_disabled`), then run
+  `make demo-redeploy`.
+
 - **Pause live chat:** in Render, set `DEMO_ACCESS_CODE` to empty. Chat then fails closed with 503;
   everything read-only keeps working.
 - **Rotate the code:** change `DEMO_ACCESS_CODE` in Render. Visitors with the old code are asked

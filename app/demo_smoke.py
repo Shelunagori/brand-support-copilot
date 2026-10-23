@@ -34,7 +34,9 @@ def wait_for_health(c: httpx.Client, api: str, max_s: float = 120) -> float:
 def main(api: str = typer.Option(..., help="Render API base URL"),
          ui: str = typer.Option(..., help="Vercel UI URL"),
          code: str = typer.Option("", help="Demo access code (or DEMO_ACCESS_CODE env)"),
-         chat: bool = typer.Option(False, "--chat", help="Send ONE real chat message (paid)")
+         chat: bool = typer.Option(False, "--chat", help="Send ONE real chat message (paid)"),
+         compare: bool = typer.Option(False, "--compare",
+                                      help="One Compare call: base + aligned (2 paid messages)"),
          ) -> None:
     api, ui = api.rstrip("/"), ui.rstrip("/")
     code = code or os.environ.get("DEMO_ACCESS_CODE", "")
@@ -133,6 +135,27 @@ def main(api: str = typer.Option(..., help="Render API base URL"),
                 return r.status_code == 200 and not b.get("fallback"), \
                     f"{b.get('model_id')} notice={b.get('notice')} {b.get('latency_ms')}ms"
             check("one live chat message (paid, ~$0.02)", one_message)
+
+        if code and compare:
+            q = "My jeans were delivered 3 days ago, unworn with tags. Can I return them?"
+            before = c.get(f"{api}/v1/demo/status").json().get("spent_today_usd", 0.0)
+            answers = {}
+            for kind in ("base", "aligned"):
+                r = c.post(f"{api}/v1/support/query", headers={"X-Demo-Code": code},
+                           json={"query": q, "model": kind, "use_cache": False}, timeout=180)
+                answers[kind] = (r.status_code, r.json())
+            after = c.get(f"{api}/v1/demo/status").json().get("spent_today_usd", 0.0)
+            for kind, (st, b) in answers.items():
+                ok = st == 200 and b.get("model_kind") == kind and not b.get("fallback")
+                results.append((f"compare: {kind}", ok, ""))
+                typer.echo(f"{'PASS' if ok else 'FAIL'}  compare: {kind:<38} "
+                           f"model={b.get('model_id')} "
+                           f"json_first_try={b.get('json_valid_first_try')} "
+                           f"repaired={b.get('repaired')} policy_ref={b.get('policy_ref')} "
+                           f"conf={b.get('confidence')}({b.get('confidence_source')}) "
+                           f"{b.get('latency_ms')}ms {b.get('total_tokens')}tok")
+                typer.echo(f"      answer: {str(b.get('answer'))[:220]}")
+            typer.echo(f"compare cost (demo budget, est. at $38/1M): ${after - before:.4f}")
 
     failed = [n for n, ok, _ in results if not ok]
     typer.echo(f"\n{len(results) - len(failed)}/{len(results)} checks passed")

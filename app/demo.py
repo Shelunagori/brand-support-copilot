@@ -1,8 +1,10 @@
 """Public-demo guards: a Redis daily spend cap (also a client SpendGuard) and per-IP limits."""
 
 import hashlib
+import logging
 import time
 from datetime import UTC, datetime
+from typing import Any
 
 from redis.asyncio import Redis
 
@@ -67,6 +69,26 @@ class DemoBudget:
         await self._r.incrbyfloat(key, cost)
         await self._r.expire(key, DAY_TTL_S)
         await self._r.incrbyfloat(self.TOTAL_KEY, cost)
+
+
+ALIGNED_KILL_KEY = "demo:aligned_disabled"
+log = logging.getLogger(__name__)
+
+
+async def enforce_lifetime_cap(redis: Redis, budget: DemoBudget | None, support: Any,
+                               nugen: Any) -> None:
+    """Lifetime demo cap reached: undeploy the aligned model once (it may bill per hour) and
+    flip a Redis kill switch so every replica answers with the base model from then on."""
+    if budget is None or await budget.limit_reason() != "total":
+        return
+    model_id = support.aligned_model_id
+    support.aligned_model_id = None
+    if await redis.set(ALIGNED_KILL_KEY, "1", nx=True) and model_id and nugen is not None:
+        try:
+            await nugen.undeploy_model(model_id)
+            log.warning("demo.aligned_auto_undeployed", extra={"model_id": model_id})
+        except Exception:
+            log.exception("demo.auto_undeploy_failed")
 
 
 async def hit_hourly_limit(redis: Redis, bucket: str, ident: str, limit: int) -> bool:

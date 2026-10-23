@@ -209,6 +209,28 @@ function DatasetCard({ onRealign }: { onRealign: () => void }) {
   );
 }
 
+const baseOf = (e: EvalHistoryEntry): string | null =>
+  e.base_model_id ?? e.summary.base?.model_id ?? null;
+
+const shortModel = (id: string | null): string => (id ? (id.split('/').pop() ?? id) : 'unknown base');
+
+/** Like-for-like default: the first base model with 2+ real (not re-scored) runs, first -> last. */
+function defaultPair(sorted: EvalHistoryEntry[]): [string, string] {
+  const groups = new Map<string, EvalHistoryEntry[]>();
+  for (const e of sorted) {
+    const k = baseOf(e) ?? '?';
+    groups.set(k, [...(groups.get(k) ?? []), e]);
+  }
+  for (const pool of [
+    [...groups.values()].map((g) => g.filter((e) => !e.rescored)),
+    [...groups.values()],
+  ]) {
+    const g = pool.find((x) => x.length >= 2);
+    if (g) return [g[0]!.id, g[g.length - 1]!.id];
+  }
+  return [sorted[0]!.id, sorted[sorted.length - 1]!.id];
+}
+
 function BeforeAfter() {
   const res = useResource(({ signal }) => api.evalHistory({ signal }));
   const sorted = useMemo(
@@ -219,13 +241,25 @@ function BeforeAfter() {
   const [toId, setToId] = useState<string>();
   useEffect(() => {
     if (sorted.length >= 2) {
-      setFromId((v) => v ?? sorted[0]!.id);
-      setToId((v) => v ?? sorted[sorted.length - 1]!.id);
+      const pair = defaultPair(sorted);
+      setFromId((v) => v ?? pair[0]);
+      setToId((v) => v ?? pair[1]);
     }
   }, [sorted]);
   const from = sorted.find((e) => e.id === fromId);
   const to = sorted.find((e) => e.id === toId);
-  const label = (e: EvalHistoryEntry) => `${e.label || e.id} · ${dateTime(e.generated_at)}`;
+  const label = (e: EvalHistoryEntry) =>
+    `${e.label || e.id} · ${shortModel(baseOf(e))} · ${dateTime(e.generated_at)}`;
+  const mismatch = !!from && !!to && baseOf(from) !== baseOf(to);
+  const pickFrom = (id: string) => {
+    setFromId(id);
+    const f = sorted.find((e) => e.id === id);
+    // keep the pair like-for-like: snap "after" to the latest run on the same base model
+    if (f && to && baseOf(to) !== baseOf(f)) {
+      const same = sorted.filter((e) => e.id !== id && baseOf(e) === baseOf(f));
+      if (same.length) setToId(same[same.length - 1]!.id);
+    }
+  };
 
   return (
     <Card>
@@ -259,7 +293,7 @@ function BeforeAfter() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label className="flex-1">
               <span className="eyebrow mb-1 block">Before</span>
-              <select className="input" value={fromId} onChange={(e) => setFromId(e.target.value)}>
+              <select className="input" value={fromId} onChange={(e) => pickFrom(e.target.value)}>
                 {sorted.map((e) => (
                   <option key={e.id} value={e.id}>
                     {label(e)}
@@ -271,14 +305,24 @@ function BeforeAfter() {
             <label className="flex-1">
               <span className="eyebrow mb-1 block">After</span>
               <select className="input" value={toId} onChange={(e) => setToId(e.target.value)}>
-                {sorted.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {label(e)}
-                  </option>
-                ))}
+                {sorted.map((e) => {
+                  const other = !!from && baseOf(e) !== baseOf(from);
+                  return (
+                    <option key={e.id} value={e.id} disabled={other}>
+                      {label(e)}
+                      {other ? ' · different base model' : ''}
+                    </option>
+                  );
+                })}
               </select>
             </label>
           </div>
+          {mismatch && (
+            <p role="alert" className="rounded-xl bg-warn/10 px-3 py-2 text-sm text-warn ring-1 ring-inset ring-warn/30">
+              Different base models ({shortModel(baseOf(from!))} vs {shortModel(baseOf(to!))}): this is not a
+              before/after of the same model, so the deltas are not a re-alignment effect.
+            </p>
+          )}
           {from && to && (
             <>
               <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 xl:grid-cols-4">

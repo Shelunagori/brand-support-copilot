@@ -220,3 +220,77 @@ async def test_hosted_misconfig_rejects_dev_key_over_http(monkeypatch, session_f
         r = await c.get("/v1/pipeline/runs", headers={"X-API-Key": "dev-key-change-me"})
     assert r.status_code == 401
     await redis.aclose()
+
+
+async def test_history_exposes_base_model_and_rescore_flag(api, session_factory) -> None:  # type: ignore[no-untyped-def]
+    from app.models import EvalRun
+
+    c, _ = api
+    async with session_factory() as s:
+        s.add(EvalRun(label="a", summary={"base": {"model_id": "Qwen/0.5B"},
+                                          "aligned": {"model_id": "m1"}}, report={}))
+        s.add(EvalRun(label="b", summary={"base": {"model_id": "Llama/3B"}},
+                      report={"rescored_from": "x.json"}))
+        await s.commit()
+    hist = (await c.get("/v1/eval/history", headers={"X-API-Key": "test-key"})).json()
+    by = {h["label"]: h for h in hist}
+    assert by["a"]["base_model_id"] == "Qwen/0.5B" and by["a"]["rescored"] is False
+    assert by["b"]["base_model_id"] == "Llama/3B" and by["b"]["rescored"] is True
+
+
+async def test_spend_reports_billed_total_cap_and_demo_caps(demo) -> None:  # type: ignore[no-untyped-def]
+    from app.models import SpendEntry
+
+    c, _ = demo
+    sf = c._transport.app.state.services.session_factory  # type: ignore[attr-defined]
+    async with sf() as s:
+        s.add(SpendEntry(endpoint="chat", est_cost_usd=30.0))
+        s.add(SpendEntry(endpoint="(billing reconciliation)", purpose="reconciliation",
+                         est_cost_usd=-8.96, note="billing"))
+        await s.commit()
+    body = (await c.get("/v1/spend")).json()
+    assert body["total_est_usd"] == pytest.approx(21.04)
+    assert body["billed_total_usd"] == pytest.approx(21.04)
+    assert body["last_reconciled_at"] is not None
+    assert body["hard_limit_usd"] == 45.0
+    assert body["demo"]["daily_cap_usd"] == 1.0 and body["demo"]["total_cap_usd"] == 5.0
+
+
+class FakeNugenDeploy:
+    def __init__(self) -> None:
+        self.undeployed: list[str] = []
+
+    async def undeploy_model(self, model_id: str) -> str:
+        self.undeployed.append(model_id)
+        return "Undeployment started"
+
+
+async def test_lifetime_cap_auto_undeploys_aligned_and_falls_back_to_base(session_factory) -> None:  # type: ignore[no-untyped-def]
+    from app.api.main import resolve_aligned_model_id
+    from app.models import AlignmentRun, RunState
+
+    redis: Redis = Redis.from_url("redis://localhost:6379/15", decode_responses=True)
+    await redis.flushdb()
+    async with session_factory() as s:
+        s.add(AlignmentRun(name="r", base_model_id="b", docs_hash="h", state=RunState.DEPLOYED,
+                           model_id="model_live"))
+        await s.commit()
+    settings = Settings(demo_mode=True, demo_access_code="open-sesame", demo_total_cap_usd=0.01)
+    budget = DemoBudget(redis, 38.0, daily_cap_usd=1.0, total_cap_usd=0.01)
+    nugen = FakeNugenDeploy()
+    support = SupportService(client=ScriptedClient([VALID] * 5), cache=None,  # type: ignore[arg-type]
+                             aligned_model_id="model_live", base_model_id="base")
+    svc = AppServices(redis=redis, session_factory=session_factory, support=support,
+                      nugen=nugen, demo_budget=budget)  # type: ignore[arg-type]
+    app = create_app(settings, svc)
+    await budget.record(endpoint="chat", total_tokens=1_000)  # $0.038 > $0.01 lifetime cap
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+        r = await c.post("/v1/support/query", json={"query": "q"}, headers=CODE)
+        assert r.status_code == 429 and r.json()["detail"] == "demo_daily_limit"
+        await c.get("/v1/demo/status")  # a second trigger must not undeploy twice
+    assert nugen.undeployed == ["model_live"]
+    assert support.aligned_model_id is None
+    # the DB still says DEPLOYED, but the Redis kill switch wins
+    assert await resolve_aligned_model_id(svc, settings) is None
+    await redis.flushdb()
+    await redis.aclose()

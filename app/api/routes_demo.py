@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from app.api.deps import Services, client_ip, settings
-from app.demo import hit_hourly_limit
+from app.demo import enforce_lifetime_cap, hit_hourly_limit
 
 router = APIRouter(prefix="/v1/demo", tags=["demo"])
 
@@ -18,6 +18,7 @@ async def status(request: Request, svc: Services) -> dict[str, Any]:
     if not cfg.demo_mode:
         return {"demo_mode": False}
     budget = svc.demo_budget
+    await enforce_lifetime_cap(svc.redis, budget, svc.support, svc.nugen)
     spent = await budget.spent_today() if budget else 0.0
     reason = await budget.limit_reason() if budget else None
     return {

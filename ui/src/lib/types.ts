@@ -97,8 +97,13 @@ export interface SpendRow {
 
 export interface Spend {
   total_est_usd: number;
+  /** Equals the platform-billed total after a reconciliation; null if never reconciled. */
+  billed_total_usd?: number | null;
+  last_reconciled_at?: string | null;
   hard_limit_usd: number;
   breakdown: SpendRow[];
+  /** Public demo only: its own Redis budgets. */
+  demo?: { daily_cap_usd: number; total_cap_usd: number; spent_today_usd: number; spent_total_usd: number };
 }
 
 export interface EvalMetrics {
@@ -157,6 +162,10 @@ export interface EvalHistoryEntry {
   label: string;
   generated_at: string;
   summary: EvalSummary;
+  /** Base model of the run (both sides of a before/after must share it). */
+  base_model_id?: string | null;
+  /** Offline re-score of a saved run, not a new run. */
+  rescored?: boolean;
 }
 
 export interface FeedbackBody {

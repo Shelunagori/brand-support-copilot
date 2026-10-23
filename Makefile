@@ -89,9 +89,12 @@ demo-redeploy: demo-cost  ## PAID: redeploy the Exp 3 aligned model (asks first)
 	@printf "Redeploy $(EXP3_MODEL)? Deployment uptime may be billed per hour. [y/N] "; \
 	read a; [ "$$a" = "y" ] || { echo "aborted, nothing deployed"; exit 1; }
 	$(PY) -m app.cli deploy --model-id $(EXP3_MODEL) --poll-interval 15
+	@if grep -q '^DEMO_DATABASE_URL=.' .env 2>/dev/null; then $(MAKE) demo-seed demo-snapshot; \
+	  echo "public demo: Neon updated, the live API switches to the aligned model within ~30 s"; fi
 
 demo-undeploy:     ## turn the aligned model off again (free)
 	$(PY) -m app.cli undeploy $(EXP3_MODEL)
+	@if grep -q '^DEMO_DATABASE_URL=.' .env 2>/dev/null; then $(MAKE) demo-seed demo-snapshot; fi
 
 # ---------------------------------------------------------------- public demo (Render + Vercel)
 .PHONY: demo-snapshot demo-seed demo-smoke demo-local

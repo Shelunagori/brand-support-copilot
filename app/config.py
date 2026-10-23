@@ -43,7 +43,8 @@ class Settings(BaseSettings):
     # Nugen does not publish per-token prices in its API docs; this is an estimate (VETOABLE).
     # Calibrated from platform billing on 2026-10-22 (see DECISIONS D28).
     nugen_price_per_mtok_usd: float = 38.0
-    nugen_spend_hard_limit_usd: float = 40.0
+    # Lifetime cap = billed total + (remaining balance - $5 buffer); 2026-10-23: 21.04 + 23.96.
+    nugen_spend_hard_limit_usd: float = 45.0
     # Alignment cost is not returned by the API; budget conservatively per run (VETOABLE).
     nugen_alignment_cost_est_usd: float = 8.0
 

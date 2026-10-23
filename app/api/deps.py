@@ -9,7 +9,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
-from app.demo import DemoBudget, hit_hourly_limit
+from app.demo import DemoBudget, enforce_lifetime_cap, hit_hourly_limit
 from app.nugen.client import NugenClient
 from app.support.service import SupportService
 
@@ -105,6 +105,7 @@ async def chat_access(
     if not x_demo_code or not secrets.compare_digest(x_demo_code, expected):
         raise HTTPException(401, "invalid access code")
     svc = services(request)
+    await enforce_lifetime_cap(svc.redis, svc.demo_budget, svc.support, svc.nugen)
     if svc.demo_budget is not None and await svc.demo_budget.limit_reached():
         raise HTTPException(429, "demo_daily_limit")
     if await hit_hourly_limit(svc.redis, "ip", client_ip(request),

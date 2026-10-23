@@ -174,16 +174,29 @@ function SpendCard() {
       ) : spend.data ? (
         (() => {
           const d = spend.data;
-          const ratio = d.hard_limit_usd > 0 ? d.total_est_usd / d.hard_limit_usd : 0;
+          const billed = d.billed_total_usd ?? null;
+          const shown = billed ?? d.total_est_usd;
+          const ratio = d.hard_limit_usd > 0 ? shown / d.hard_limit_usd : 0;
           return (
             <div>
+              <p className="eyebrow mb-1">
+                {billed != null && d.last_reconciled_at
+                  ? `Billed total · reconciled ${dateTime(d.last_reconciled_at)}`
+                  : 'Estimated spend · not yet reconciled with billing'}
+              </p>
               <div className="flex items-baseline justify-between gap-2">
-                <p className="num text-2xl font-semibold tracking-tight text-ink">{usd(d.total_est_usd)}</p>
-                <p className="num text-xs text-ink-subtle">of {usd(d.hard_limit_usd, 2)} hard limit</p>
+                <p className="num text-2xl font-semibold tracking-tight text-ink" data-testid="spend-total">{usd(shown, 2)}</p>
+                <p className="num text-xs text-ink-subtle">of {usd(d.hard_limit_usd, 2)} lifetime cap</p>
               </div>
               <div className="mt-3">
-                <Progress value={ratio} tone={ratio > 0.9 ? 'danger' : ratio > 0.7 ? 'warn' : 'accent'} label="Spend vs hard limit" />
+                <Progress value={ratio} tone={ratio > 0.9 ? 'danger' : ratio > 0.7 ? 'warn' : 'accent'} label="Spend vs lifetime cap" />
               </div>
+              {d.demo && (
+                <p className="num mt-3 rounded-lg bg-surface-3/50 px-2.5 py-1.5 text-2xs text-ink-muted ring-1 ring-inset ring-line/70">
+                  Public demo budget: {usd(d.demo.spent_today_usd, 2)} of {usd(d.demo.daily_cap_usd, 2)} today ·{' '}
+                  {usd(d.demo.spent_total_usd, 2)} of {usd(d.demo.total_cap_usd, 2)} lifetime
+                </p>
+              )}
               {d.breakdown.length === 0 ? (
                 <p className="mt-4 flex items-center gap-2 text-xs text-ink-subtle">
                   <CircleDollarSign className="h-3.5 w-3.5" aria-hidden /> No billable calls logged yet.

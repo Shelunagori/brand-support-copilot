@@ -179,7 +179,7 @@ export function ComparePage() {
   // aligned model undeployed at the time of the run: base only, offline card for aligned
   const [offlineRun, setOfflineRun] = useState(false);
   const ctrl = useRef<AbortController | null>(null);
-  const models = useResource(({ signal }) => api.models({ signal }));
+  const models = useResource(({ signal }) => api.models({ signal }), 60000);
   const alignedOffline = !!models.data && !models.data.aligned_model_id;
   const { access, status: demo } = useDemoAccess();
   const canSend = access === 'open';
