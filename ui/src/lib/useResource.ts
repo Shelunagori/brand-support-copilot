@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiError } from './api';
+import { useServerPhase } from './serverStatus';
 
 export interface Resource<T> {
   data: T | undefined;
@@ -27,6 +28,15 @@ export function useResource<T>(fetcher: Fetcher<T>, pollMs?: number | ((data: T 
   const pollRef = useRef(pollMs);
   fetcherRef.current = fetcher;
   pollRef.current = pollMs;
+
+  // Reads may have been answered from the static snapshot while the API slept:
+  // refetch live data as soon as the server comes up.
+  const phase = useServerPhase();
+  const lastPhase = useRef(phase);
+  useEffect(() => {
+    if (phase === 'up' && lastPhase.current !== 'up') setTick((t) => t + 1);
+    lastPhase.current = phase;
+  }, [phase]);
 
   const reload = useCallback(() => {
     setLoading((l) => l || data === undefined);

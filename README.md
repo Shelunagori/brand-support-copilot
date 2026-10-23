@@ -190,6 +190,30 @@ JSON lines with the request id, and secrets are redacted by the formatter.
 deterministic guardrails that can only *raise* escalation. Upstream errors also fall back to a
 human hand-off, flagged in the log.
 
+## Public demo
+
+**Live link:** *coming soon (being deployed)*. The access code for live chat is shared
+privately on request.
+
+The public demo runs the same code in `DEMO_MODE`:
+- **Real results, public:** Pipeline, Eval (all 4 runs, including the labelled offline
+  re-score) and Feedback show the real data from development, read-only.
+- **Live chat, behind the access code:** Chat and Compare call the live **base** model
+  (`Llama-3.2-3B-Instruct`). The aligned models are undeployed to save credits, and a badge
+  says so.
+- **Capped spend:** $1/day and $5 lifetime, plus 10 messages per IP per hour.
+- **Read-only:** paid and admin actions are disabled.
+- **No key in the browser,** and CORS allows only the UI's domain.
+- **Free-tier cold starts:** the API sleeps when idle. The UI shows a wake-up screen and renders
+  the results screens instantly from a bundled snapshot.
+
+Stack: Vercel (UI) · Render (API, Docker) · Neon (Postgres) · Upstash (Redis). Setup steps are in
+[docs/DEPLOY.md](docs/DEPLOY.md). `make demo-local` runs the API exactly as deployed.
+
+| Wake-up (dark) | Wake-up (light) | Access gate |
+|---|---|---|
+| ![](ui/screenshots/wake-dark.png) | ![](ui/screenshots/wake-light.png) | ![](ui/screenshots/demo-gate-dark.png) |
+
 ## Local demo (UI + API)
 
 The aligned models are **undeployed to save credits**. Chat and Compare still work: they

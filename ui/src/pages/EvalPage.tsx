@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpDown, ChartColumn, Check, ChevronRight, FlaskConical, Gauge, ListFilter, Search, ShieldAlert, Timer, X } from 'lucide-react';
-import { Fragment, useMemo, useState } from 'react';
+import { ArrowUpDown, ChartColumn, Check, ChevronRight, FlaskConical, Gauge, History, ListFilter, Search, ShieldAlert, Timer, X } from 'lucide-react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { GroupedBars, type SeriesRow } from '../components/ui/charts';
 import { Card, CardHeader, PageHeader, Pill, Skeleton, Stagger } from '../components/ui/primitives';
 import { EmptyState, ErrorState } from '../components/ui/states';
@@ -10,7 +11,7 @@ import { ScoreCard } from '../components/support/metrics';
 import { METRICS } from '../lib/metrics';
 import { api } from '../lib/api';
 import { dateTime, humanize, ms } from '../lib/format';
-import type { EvalQuestion, EvalReport, EvalResult } from '../lib/types';
+import type { EvalHistoryEntry, EvalQuestion, EvalReport, EvalResult } from '../lib/types';
 import { useResource } from '../lib/useResource';
 
 type ModelView = 'both' | 'base' | 'aligned';
@@ -349,24 +350,113 @@ export function EvalDashboard({ report }: { report: EvalReport }) {
   );
 }
 
+function RunSelect({
+  history,
+  latestId,
+  value,
+  onChange,
+}: {
+  history: EvalHistoryEntry[];
+  latestId: string | undefined;
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  // Newest first in the menu; history arrives oldest first.
+  const runs = useMemo(() => [...history].reverse(), [history]);
+  const latestKnown = !!latestId && runs.some((r) => r.id === latestId);
+  return (
+    <label className="flex w-full min-w-0 flex-col gap-1 sm:w-[24rem]">
+      <span className="eyebrow inline-flex items-center gap-1.5">
+        <History className="h-3 w-3" aria-hidden />
+        Eval run
+      </span>
+      <select className="input h-10 truncate pr-8" value={value} onChange={(e) => onChange(e.target.value)}>
+        {!latestKnown && <option value="">Latest run</option>}
+        {runs.map((r) => (
+          <option key={r.id} value={r.id === latestId ? '' : r.id}>
+            {r.label || 'Unlabelled run'} · {dateTime(r.generated_at)}
+            {r.id === latestId ? ' (latest)' : ''}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function EvalPage() {
-  const res = useResource(({ signal }) => api.evalLatest({ signal }));
+  const [params, setParams] = useSearchParams();
+  const selected = params.get('run') ?? '';
+  const history = useResource(({ signal }) => api.evalHistory({ signal }));
+  // Tag each response with the selection it was fetched for, so a stale report never shows.
+  const res = useResource(async ({ signal }) => ({
+    sel: selected,
+    report: await (selected ? api.evalRun(selected, { signal }) : api.evalLatest({ signal })),
+  }));
+  const { reload } = res;
+
+  // Refetch when the selection changes (the first render already fetched).
+  const [lastSel, setLastSel] = useState(selected);
+  useEffect(() => {
+    if (selected !== lastSel) {
+      setLastSel(selected);
+      reload();
+    }
+  }, [selected, lastSel, reload]);
+
+  const setSelected = (id: string) =>
+    setParams(
+      (p) => {
+        const n = new URLSearchParams(p);
+        if (id) n.set('run', id);
+        else n.delete('run');
+        return n;
+      },
+      { replace: true },
+    );
+
+  const entries = history.data ?? [];
+  const latestEntry = entries[entries.length - 1];
+  // The report for the current selection (ignore a stale one while switching).
+  const report = res.data?.sel === selected ? res.data.report : undefined;
+  const latestId = !selected && report?.id ? report.id : latestEntry?.id;
+  const shownId = selected || latestId;
+  const label = report?.label ?? entries.find((e) => e.id === shownId)?.label ?? null;
+  const switching = !!res.data && !report;
+
   return (
     <div>
       <PageHeader
         title="Eval Dashboard"
         icon={<ChartColumn className="h-5 w-5" aria-hidden />}
         description={
-          res.data ? (
-            <>Latest offline evaluation · generated {dateTime(res.data.generated_at)}</>
+          report ? (
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              {label && (
+                <span
+                  className="inline-flex max-w-full items-center rounded-lg bg-accent/10 px-2 py-0.5 text-[13px] font-semibold text-accent-text ring-1 ring-inset ring-accent/30"
+                  data-testid="eval-run-label"
+                >
+                  <span className="truncate">{label}</span>
+                </span>
+              )}
+              <span>
+                {selected && selected !== latestId ? 'Earlier evaluation' : 'Latest offline evaluation'} · generated{' '}
+                {dateTime(report.generated_at)}
+              </span>
+            </span>
           ) : (
             'Offline evaluation of base vs aligned on the held-out support question set.'
           )
         }
+        actions={
+          entries.length > 0 && (
+            <RunSelect history={entries} latestId={latestId} value={selected === latestId ? '' : selected} onChange={setSelected} />
+          )
+        }
       />
-      {res.loading ? (
+      {res.loading || switching ? (
         <EvalSkeleton />
-      ) : res.error?.isNotFound ? (
+      ) : res.error?.isNotFound && !selected ? (
         <Card>
           <EmptyState
             icon={<FlaskConical className="h-6 w-6" aria-hidden />}
@@ -381,10 +471,10 @@ export function EvalPage() {
         </Card>
       ) : res.error ? (
         <Card>
-          <ErrorState error={res.error} onRetry={res.reload} />
+          <ErrorState error={res.error} onRetry={res.reload} title={res.error.isNotFound ? 'Eval run not found' : undefined} />
         </Card>
-      ) : res.data ? (
-        <EvalDashboard report={res.data} />
+      ) : report ? (
+        <EvalDashboard key={shownId ?? 'latest'} report={report} />
       ) : null}
     </div>
   );

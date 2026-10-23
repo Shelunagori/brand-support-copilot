@@ -30,3 +30,4 @@ var/
 **/.terraform/
 *.tfstate
 *.tfstate.*
+!ui/.env.development

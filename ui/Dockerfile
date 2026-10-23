@@ -9,7 +9,9 @@ COPY . .
 # Baked into the bundle at build time (Vite inlines import.meta.env.*).
 ARG VITE_API_KEY=dev-key-change-me
 ARG VITE_API_BASE=/api
-ENV VITE_API_KEY=$VITE_API_KEY VITE_API_BASE=$VITE_API_BASE
+# Private, self-hosted image (docker compose): embedding the key is intentional here.
+# Never use this for a public deployment (see vite.config.ts guard).
+ENV VITE_API_KEY=$VITE_API_KEY VITE_API_BASE=$VITE_API_BASE ALLOW_API_KEY_IN_BUNDLE=1
 RUN npm run build
 
 # ---- serve -------------------------------------------------------------

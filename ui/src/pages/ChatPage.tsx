@@ -3,6 +3,8 @@ import { ArrowUp, Eraser, MessagesSquare, Sparkles } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlignedOfflineBadge } from '../components/support/AlignedOffline';
 import { AnswerCard } from '../components/support/AnswerCard';
+import { AccessGate, DemoLimitCard } from '../components/demo/DemoGate';
+import { useDemoAccess } from '../lib/demo';
 import { Button, Kbd, PageHeader } from '../components/ui/primitives';
 import { Segmented } from '../components/ui/widgets';
 import { api, ApiError } from '../lib/api';
@@ -64,6 +66,8 @@ export function ChatPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const models = useResource(({ signal }) => api.models({ signal }));
   const busy = turns.some((t) => t.stream.status === 'streaming');
+  const { access, status: demo } = useDemoAccess();
+  const canSend = access === 'open';
 
   useEffect(() => {
     cache = turns;
@@ -91,7 +95,7 @@ export function ChatPage() {
 
   const send = (text?: string) => {
     const q = (text ?? input).trim();
-    if (!q || busy) return;
+    if (!q || busy || !canSend) return;
     const id = nextId++;
     setTurns((ts) => [...ts, { id, stream: initialStream(q, model) }]);
     setInput('');
@@ -124,7 +128,7 @@ export function ChatPage() {
         icon={<MessagesSquare className="h-5 w-5" aria-hidden />}
         description="Ask what an Urbane Threads customer would ask. Replies stream live with intent, policy citation, confidence and escalation."
         actions={
-          turns.length > 0 && (
+          turns.length > 0 && access !== 'locked' && (
             <Button
               size="sm"
               variant="ghost"
@@ -140,123 +144,132 @@ export function ChatPage() {
         }
       />
 
-      <section aria-label="Conversation" className="space-y-6">
-        <AnimatePresence initial={false}>
-          {turns.length === 0 && (
-            <motion.div
-              key="hero"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="glass relative overflow-hidden px-4 py-7 text-center sm:px-10 sm:py-12"
-            >
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[28rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-violet/25 via-accent/15 to-violet/10 blur-3xl"
-              />
-              <div className="relative mx-auto mb-4 hidden h-12 w-12 place-items-center sm:grid rounded-2xl bg-gradient-to-br from-violet/30 to-accent/20 text-accent-text ring-1 ring-inset ring-line">
-                <Sparkles className="h-5 w-5" aria-hidden />
-              </div>
-              <h2 className="relative text-base font-semibold sm:text-lg tracking-tight text-ink">How can we help an Urbane Threads customer?</h2>
-              <p className="relative mx-auto mt-1.5 max-w-md text-sm text-ink-muted">
-                Try one of these — they cover returns windows, Hinglish, chargeback threats and outdated-policy claims.
-              </p>
-              <div className="relative mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
-                {EXAMPLES.map((e, i) => (
-                  <motion.button
-                    key={e}
-                    type="button"
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0, transition: { delay: 0.05 * i } }}
-                    whileHover={{ y: -2 }}
-                    onClick={() => send(e)}
-                    className="w-full rounded-xl border border-line bg-surface/80 px-3.5 py-1.5 text-left text-[13px] text-ink-muted shadow-glass transition-colors hover:border-accent/40 hover:text-ink sm:w-auto sm:rounded-full sm:py-1.5"
-                  >
-                    {e}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {turns.map((t) => (
-          <div key={t.id} className="space-y-3">
-            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex justify-end">
-              <div className="max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-violet/90 to-violet/75 px-4 py-2.5 text-[15px] leading-6 text-white shadow-lift dark:from-violet/40 dark:to-violet/25 dark:text-ink dark:ring-1 dark:ring-inset dark:ring-violet/40">
-                {t.stream.query}
-              </div>
-            </motion.div>
-            <AnswerCard s={t.stream} onRetry={() => retry(t)} />
-          </div>
-        ))}
-        <div ref={endRef} />
-      </section>
-
-      {/* composer */}
-      <div className="sticky bottom-20 z-30 mt-6 md:bottom-6">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            send();
-          }}
-          className="glass p-2 shadow-lift focus-within:shadow-glow"
-          style={{ background: 'rgb(var(--surface) / 0.88)' }}
-        >
-          {turns.length > 0 && (
-            <div className="-mx-1 mb-1 flex gap-1.5 overflow-x-auto px-1 pb-1 pt-0.5 [mask-image:linear-gradient(90deg,#000_85%,transparent)] [scrollbar-width:none]">
-              {EXAMPLES.map((e) => (
-                <button
-                  key={e}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => send(e)}
-                  className="shrink-0 rounded-full border border-line/80 bg-surface-2/70 px-2.5 py-1 text-xs text-ink-muted transition-colors hover:text-ink disabled:opacity-50"
+      {access === 'locked' ? (
+        <AccessGate status={demo} />
+      ) : (
+        <>
+          <section aria-label="Conversation" className="space-y-6">
+            {access === 'limit' && <DemoLimitCard status={demo} />}
+            <AnimatePresence initial={false}>
+              {turns.length === 0 && access !== 'limit' && (
+                <motion.div
+                  key="hero"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="glass relative overflow-hidden px-4 py-7 text-center sm:px-10 sm:py-12"
                 >
-                  {e.length > 38 ? `${e.slice(0, 36)}…` : e}
-                </button>
-              ))}
-            </div>
-          )}
-          <label htmlFor="composer" className="sr-only">
-            Customer message
-          </label>
-          <textarea
-            id="composer"
-            ref={inputRef}
-            rows={2}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[28rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-violet/25 via-accent/15 to-violet/10 blur-3xl"
+                  />
+                  <div className="relative mx-auto mb-4 hidden h-12 w-12 place-items-center sm:grid rounded-2xl bg-gradient-to-br from-violet/30 to-accent/20 text-accent-text ring-1 ring-inset ring-line">
+                    <Sparkles className="h-5 w-5" aria-hidden />
+                  </div>
+                  <h2 className="relative text-base font-semibold sm:text-lg tracking-tight text-ink">How can we help an Urbane Threads customer?</h2>
+                  <p className="relative mx-auto mt-1.5 max-w-md text-sm text-ink-muted">
+                    Try one of these — they cover returns windows, Hinglish, chargeback threats and outdated-policy claims.
+                  </p>
+                  <div className="relative mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
+                    {EXAMPLES.map((e, i) => (
+                      <motion.button
+                        key={e}
+                        type="button"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0, transition: { delay: 0.05 * i } }}
+                        whileHover={{ y: -2 }}
+                        onClick={() => send(e)}
+                        disabled={!canSend}
+                        className="w-full rounded-xl border border-line bg-surface/80 px-3.5 py-1.5 text-left text-[13px] text-ink-muted shadow-glass transition-colors hover:border-accent/40 hover:text-ink sm:w-auto sm:rounded-full sm:py-1.5"
+                      >
+                        {e}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {turns.map((t) => (
+              <div key={t.id} className="space-y-3">
+                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex justify-end">
+                  <div className="max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-violet/90 to-violet/75 px-4 py-2.5 text-[15px] leading-6 text-white shadow-lift dark:from-violet/40 dark:to-violet/25 dark:text-ink dark:ring-1 dark:ring-inset dark:ring-violet/40">
+                    {t.stream.query}
+                  </div>
+                </motion.div>
+                <AnswerCard s={t.stream} onRetry={() => retry(t)} />
+              </div>
+            ))}
+            <div ref={endRef} />
+          </section>
+
+          {/* composer */}
+          <div className="sticky bottom-20 z-30 mt-6 md:bottom-6">
+            <form
+              onSubmit={(e) => {
                 e.preventDefault();
                 send();
-              }
-            }}
-            placeholder="Type a customer message…"
-            className="block max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 py-2 text-[15px] text-ink placeholder:text-ink-subtle focus:outline-none focus-visible:outline-none"
-          />
-          <div className="flex items-center gap-2 px-1 pb-0.5">
-            <ModelToggle value={model} onChange={setModel} alignedOffline={alignedOffline} />
-            {alignedOffline ? (
-              <AlignedOfflineBadge modelId={models.data?.offline_aligned_model_id} className="min-w-0 truncate" />
-            ) : (
-              <span className="hidden text-xs text-ink-subtle sm:inline">
-                <Kbd>Enter</Kbd> to send · <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> newline
-              </span>
-            )}
-            <Button
-              type="submit"
-              variant="primary"
-              className="ml-auto !h-9 !w-9 !px-0"
-              disabled={!input.trim() || busy}
-              loading={busy}
-              aria-label="Send message"
-              icon={busy ? undefined : <ArrowUp className="h-4 w-4" aria-hidden />}
-            />
+              }}
+              className="glass p-2 shadow-lift focus-within:shadow-glow"
+              style={{ background: 'rgb(var(--surface) / 0.88)' }}
+            >
+              {turns.length > 0 && (
+                <div className="-mx-1 mb-1 flex gap-1.5 overflow-x-auto px-1 pb-1 pt-0.5 [mask-image:linear-gradient(90deg,#000_85%,transparent)] [scrollbar-width:none]">
+                  {EXAMPLES.map((e) => (
+                    <button
+                      key={e}
+                      type="button"
+                      disabled={busy || !canSend}
+                      onClick={() => send(e)}
+                      className="shrink-0 rounded-full border border-line/80 bg-surface-2/70 px-2.5 py-1 text-xs text-ink-muted transition-colors hover:text-ink disabled:opacity-50"
+                    >
+                      {e.length > 38 ? `${e.slice(0, 36)}…` : e}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <label htmlFor="composer" className="sr-only">
+                Customer message
+              </label>
+              <textarea
+                id="composer"
+                ref={inputRef}
+                rows={2}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault();
+                    send();
+                  }
+                }}
+                disabled={!canSend}
+                placeholder={access === 'limit' ? 'Live chat is paused: the demo limit was reached' : 'Type a customer message…'}
+                className="block max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 py-2 text-[15px] text-ink placeholder:text-ink-subtle focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              />
+              <div className="flex items-center gap-2 px-1 pb-0.5">
+                <ModelToggle value={model} onChange={setModel} alignedOffline={alignedOffline} />
+                {alignedOffline ? (
+                  <AlignedOfflineBadge modelId={models.data?.offline_aligned_model_id} className="min-w-0 truncate" />
+                ) : (
+                  <span className="hidden text-xs text-ink-subtle sm:inline">
+                    <Kbd>Enter</Kbd> to send · <Kbd>Shift</Kbd>+<Kbd>Enter</Kbd> newline
+                  </span>
+                )}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="ml-auto !h-9 !w-9 !px-0"
+                  disabled={!input.trim() || busy || !canSend}
+                  loading={busy}
+                  aria-label="Send message"
+                  icon={busy ? undefined : <ArrowUp className="h-4 w-4" aria-hidden />}
+                />
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
+        </>
+      )}
     </div>
   );
 }

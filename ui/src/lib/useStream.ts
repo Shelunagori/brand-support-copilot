@@ -1,4 +1,5 @@
 import { ApiError } from './api';
+import { handleChatError } from './demo';
 import { streamSupport } from './sse';
 import type { ModelKind, StreamMeta, SupportResponse } from './types';
 
@@ -46,7 +47,9 @@ export async function runStream(
     );
   } catch (e) {
     if (e instanceof DOMException && e.name === 'AbortError') return;
-    const err = e instanceof ApiError ? e : new ApiError(0, '/v1/support/stream', e instanceof Error ? e.message : 'Stream failed');
+    const err = handleChatError(
+      e instanceof ApiError ? e : new ApiError(0, '/v1/support/stream', e instanceof Error ? e.message : 'Stream failed'),
+    );
     update((s) => ({ ...s, status: 'error', error: err }));
   }
 }

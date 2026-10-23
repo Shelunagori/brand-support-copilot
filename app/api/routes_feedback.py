@@ -3,7 +3,7 @@ from typing import Any, Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from app.api.deps import Authed, Services
+from app.api.deps import AdminAuthed, ReadAuthed, Services
 from app.config import ROOT
 from app.feedback import (
     FeedbackService,
@@ -24,7 +24,7 @@ class FeedbackIn(BaseModel):
 
 
 @router.post("/feedback", status_code=201)
-async def submit(body: FeedbackIn, _: Authed, svc: Services) -> dict[str, Any]:
+async def submit(body: FeedbackIn, _: AdminAuthed, svc: Services) -> dict[str, Any]:
     try:
         return await FeedbackService(svc.session_factory).submit(
             body.inference_id, rating=body.rating, correction=body.correction,
@@ -34,17 +34,17 @@ async def submit(body: FeedbackIn, _: Authed, svc: Services) -> dict[str, Any]:
 
 
 @router.get("/feedback/flagged")
-async def flagged(_: Authed, svc: Services, limit: int = 50) -> list[dict[str, Any]]:
+async def flagged(_: ReadAuthed, svc: Services, limit: int = 50) -> list[dict[str, Any]]:
     return await FeedbackService(svc.session_factory).flagged(min(limit, 200))
 
 
 @router.get("/feedback/stats")
-async def stats(_: Authed, svc: Services) -> dict[str, Any]:
+async def stats(_: ReadAuthed, svc: Services) -> dict[str, Any]:
     return await FeedbackService(svc.session_factory).stats()
 
 
 @router.get("/realign/dataset")
-async def dataset(_: Authed, svc: Services) -> dict[str, Any]:
+async def dataset(_: ReadAuthed, svc: Services) -> dict[str, Any]:
     items = await collect_realign_items(svc.session_factory)
     return {"items": items, "count": len(items)}
 
@@ -55,7 +55,7 @@ class RealignIn(BaseModel):
 
 
 @router.post("/realign", status_code=202)
-async def realign(body: RealignIn, _: Authed, svc: Services) -> dict[str, Any]:
+async def realign(body: RealignIn, _: AdminAuthed, svc: Services) -> dict[str, Any]:
     try:
         ds = await build_realign_dataset(svc.session_factory, REALIGN_DIR)
     except RealignDatasetTooSmall as exc:

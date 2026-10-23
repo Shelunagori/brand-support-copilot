@@ -231,7 +231,50 @@
   }
 }
 
+/* Wake-up screen: pulse rings around the logo + indeterminate progress sweep. */
+@keyframes wake-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(260%);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+/* CSS (not JS) so it runs on the document timeline. */
+.fade-up {
+  animation: fade-up 0.3s ease-out both;
+}
+.wake-ring {
+  animation: wake-ring 2.4s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+}
+.wake-ring-delayed {
+  animation-delay: 1.2s;
+}
+.indeterminate {
+  animation: indeterminate 1.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .wake-ring,
+  .indeterminate {
+    display: none;
+  }
   *,
   *::before,
   *::after {

@@ -2,7 +2,7 @@
 
 from app.config import Settings, get_settings
 from app.db import get_session_factory
-from app.nugen.client import NugenClient
+from app.nugen.client import NugenClient, SpendGuard
 from app.pipeline import AlignmentPipeline
 from app.spend import SpendTracker
 
@@ -13,7 +13,7 @@ def build_spend(settings: Settings | None = None) -> SpendTracker:
                         s.nugen_spend_hard_limit_usd, s.nugen_alignment_cost_est_usd)
 
 
-def build_client(settings: Settings | None = None, spend: SpendTracker | None = None
+def build_client(settings: Settings | None = None, spend: SpendGuard | None = None
                  ) -> NugenClient:
     s = settings or get_settings()
     return NugenClient(

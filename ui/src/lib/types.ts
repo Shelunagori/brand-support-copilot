@@ -141,6 +141,10 @@ export interface EvalSummary {
 }
 
 export interface EvalReport {
+  /** Present on /v1/eval/latest and /v1/eval/runs/{id}. */
+  id?: string;
+  /** Present on /v1/eval/runs/{id}. */
+  label?: string | null;
   generated_at: string;
   summary: EvalSummary;
   questions: EvalQuestion[];
@@ -191,4 +195,17 @@ export interface RealignItem {
 export interface RealignDataset {
   items: RealignItem[];
   count: number;
+}
+
+/** GET /v1/demo/status. Only `demo_mode` is present when the backend is not in demo mode. */
+export interface DemoStatus {
+  demo_mode: boolean;
+  access_code_required?: boolean;
+  daily_cap_usd?: number;
+  spent_today_usd?: number;
+  limit_reached?: boolean;
+  /** Which cap is spent: the daily one (resets 00:00 UTC) or the lifetime one. Missing = daily. */
+  limit_reason?: 'daily' | 'total' | null;
+  ip_limit_per_hour?: number;
+  base_model_id?: string;
 }

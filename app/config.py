@@ -1,10 +1,31 @@
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+_DROP_PARAMS = {"channel_binding"}  # libpq-only; asyncpg rejects it
+
+
+def normalize_database_url(url: str) -> str:
+    """Accept libpq-style URLs (Neon, Render, Heroku) and make them asyncpg-ready:
+    postgres:// -> postgresql+asyncpg://, sslmode=X -> ssl=X, drop libpq-only params."""
+    parts = urlsplit(url)
+    scheme = parts.scheme
+    if scheme in {"postgres", "postgresql"}:
+        scheme = "postgresql+asyncpg"
+    if not scheme.startswith("postgresql+asyncpg"):
+        return url
+    params = []
+    for k, v in parse_qsl(parts.query, keep_blank_values=True):
+        if k in _DROP_PARAMS:
+            continue
+        params.append(("ssl", v) if k == "sslmode" else (k, v))
+    return urlunsplit((scheme, parts.netloc, parts.path, urlencode(params), parts.fragment))
 
 
 class Settings(BaseSettings):
@@ -41,7 +62,23 @@ class Settings(BaseSettings):
     # Scheduled re-alignment only spends credits when this is true.
     auto_realign_confirm: bool = False
 
+    # --- public demo (Render + Vercel) ---
+    demo_mode: bool = False
+    demo_access_code: SecretStr = SecretStr("")
+    demo_daily_cap_usd: float = 1.0
+    # Lifetime cap across all days (Redis counter), so a leaked code can't drain the credit.
+    demo_total_cap_usd: float = 5.0
+    demo_ip_messages_per_hour: int = 10
+    demo_verify_attempts_per_hour: int = 20
+    # Only used by `make demo-seed` (local -> Neon); never set on the deployed API.
+    demo_database_url: SecretStr = SecretStr("")
+
     low_confidence_threshold: float = Field(default=0.5, ge=0, le=1)
+
+    @field_validator("database_url")
+    @classmethod
+    def _normalize_db_url(cls, v: str) -> str:
+        return normalize_database_url(v)
 
     @property
     def api_keys(self) -> set[str]:

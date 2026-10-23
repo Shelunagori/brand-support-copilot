@@ -24,6 +24,8 @@ import { dateTime, humanize, int, pct, relTime } from '../lib/format';
 import { useToast } from '../lib/toast';
 import type { EvalHistoryEntry, FeedbackStats } from '../lib/types';
 import { useResource } from '../lib/useResource';
+import { DemoLock } from '../components/demo/DemoGate';
+import { demoDisabledProps, useIsDemo } from '../lib/demo';
 
 const FLAG_TONE: Record<string, 'danger' | 'warn' | 'violet' | 'neutral'> = {
   thumbs_down: 'danger',
@@ -151,6 +153,7 @@ function FlaggedList() {
 
 function DatasetCard({ onRealign }: { onRealign: () => void }) {
   const res = useResource(({ signal }) => api.realignDataset({ signal }), 30000);
+  const demo = useIsDemo();
   return (
     <Card pad={false}>
       <div className="px-4 pt-4 sm:px-5 sm:pt-5">
@@ -159,9 +162,18 @@ function DatasetCard({ onRealign }: { onRealign: () => void }) {
           title="Training pairs from feedback"
           icon={<Database className="h-4 w-4" aria-hidden />}
           action={
-            <Button size="sm" variant="primary" onClick={onRealign} disabled={!res.data?.count} icon={<Repeat2 className="h-3.5 w-3.5" aria-hidden />}>
-              Re-align
-            </Button>
+            <DemoLock active={demo}>
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={onRealign}
+                disabled={!res.data?.count}
+                icon={<Repeat2 className="h-3.5 w-3.5" aria-hidden />}
+                {...demoDisabledProps(demo)}
+              >
+                Re-align
+              </Button>
+            </DemoLock>
           }
         />
       </div>
@@ -299,6 +311,7 @@ export function FeedbackPage() {
   const stats = useResource(({ signal }) => api.feedbackStats({ signal }), 30000);
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
+  const demo = useIsDemo();
 
   const realign = async () => {
     setBusy(true);
@@ -324,9 +337,17 @@ export function FeedbackPage() {
         icon={<Repeat2 className="h-5 w-5" aria-hidden />}
         description="Thumbs-down and auto-flagged answers become corrections, corrections become a dataset, and the dataset re-aligns the model."
         actions={
-          <Button variant="primary" size="sm" onClick={() => setConfirm(true)} icon={<Sparkles className="h-3.5 w-3.5" aria-hidden />}>
-            Re-align from feedback
-          </Button>
+          <DemoLock active={demo}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setConfirm(true)}
+              icon={<Sparkles className="h-3.5 w-3.5" aria-hidden />}
+              {...demoDisabledProps(demo)}
+            >
+              Re-align from feedback
+            </Button>
+          </DemoLock>
         }
       />
       <Stagger className="space-y-4">

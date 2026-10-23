@@ -28,6 +28,8 @@ import { deriveStages, isSettled, pollTransitions, type Stage, type StageKey } f
 import { useToast } from '../lib/toast';
 import type { PipelineRun, RunState } from '../lib/types';
 import { useResource } from '../lib/useResource';
+import { DemoLock } from '../components/demo/DemoGate';
+import { demoDisabledProps, useIsDemo } from '../lib/demo';
 
 const STAGE_ICON: Record<StageKey, typeof Upload> = {
   upload: Upload,
@@ -309,6 +311,8 @@ export function PipelinePage() {
   };
 
   const canDeploy = list.some((r) => r.model_id);
+  const demo = useIsDemo();
+  const locked = demoDisabledProps(demo);
   const transitions = run ? pollTransitions(run) : [];
 
   return (
@@ -319,22 +323,35 @@ export function PipelinePage() {
         description="Policy docs → Nugen benchmark → domain alignment → deployment. Live status, polled every 5s while a run is moving."
         actions={
           <>
-            <Button size="sm" onClick={() => void act('prep')} loading={busy === 'prep'} icon={<ListChecks className="h-3.5 w-3.5" aria-hidden />}>
-              Prepare (no cost)
-            </Button>
-            <Button size="sm" variant="primary" onClick={() => setConfirmOpen(true)} icon={<Play className="h-3.5 w-3.5" aria-hidden />}>
-              Start alignment
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => void act('deploy')}
-              loading={busy === 'deploy'}
-              disabled={!canDeploy}
-              title={canDeploy ? 'Deploy the latest aligned model' : 'No aligned model to deploy yet'}
-              icon={<Rocket className="h-3.5 w-3.5" aria-hidden />}
-            >
-              Deploy
-            </Button>
+            <DemoLock active={demo}>
+              <Button
+                size="sm"
+                onClick={() => void act('prep')}
+                loading={busy === 'prep'}
+                icon={<ListChecks className="h-3.5 w-3.5" aria-hidden />}
+                {...locked}
+              >
+                Prepare (no cost)
+              </Button>
+            </DemoLock>
+            <DemoLock active={demo}>
+              <Button size="sm" variant="primary" onClick={() => setConfirmOpen(true)} icon={<Play className="h-3.5 w-3.5" aria-hidden />} {...locked}>
+                Start alignment
+              </Button>
+            </DemoLock>
+            <DemoLock active={demo}>
+              <Button
+                size="sm"
+                onClick={() => void act('deploy')}
+                loading={busy === 'deploy'}
+                disabled={!canDeploy}
+                title={canDeploy ? 'Deploy the latest aligned model' : 'No aligned model to deploy yet'}
+                icon={<Rocket className="h-3.5 w-3.5" aria-hidden />}
+                {...locked}
+              >
+                Deploy
+              </Button>
+            </DemoLock>
           </>
         }
       />

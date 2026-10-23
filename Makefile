@@ -92,3 +92,19 @@ demo-redeploy: demo-cost  ## PAID: redeploy the Exp 3 aligned model (asks first)
 
 demo-undeploy:     ## turn the aligned model off again (free)
 	$(PY) -m app.cli undeploy $(EXP3_MODEL)
+
+# ---------------------------------------------------------------- public demo (Render + Vercel)
+.PHONY: demo-snapshot demo-seed demo-smoke demo-local
+
+demo-snapshot:     ## real local data -> ui/public/demo-snapshot.json (UI shows it while the API wakes)
+	$(PY) -m app.demo_snapshot
+
+demo-seed: up      ## WIPES + reseeds the Neon demo DB (DEMO_DATABASE_URL in .env) with the real local data
+	$(PY) -m app.demo_seed --yes
+
+demo-smoke:        ## make demo-smoke API=https://x.onrender.com UI=https://y.vercel.app [CODE=...] [CHAT=--chat]
+	$(PY) -m app.demo_smoke --api $(API) --ui $(UI) $(if $(CODE),--code $(CODE)) $(CHAT)
+
+demo-local: migrate  ## run the API locally exactly as on Render (demo mode)
+	DEMO_MODE=true DEMO_ACCESS_CODE=$${DEMO_ACCESS_CODE:-local-demo} NUGEN_BASE_MODEL_ID=$(DEMO_BASE_MODEL) \
+	uv run uvicorn --factory app.api.main:create_app --port 8000 --proxy-headers

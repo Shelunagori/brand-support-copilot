@@ -18,7 +18,8 @@ import {
   Wrench,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { api } from '../../lib/api';
+import { api, DEMO_DISABLED_MESSAGE } from '../../lib/api';
+import { useIsDemo } from '../../lib/demo';
 import { POLICY_REF_RE, humanize, int, ms } from '../../lib/format';
 import { useToast } from '../../lib/toast';
 import type { StreamState } from '../../lib/useStream';
@@ -66,7 +67,9 @@ function Feedback({ inferenceId }: { inferenceId: string | null }) {
   const [busy, setBusy] = useState(false);
   const [correction, setCorrection] = useState('');
   const [comment, setComment] = useState('');
-  const disabled = !inferenceId;
+  const demo = useIsDemo();
+  const disabled = !inferenceId || demo;
+  const reason = demo ? DEMO_DISABLED_MESSAGE : !inferenceId ? 'No inference id for this reply (cached or fallback)' : undefined;
 
   const send = async (rating: 'up' | 'down') => {
     if (!inferenceId) return;
@@ -93,12 +96,13 @@ function Feedback({ inferenceId }: { inferenceId: string | null }) {
 
   return (
     <div className="contents">
-      <div className="ml-auto flex items-center gap-1" title={disabled ? 'No inference id for this reply (cached or fallback)' : undefined}>
+      <div className={clsx('ml-auto flex items-center gap-1', disabled && 'cursor-not-allowed')} title={reason}>
         <button
           type="button"
           disabled={disabled || busy || state === 'up' || state === 'down'}
           onClick={() => void send('up')}
           aria-pressed={state === 'up'}
+          aria-description={demo ? DEMO_DISABLED_MESSAGE : undefined}
           aria-label="Helpful"
           className={clsx(
             'grid h-7 w-7 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed',
@@ -114,6 +118,7 @@ function Feedback({ inferenceId }: { inferenceId: string | null }) {
           onClick={() => setState((s) => (s === 'down-open' ? 'idle' : 'down-open'))}
           aria-pressed={state === 'down' || state === 'down-open'}
           aria-expanded={state === 'down-open'}
+          aria-description={demo ? DEMO_DISABLED_MESSAGE : undefined}
           aria-label="Not helpful — suggest a correction"
           className={clsx(
             'grid h-7 w-7 place-items-center rounded-lg transition-colors disabled:cursor-not-allowed',

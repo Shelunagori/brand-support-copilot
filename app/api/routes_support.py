@@ -3,7 +3,7 @@ import time
 from fastapi import APIRouter, Request
 from sse_starlette.sse import EventSourceResponse
 
-from app.api.deps import AppServices, Authed, Services
+from app.api.deps import AppServices, ChatAuthed, Services
 from app.support.schema import SupportQuery, SupportResponse
 
 router = APIRouter(prefix="/v1/support", tags=["support"])
@@ -23,7 +23,7 @@ async def refresh_aligned_model(request: Request, svc: AppServices) -> None:
 
 
 @router.post("/query", response_model=SupportResponse)
-async def query(body: SupportQuery, request: Request, _: Authed, svc: Services
+async def query(body: SupportQuery, request: Request, _: ChatAuthed, svc: Services
                 ) -> SupportResponse:
     await refresh_aligned_model(request, svc)
     return await svc.support.answer(body.query, model_kind=body.model,
@@ -32,7 +32,7 @@ async def query(body: SupportQuery, request: Request, _: Authed, svc: Services
 
 
 @router.post("/stream")
-async def stream(body: SupportQuery, request: Request, _: Authed, svc: Services
+async def stream(body: SupportQuery, request: Request, _: ChatAuthed, svc: Services
                  ) -> EventSourceResponse:
     await refresh_aligned_model(request, svc)
     events = svc.support.stream(body.query, model_kind=body.model,

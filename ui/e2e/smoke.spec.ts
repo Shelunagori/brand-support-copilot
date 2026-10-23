@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { healthUp } from './fixtures';
 import { SCREENS } from './routes';
+
+// /health answers fast so the live routes don't show the wake-up screen.
+test.beforeEach(async ({ page }) => {
+  await healthUp(page);
+});
 
 for (const s of SCREENS) {
   test(`${s.slug} renders its heading`, async ({ page }) => {

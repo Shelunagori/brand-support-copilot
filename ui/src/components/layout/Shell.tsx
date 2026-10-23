@@ -2,8 +2,11 @@ import clsx from 'clsx';
 import { Monitor, Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { api } from '../../lib/api';
+import { useServerPhase } from '../../lib/serverStatus';
+import { DemoModePill } from '../demo/DemoGate';
+import { SnapshotBanner } from './SnapshotBanner';
 import { NAV } from '../../lib/nav';
 import { useTheme, type ThemePref } from '../../lib/theme';
 import { useResource } from '../../lib/useResource';
@@ -34,9 +37,11 @@ export function LogoMark({ className }: { className?: string }) {
 function HealthDot() {
   const health = useResource<Health>(({ signal }) => api.health({ signal }), 15000);
   const ready = useResource<Health>(({ signal }) => api.ready({ signal }), 15000);
+  const phase = useServerPhase();
   const ok = health.data?.status === 'ok';
   const degraded = ok && (ready.error || ready.data?.status !== 'ready');
-  const state = health.loading ? 'checking' : !ok ? 'down' : degraded ? 'degraded' : 'healthy';
+  const state =
+    phase === 'waking' ? 'waking' : health.loading ? 'checking' : !ok ? 'down' : degraded ? 'degraded' : 'healthy';
   const checks = ready.data?.checks;
   const title =
     state === 'healthy'
@@ -45,7 +50,9 @@ function HealthDot() {
         ? `API up, dependencies not ready${checks ? ` · postgres ${checks.postgres} · redis ${checks.redis}` : ''}`
         : state === 'down'
           ? 'API unreachable'
-          : 'Checking API…';
+          : state === 'waking'
+            ? 'API is waking up (free-tier server was asleep)'
+            : 'Checking API…';
   return (
     <div
       className="flex h-8 items-center gap-2 rounded-full border border-line bg-surface/70 px-2.5 text-xs text-ink-muted"
@@ -59,14 +66,22 @@ function HealthDot() {
           className={clsx(
             'relative h-2 w-2 rounded-full',
             state === 'healthy' && 'bg-success',
-            state === 'degraded' && 'bg-warn',
+            (state === 'degraded' || state === 'waking') && 'bg-warn',
             state === 'down' && 'bg-danger',
             state === 'checking' && 'bg-ink-subtle',
           )}
         />
       </span>
       <span className="hidden sm:inline">
-        {state === 'healthy' ? 'API' : state === 'degraded' ? 'Degraded' : state === 'down' ? 'Offline' : 'API'}
+        {state === 'healthy'
+          ? 'API'
+          : state === 'degraded'
+            ? 'Degraded'
+            : state === 'down'
+              ? 'Offline'
+              : state === 'waking'
+                ? 'Waking'
+                : 'API'}
       </span>
     </div>
   );
@@ -142,7 +157,10 @@ function ThemeToggle() {
   );
 }
 
+const READ_ONLY_ROUTES = ['/pipeline', '/eval', '/feedback'];
+
 export function Shell({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation();
   return (
     <div className="min-h-screen">
       <div className="bg-stage" aria-hidden />
@@ -172,6 +190,7 @@ export function Shell({ children }: { children: ReactNode }) {
             </div>
           </NavLink>
           <div className="ml-auto flex items-center gap-2">
+            <DemoModePill />
             <EnvPill />
             <HealthDot />
             <ThemeToggle />
@@ -235,7 +254,10 @@ export function Shell({ children }: { children: ReactNode }) {
         </nav>
 
         <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 pb-28 pt-6 outline-none sm:px-6 md:pb-12 lg:px-10 lg:pt-8">
-          <div className="mx-auto max-w-6xl">{children}</div>
+          <div className="mx-auto max-w-6xl">
+            {READ_ONLY_ROUTES.includes(pathname) && <SnapshotBanner />}
+            {children}
+          </div>
         </main>
       </div>
 

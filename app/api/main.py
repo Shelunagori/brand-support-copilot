@@ -13,6 +13,7 @@ from sqlalchemy import select, text
 from app.api.deps import AppServices
 from app.config import Settings, get_settings
 from app.db import get_session_factory
+from app.demo import DemoBudget
 from app.logging_setup import configure_logging, request_id_var
 from app.models import AlignmentRun, RunState
 from app.runtime import build_client, build_spend
@@ -37,19 +38,29 @@ async def resolve_aligned_model_id(services: AppServices, settings: Settings) ->
 async def build_services(settings: Settings) -> AppServices:
     redis: Redis = Redis.from_url(settings.redis_url, decode_responses=True)
     sf = get_session_factory()
-    nugen = build_client(settings, build_spend(settings))
+    demo_budget = None
     recorder = None
-    try:
-        from app.feedback import InferenceLogger
+    if settings.demo_mode:
+        # Public demo: Postgres stays read-only (seeded real data). Spend is capped per day
+        # in Redis, inferences are not logged, and there is no job queue.
+        demo_budget = DemoBudget(redis, settings.nugen_price_per_mtok_usd,
+                                 settings.demo_daily_cap_usd, settings.demo_total_cap_usd)
+        nugen = build_client(settings, demo_budget)
+    else:
+        nugen = build_client(settings, build_spend(settings))
+        try:
+            from app.feedback import InferenceLogger
 
-        recorder = InferenceLogger(sf, settings)
-    except ImportError:  # feedback loop module not installed
-        pass
+            recorder = InferenceLogger(sf, settings)
+        except ImportError:  # feedback loop module not installed
+            pass
     support = SupportService(client=nugen, cache=ResponseCache(redis, settings.cache_ttl_seconds),
                              aligned_model_id=None, base_model_id=settings.nugen_base_model_id,
                              recorder=recorder)
     arq_pool = None
     try:
+        if settings.demo_mode:
+            raise RuntimeError("no job queue in demo mode")
         from arq import create_pool
 
         from app.worker import redis_settings
@@ -58,7 +69,7 @@ async def build_services(settings: Settings) -> AppServices:
     except Exception:  # queue is optional for answering traffic
         log.warning("arq.unavailable")
     svc = AppServices(redis=redis, session_factory=sf, support=support, nugen=nugen,
-                      arq=arq_pool, recorder=recorder)
+                      arq=arq_pool, recorder=recorder, demo_budget=demo_budget)
     support.aligned_model_id = await resolve_aligned_model_id(svc, settings)
     return svc
 
@@ -115,12 +126,13 @@ def create_app(settings: Settings | None = None, services: AppServices | None = 
                 "duration_ms": round((time.perf_counter() - started) * 1000, 1)})
         return response
 
-    from app.api import routes_eval, routes_feedback, routes_ops, routes_support
+    from app.api import routes_demo, routes_eval, routes_feedback, routes_ops, routes_support
 
     app.include_router(routes_ops.router)
     app.include_router(routes_support.router)
     app.include_router(routes_eval.router)
     app.include_router(routes_feedback.router)
+    app.include_router(routes_demo.router)
     return app
 
 

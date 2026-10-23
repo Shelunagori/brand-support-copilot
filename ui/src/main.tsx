@@ -6,6 +6,10 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
+import { serverStatus } from './lib/serverStatus';
+
+// Detect a sleeping API (Render free tier) before the first render.
+serverStatus.start();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

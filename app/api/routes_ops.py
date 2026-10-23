@@ -1,11 +1,11 @@
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 
-from app.api.deps import Authed, Services
+from app.api.deps import AdminAuthed, ReadAuthed, Services, settings
 from app.models import AlignmentRun, RunEvent, RunState
 from app.spend import SpendTracker
 
@@ -28,7 +28,7 @@ async def ready(svc: Services) -> JSONResponse:
 
 
 @router.get("/v1/models")
-async def models(_: Authed, svc: Services) -> dict[str, Any]:
+async def models(request: Request, _: ReadAuthed, svc: Services) -> dict[str, Any]:
     aligned = svc.support.aligned_model_id
     offline: str | None = None
     if not aligned:
@@ -44,14 +44,17 @@ async def models(_: Authed, svc: Services) -> dict[str, Any]:
         "aligned_available": bool(aligned),
         "offline_aligned_model_id": offline,
         "aligned_notice": None if aligned else (
-            "Aligned model offline (undeployed to save credits). Requests are answered by the "
-            "base model; run `make demo-redeploy` to bring it back."
+            ("Aligned model offline (undeployed to save credits). The base model answers live; "
+             "the aligned models' measured results are on the Eval dashboard."
+             if settings(request).demo_mode else
+             "Aligned model offline (undeployed to save credits). Requests are answered by the "
+             "base model; run `make demo-redeploy` to bring it back.")
             if offline else "No aligned model has been trained yet."),
     }
 
 
 @router.get("/v1/pipeline/runs")
-async def runs(_: Authed, svc: Services, limit: int = 10) -> list[dict[str, Any]]:
+async def runs(_: ReadAuthed, svc: Services, limit: int = 10) -> list[dict[str, Any]]:
     async with svc.session_factory() as s:
         rows = (await s.scalars(select(AlignmentRun).order_by(AlignmentRun.created_at.desc())
                                 .limit(min(limit, 50)))).all()
@@ -80,7 +83,7 @@ class AlignRequest(BaseModel):
 
 
 @router.post("/v1/pipeline/align", status_code=202)
-async def enqueue_align(body: AlignRequest, _: Authed, svc: Services) -> dict[str, Any]:
+async def enqueue_align(body: AlignRequest, _: AdminAuthed, svc: Services) -> dict[str, Any]:
     if svc.arq is None:
         raise HTTPException(503, "job queue unavailable")
     job = await svc.arq.enqueue_job("run_alignment", confirm=body.confirm, deploy=body.deploy,
@@ -91,7 +94,7 @@ async def enqueue_align(body: AlignRequest, _: Authed, svc: Services) -> dict[st
 
 
 @router.post("/v1/pipeline/deploy", status_code=202)
-async def enqueue_deploy(_: Authed, svc: Services) -> dict[str, Any]:
+async def enqueue_deploy(_: AdminAuthed, svc: Services) -> dict[str, Any]:
     if svc.arq is None:
         raise HTTPException(503, "job queue unavailable")
     job = await svc.arq.enqueue_job("run_deploy", _job_id="deploy:latest")
@@ -100,7 +103,7 @@ async def enqueue_deploy(_: Authed, svc: Services) -> dict[str, Any]:
 
 
 @router.get("/v1/spend")
-async def spend(_: Authed, svc: Services) -> dict[str, Any]:
+async def spend(_: ReadAuthed, svc: Services) -> dict[str, Any]:
     from app.config import get_settings
 
     s = get_settings()

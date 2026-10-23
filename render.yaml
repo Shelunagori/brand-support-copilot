@@ -1,0 +1,44 @@
+# Render Blueprint: public demo API only (no worker, no job queue).
+# Secrets are `sync: false`: Render asks for them in the dashboard; they never live in git.
+services:
+  - type: web
+    name: brand-support-copilot-api
+    runtime: docker
+    plan: free
+    region: singapore            # closest Render region to India / Neon ap-southeast-1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    # migrations are idempotent; --proxy-headers so per-IP limits see the real client IP
+    dockerCommand: >-
+      sh -c "alembic upgrade head &&
+      uvicorn --factory app.api.main:create_app --host 0.0.0.0 --port ${PORT:-10000}
+      --proxy-headers --forwarded-allow-ips='*'"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: NUGEN_BASE_MODEL_ID
+        value: meta-llama/Llama-3.2-3B-Instruct
+      - key: DEMO_DAILY_CAP_USD
+        value: "1"
+      - key: DEMO_TOTAL_CAP_USD        # lifetime demo spend cap
+        value: "5"
+      - key: DEMO_IP_MESSAGES_PER_HOUR
+        value: "10"
+      - key: NUGEN_PRICE_PER_MTOK_USD
+        value: "38"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: CLIENT_API_KEYS          # unused in demo mode; random so the dev default is never valid
+        generateValue: true
+      - key: NUGEN_API_KEY            # Nugen key (stays server-side)
+        sync: false
+      - key: DATABASE_URL             # Neon connection string (direct, not pooled)
+        sync: false
+      - key: REDIS_URL                # Upstash rediss:// URL
+        sync: false
+      - key: DEMO_ACCESS_CODE         # the code you share with reviewers
+        sync: false
+      - key: CORS_ORIGINS             # https://<your-app>.vercel.app (exact, no trailing slash)
+        sync: false

@@ -4,6 +4,8 @@ import { ArrowRight, Check, GitCompareArrows, Minus, Scale, Trophy } from 'lucid
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AlignedOfflineBadge, AlignedOfflineCard } from '../components/support/AlignedOffline';
 import { AnswerCard } from '../components/support/AnswerCard';
+import { AccessGate, DemoLimitCard } from '../components/demo/DemoGate';
+import { useDemoAccess } from '../lib/demo';
 import { api } from '../lib/api';
 import { useResource } from '../lib/useResource';
 import { Button, Card, CardHeader, PageHeader, Pill, Stagger } from '../components/ui/primitives';
@@ -179,6 +181,8 @@ export function ComparePage() {
   const ctrl = useRef<AbortController | null>(null);
   const models = useResource(({ signal }) => api.models({ signal }));
   const alignedOffline = !!models.data && !models.data.aligned_model_id;
+  const { access, status: demo } = useDemoAccess();
+  const canSend = access === 'open';
   const busy =
     !!pair && (pair.base.status === 'streaming' || (!offlineRun && pair.aligned.status === 'streaming'));
 
@@ -186,7 +190,7 @@ export function ComparePage() {
 
   const run = (text?: string) => {
     const query = (text ?? q).trim();
-    if (!query || busy) return;
+    if (!query || busy || !canSend) return;
     if (text) setQ(text);
     ctrl.current?.abort();
     const c = new AbortController();
@@ -213,77 +217,91 @@ export function ComparePage() {
         </div>
       )}
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          run();
-        }}
-        className="glass mb-4 flex flex-col gap-2 p-2 sm:flex-row"
-      >
-        <label htmlFor="cmp-q" className="sr-only">
-          Question for both models
-        </label>
-        <input
-          id="cmp-q"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="e.g. Can I return a kurta bought during the sale?"
-          className="h-11 min-w-0 flex-1 rounded-xl bg-transparent px-3 text-[15px] text-ink placeholder:text-ink-subtle focus:outline-none"
-        />
-        <Button type="submit" variant="primary" className="!h-11" loading={busy} disabled={!q.trim()} icon={<ArrowRight className="h-4 w-4" aria-hidden />}>
-          Compare
-        </Button>
-      </form>
-      <div className="mb-6 flex flex-wrap gap-1.5">
-        {EXAMPLES.map((e) => (
-          <button
-            key={e}
-            type="button"
-            disabled={busy}
-            onClick={() => run(e)}
-            className="rounded-full border border-line/80 bg-surface/70 px-3 py-1 text-xs text-ink-muted transition-colors hover:border-accent/40 hover:text-ink disabled:opacity-50"
-          >
-            {e}
-          </button>
-        ))}
-      </div>
-
-      {!pair ? (
-        <Card>
-          <EmptyState
-            icon={<GitCompareArrows className="h-6 w-6" aria-hidden />}
-            title="Nothing compared yet"
-            body="Pick an example or type a question. Both models stream side by side; once both finish you'll get a word diff and a field-by-field verdict."
-          />
-        </Card>
+      {access === 'locked' ? (
+        <AccessGate status={demo} />
       ) : (
-        <Stagger className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-2">
-            {(['base', 'aligned'] as const).map((k) => (
-              <motion.section key={k} aria-label={`${k} model`} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
-                <h2 className="mb-2 flex items-center gap-2 px-1 text-sm font-semibold text-ink">
-                  <span className={clsx('h-2 w-2 rounded-full', k === 'aligned' ? 'bg-accent' : 'bg-violet')} aria-hidden />
-                  {k === 'aligned' ? 'Aligned model' : 'Base model'}
-                </h2>
-                {k === 'aligned' && offlineRun ? (
-                  <AlignedOfflineCard modelId={models.data?.offline_aligned_model_id} />
-                ) : (
-                  <AnswerCard s={pair[k]} compact onRetry={() => run(pair[k].query)} />
-                )}
-              </motion.section>
+        <>
+          {access === 'limit' && (
+            <div className="mb-6">
+              <DemoLimitCard status={demo} />
+            </div>
+          )}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              run();
+            }}
+            className="glass mb-4 flex flex-col gap-2 p-2 sm:flex-row"
+          >
+            <label htmlFor="cmp-q" className="sr-only">
+              Question for both models
+            </label>
+            <input
+              id="cmp-q"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="e.g. Can I return a kurta bought during the sale?"
+              disabled={!canSend}
+              className="h-11 min-w-0 flex-1 rounded-xl bg-transparent px-3 text-[15px] text-ink placeholder:text-ink-subtle focus:outline-none disabled:cursor-not-allowed"
+            />
+            <Button type="submit" variant="primary" className="!h-11" loading={busy} disabled={!q.trim() || !canSend} icon={<ArrowRight className="h-4 w-4" aria-hidden />}>
+              Compare
+            </Button>
+          </form>
+          <div className="mb-6 flex flex-wrap gap-1.5">
+            {EXAMPLES.map((e) => (
+              <button
+                key={e}
+                type="button"
+                disabled={busy || !canSend}
+                onClick={() => run(e)}
+                className="rounded-full border border-line/80 bg-surface/70 px-3 py-1 text-xs text-ink-muted transition-colors hover:border-accent/40 hover:text-ink disabled:opacity-50"
+              >
+                {e}
+              </button>
             ))}
           </div>
-          {bothDone && pair.base.final && pair.aligned.final && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="grid items-start gap-4 xl:grid-cols-[1.25fr_1fr]"
-            >
-              <Diff a={pair.base.final.answer} b={pair.aligned.final.answer} />
-              <FieldTable base={pair.base.final} aligned={pair.aligned.final} />
-            </motion.div>
+
+          {!pair ? (
+            access !== 'limit' && (
+              <Card>
+                <EmptyState
+                  icon={<GitCompareArrows className="h-6 w-6" aria-hidden />}
+                  title="Nothing compared yet"
+                  body="Pick an example or type a question. Both models stream side by side; once both finish you'll get a word diff and a field-by-field verdict."
+                />
+              </Card>
+            )
+          ) : (
+            <Stagger className="space-y-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                {(['base', 'aligned'] as const).map((k) => (
+                  <motion.section key={k} aria-label={`${k} model`} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
+                    <h2 className="mb-2 flex items-center gap-2 px-1 text-sm font-semibold text-ink">
+                      <span className={clsx('h-2 w-2 rounded-full', k === 'aligned' ? 'bg-accent' : 'bg-violet')} aria-hidden />
+                      {k === 'aligned' ? 'Aligned model' : 'Base model'}
+                    </h2>
+                    {k === 'aligned' && offlineRun ? (
+                      <AlignedOfflineCard modelId={models.data?.offline_aligned_model_id} />
+                    ) : (
+                      <AnswerCard s={pair[k]} compact onRetry={() => run(pair[k].query)} />
+                    )}
+                  </motion.section>
+                ))}
+              </div>
+              {bothDone && pair.base.final && pair.aligned.final && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="grid items-start gap-4 xl:grid-cols-[1.25fr_1fr]"
+                >
+                  <Diff a={pair.base.final.answer} b={pair.aligned.final.answer} />
+                  <FieldTable base={pair.base.final} aligned={pair.aligned.final} />
+                </motion.div>
+              )}
+            </Stagger>
           )}
-        </Stagger>
+        </>
       )}
     </div>
   );

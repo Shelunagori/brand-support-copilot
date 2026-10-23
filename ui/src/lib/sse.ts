@@ -1,4 +1,4 @@
-import { API_BASE, ApiError, headers } from './api';
+import { API_BASE, ApiError, detailOf, errorMessage, headers } from './api';
 import type { ModelKind, StreamMeta, SupportResponse } from './types';
 
 export interface StreamHandlers {
@@ -64,23 +64,28 @@ export async function streamSupport(
   try {
     res = await fetch(`${API_BASE}${path}`, {
       method: 'POST',
-      headers: headers({ 'Content-Type': 'application/json', Accept: 'text/event-stream' }),
+      headers: headers({ 'Content-Type': 'application/json', Accept: 'text/event-stream' }, { demo: true }),
       body: JSON.stringify({ query, model, use_cache: true }),
       signal,
     });
   } catch (e) {
     if (e instanceof DOMException && e.name === 'AbortError') throw e;
-    throw new ApiError(0, path, 'Could not reach the API. Is the backend running on :8000?');
+    throw new ApiError(0, path, 'Could not reach the API. Is the backend running?');
   }
+  // Demo-mode refusals (401 code, 429 limits, 503 not configured) arrive as plain HTTP errors
+  // before any SSE event: surface status + detail so the UI can branch on them.
   if (!res.ok || !res.body) {
-    let msg = `Stream failed (${res.status}).`;
+    const text = await res.text().catch(() => '');
+    let body: unknown = null;
     try {
-      const j = (await res.json()) as { detail?: unknown };
-      if (typeof j.detail === 'string') msg = j.detail;
+      body = text ? JSON.parse(text) : null;
     } catch {
-      if (res.status === 500) throw new ApiError(0, path, 'Could not reach the API. Is the backend running on :8000?');
+      body = text;
     }
-    throw new ApiError(res.status, path, msg);
+    if (res.status === 500 && !text) throw new ApiError(0, path, 'Could not reach the API. Is the backend running?');
+    const detail = detailOf(body);
+    const msg = res.ok ? 'The stream returned no body.' : errorMessage(res.status, detail);
+    throw new ApiError(res.ok ? 502 : res.status, path, msg, detail);
   }
 
   let final: SupportResponse | null = null;

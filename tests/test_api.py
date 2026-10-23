@@ -1,35 +1,13 @@
-from collections.abc import AsyncIterator
 
 import httpx
-import pytest
 from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.api.main import AppServices, create_app
 from app.config import Settings
-from app.support.cache import ResponseCache
 from app.support.service import SupportService
-from tests.test_support_service import VALID, ScriptedClient
+from tests.test_support_service import ScriptedClient
 
 KEY = {"X-API-Key": "test-key"}
-
-
-@pytest.fixture
-async def api(session_factory: async_sessionmaker[AsyncSession]
-              ) -> AsyncIterator[tuple[httpx.AsyncClient, ScriptedClient]]:
-    redis: Redis = Redis.from_url("redis://localhost:6379/15", decode_responses=True)
-    await redis.flushdb()
-    model = ScriptedClient([VALID] * 20)
-    settings = Settings(client_api_keys="test-key", rate_limit_per_minute=5)
-    support = SupportService(client=model, cache=ResponseCache(redis, 60),  # type: ignore[arg-type]
-                             aligned_model_id="model_aligned", base_model_id="base")
-    app = create_app(settings, AppServices(redis=redis, session_factory=session_factory,
-                                           support=support, nugen=None))
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
-                                 base_url="http://t") as c:
-        yield c, model
-    await redis.flushdb()
-    await redis.aclose()
 
 
 async def test_health_needs_no_auth(api) -> None:  # type: ignore[no-untyped-def]
