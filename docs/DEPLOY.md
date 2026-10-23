@@ -93,7 +93,9 @@ Time needed: about 25 minutes, most of it waiting for the first Render build.
 > applied. In the service, open **Environment** and add **every** variable from
 > [`deploy/render.env.example`](../deploy/render.env.example). The non-secret ones are
 > `DEMO_MODE=true`, the caps, `NUGEN_BASE_MODEL_ID` and `NUGEN_PRICE_PER_MTOK_USD`. Also set
-> `CLIENT_API_KEYS` to a long random string. Check that `…/v1/demo/status` shows
+> `CLIENT_API_KEYS` to a long random string. Leave **Settings → Docker Command** empty: the image's `CMD`
+> ([`scripts/start.sh`](../scripts/start.sh)) runs the migrations, then uvicorn on `$PORT` with
+> `--proxy-headers`. Check that `…/v1/demo/status` shows
 > `"demo_mode":true`. (When hosted, the API never accepts the public dev key, even if
 > misconfigured.)
 

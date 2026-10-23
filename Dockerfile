@@ -17,9 +17,10 @@ COPY --chown=app:app app ./app
 COPY --chown=app:app migrations ./migrations
 COPY --chown=app:app alembic.ini ./
 COPY --chown=app:app data ./data
+COPY --chown=app:app --chmod=755 scripts/start.sh ./scripts/start.sh
 RUN mkdir -p /app/var /app/reports && chown app:app /app/var /app/reports
 USER 10001
 EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=3s --retries=5 \
-  CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else 1)"
-CMD ["uvicorn", "--factory", "app.api.main:create_app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+  CMD python -c "import os,sys,urllib.request; sys.exit(0 if urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\",\"8000\")}/health').status==200 else 1)"
+CMD ["./scripts/start.sh"]

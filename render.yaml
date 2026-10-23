@@ -8,11 +8,8 @@ services:
     region: ohio                 # same region as the Neon project (aws us-east-2)
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    # migrations are idempotent; --proxy-headers so per-IP limits see the real client IP
-    dockerCommand: >-
-      sh -c "alembic upgrade head &&
-      uvicorn --factory app.api.main:create_app --host 0.0.0.0 --port ${PORT:-10000}
-      --proxy-headers --forwarded-allow-ips='*'"
+    # Start command lives in the image (scripts/start.sh: migrate, then exec uvicorn with
+    # --proxy-headers on $PORT). Leave Render's "Docker Command" field empty.
     healthCheckPath: /health
     autoDeploy: true
     envVars:
