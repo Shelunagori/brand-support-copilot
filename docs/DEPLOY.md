@@ -29,17 +29,18 @@ Time needed: about 25 minutes, most of it waiting for the first Render build.
 2. **Create project**:
    - Project name: `brand-support-copilot`
    - Postgres version: the default (16 or 17)
-   - Cloud / region: **AWS · Asia Pacific (Singapore) `ap-southeast-1`**
+   - Cloud / region: **AWS · US East (Ohio) `us-east-2`** (the live demo uses this; keep Neon,
+     Upstash and Render in the same area)
    - Click **Create project**.
 3. On the project dashboard, click **Connect** (top right).
    - Branch `main`, database `neondb`, role: the default owner.
    - Turn **Connection pooling OFF** (use the *direct* connection).
    - Copy the connection string. It looks like
-     `postgresql://neondb_owner:****@ep-xxxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
+     `postgresql://neondb_owner:****@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
      (the app converts it to asyncpg format itself).
 4. Put it in your **local** `.env` (gitignored) as one line:
    ```
-   DEMO_DATABASE_URL=postgresql://neondb_owner:...@ep-xxxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+   DEMO_DATABASE_URL=postgresql://neondb_owner:...@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
    ```
    Keep the string handy: it is also Render's `DATABASE_URL` in step 3.
 5. **Seed it with the real data.** Either tell me **"Neon ready"** and I'll run it, or run it yourself:
@@ -54,7 +55,7 @@ Time needed: about 25 minutes, most of it waiting for the first Render build.
 1. Open <https://console.upstash.com>, then **Sign up with GitHub**.
 2. **Redis**, then **Create database**:
    - Name: `bsc-demo`
-   - Type / primary region: **AWS · ap-southeast-1 (Singapore)** (Regional is fine)
+   - Type / primary region: **AWS · us-east-2 (Ohio)**, or us-east-1 if Ohio isn't offered
    - Plan: **Free**. Leave **TLS on**.
    - Click **Create**.
 3. On the database page, under **Connect**, choose the **Redis URL** / `redis-cli` tab and copy
@@ -68,7 +69,7 @@ Time needed: about 25 minutes, most of it waiting for the first Render build.
 2. Click **New +**, then **Blueprint**.
 3. Connect GitHub if asked, pick **`Shelunagori/brand-support-copilot`**, then **Connect**.
    Render reads [`render.yaml`](../render.yaml) and shows one web service,
-   **`brand-support-copilot-api`** (Docker, Free, Singapore).
+   **`brand-support-copilot-api`** (Docker, Free, Ohio).
 4. Render asks for the secret env vars (declared `sync: false`). Paste:
 
    | Key | Value |

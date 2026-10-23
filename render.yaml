@@ -5,7 +5,7 @@ services:
     name: brand-support-copilot-api
     runtime: docker
     plan: free
-    region: singapore            # closest Render region to India / Neon ap-southeast-1
+    region: ohio                 # same region as the Neon project (aws us-east-2)
     dockerfilePath: ./Dockerfile
     dockerContext: .
     # migrations are idempotent; --proxy-headers so per-IP limits see the real client IP
