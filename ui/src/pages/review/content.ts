@@ -179,9 +179,9 @@ export const BILLING_ROWS = [
   { item: 'Live Compare smoke test (base + aligned)', inr: '₹0.73', note: '₹0.24 base + ₹0.49 aligned, 23 Oct' },
 ];
 export const BILLING_TOTAL = {
-  used: '₹2,026.25 (≈ $21.05 at ₹96.28 = $1)',
-  balance: '₹2,787.68 of ₹4,813.93',
-  asOf: '23 Oct 2026, 21:35 IST',
+  used: '₹2,027.91 (≈ $21.06 at ₹96.28 = $1)',
+  balance: '₹2,786.02 of ₹4,813.93',
+  asOf: '24 Oct 2026',
 };
 export const RATE_CARD = {
   source: 'Nugen Org Settings → Usage-Based Pricing (INR per 1M words, billed in USD); converted at 0.75 words per token.',
@@ -195,7 +195,7 @@ export const RATE_CARD = {
 };
 export const IDLE_HOSTING = {
   value: '₹0',
-  label: 'charged for the deployed aligned model while idle: 21:17 → 21:35 IST (18 min); the 1-hour reading is pending',
+  label: 'charged for keeping the aligned model deployed while idle: deployed since 21:17 IST on 23 Oct; billing on 24 Oct shows only per-message usage lines, no hosting line',
 };
 
 export const TESTING = [
